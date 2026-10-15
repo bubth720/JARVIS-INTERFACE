@@ -73,7 +73,26 @@ Un seul module Gradle `app` : les frontières de packages permettent une extract
 ultérieure. Aucun stockage ni widget extensible n’est implémenté à ce stade.
 Voir [les décisions](docs/decisions.md) et [le rapport](docs/mission-002.md).
 
+## Validation continue — mission 003
+
+Le workflow Android utilise Ubuntu 24.04, JDK Temurin 17 et des actions figées par
+SHA. `setup-android` utilise les command-line tools `11076708` et installe
+explicitement `platform-tools`, `platforms;android-35`, `build-tools;35.0.0`.
+Le paramètre `packages` remplace le défaut obsolète `tools platform-tools`.
+
+La CI exécute `./scripts/check.sh --no-daemon`, vérifie les deux APK et des tests
+JVM réellement exécutés sans échec ni test ignoré. Les artefacts sont :
+
+- `jarvis-interface-apks` : APK application et APK de tests instrumentés ;
+- `android-validation-reports` : résultats XML/HTML JVM et rapports Lint.
+
+Les tests instrumentés sont compilés, pas exécutés sur le runner. Les versions
+applicatives et le minimum API 26 restent inchangés. Les patches JDK et l’image
+hébergée peuvent évoluer ; cette configuration ne promet pas des APK identiques
+bit à bit. Voir le [rapport de stabilisation](docs/mission-003.md).
+
 ## Suite envisagée
 
-Mission 003 : panneaux déplaçables/redimensionnables, contraintes, dispositions
-et sauvegarde locale, après validation de la mission 002.
+Après validation de la stabilisation CI : définir la prochaine mission consacrée
+aux panneaux et dispositions. Aucun nouveau dashboard ni animation n’est développé
+par la mission 003.
