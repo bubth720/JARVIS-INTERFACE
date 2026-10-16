@@ -76,3 +76,25 @@ Ces décisions remplacent le comportement sans persistance des missions précéd
 - Pas d’export ni de backup distant dans cette mission. Les archives restent privées
   et sont supprimées avec les données de l’application. Aucun service, réseau,
   permission, connecteur ou moteur d’avatar ajouté. API 26 et CI conservées.
+
+## Mission 006 — stabilisation ergonomique ciblée
+
+- Défaut reproduit par instrumentation : fenêtre Compose 360×360 dp, texte ×2,
+  mode édition ; la poignée Taille est inaccessible malgré le défilement de grille.
+  L’en-tête non borné consommait la hauteur disponible. Avant correction : 3/4
+  scénarios ergonomiques passent, 1 échoue ; preuve JUnit conservée.
+- L’en-tête est borné et défilable ; il laisse 168 dp (3 cellules minimales de 56 dp)
+  à la grille lorsque la fenêtre dispose de cette hauteur plus une zone d’en-tête
+  et l’espacement. En fenêtre extrême, pas de promesse de lisibilité totale. La
+  disposition métier, les gestes et le stockage ne changent pas. Le statut reste
+  accessible dans l’en-tête ; il peut nécessiter un défilement en fenêtre courte.
+- Pas de refonte d’architecture, de dépendance, de format DataStore, de permission,
+  de service, de connecteur ou de rendu avatar ajouté. Les anciennes sauvegardes
+  restent soumises au codec/contrôleur existants, inchangés.
+- Kit physique distinct dans la CI, sans APK instrumenté, avec provenance et
+  empreintes. Signature debug : une incompatibilité de mise à jour bloque l’essai
+  sur une installation existante ; ne pas effacer ses données pour la contourner.
+  Aucun secret de signature ou mécanisme de publication n’est introduit.
+- Les tests de sémantique ne remplacent pas une vraie session TalkBack. Les métriques
+  physiques restent non mesurées ; collecte guidée sur les deux appareils avant
+  validation de mission et toute mission suivante.

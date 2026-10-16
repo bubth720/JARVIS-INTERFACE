@@ -1,0 +1,68 @@
+{
+  "base": "037e2cbe2e100eb06136e9899b815a4e8351fd72",
+  "tasks": [
+    "assembleDebug",
+    "testDebugUnitTest",
+    "lintDebug",
+    "assembleDebugAndroidTest",
+    "connectedDebugAndroidTest"
+  ],
+  "result": "BUILD SUCCESSFUL",
+  "jvm": {
+    "com.jarvis.interfaceapp.storage.DataStoreLayoutRepositoryTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.DashboardTest": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.DashboardControllerTest": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.HomeStateTest": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.LayoutCodecTest": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "android": {
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "kind": "emulator only",
+    "api": 26,
+    "virtual_screen": "720x1280, 320 dpi",
+    "gpu": "software, no KVM"
+  },
+  "lint": "No issues found.",
+  "physical_devices": {
+    "POCO X8 Pro": "NOT TESTED",
+    "Redmi Pad SE": "NOT TESTED"
+  },
+  "apks": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 9869536,
+      "sha256": "867ddab8b941fc9f518b7acd883eaa9aeb162dfdf7dc04e74e4a2d6e352e5239"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1105775,
+      "sha256": "95ba7655ab61020e34746667a7ed2e4cf7325ac0b1b1b93a318556b1faef8acd"
+    }
+  }
+}

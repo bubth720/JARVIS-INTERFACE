@@ -1,6 +1,6 @@
 # JARVIS INTERFACE
 
-Application Android native autonome — mission 005, version 0.1.0.
+Application Android native autonome — mission 006 en attente de validation physique, version 0.1.0.
 
 ## Fonctionnement
 
@@ -186,3 +186,26 @@ Il installe l’APK debug, vérifie les deux profils, tailles/verrous, les vrais
 les fichiers invalides protégés et la réinitialisation. Les preuves sont écrites dans
 `app/build/reports/storage-restart/`. Les tests Android ordinaires réinitialisent eux
 aussi les dispositions via les paramètres métier ; utiliser un appareil de test.
+
+## Mission 006 — validation multiappareils
+
+La validation physique **POCO X8 Pro / Redmi Pad SE reste en attente** des résultats
+utilisateur. Aucun test émulateur n’est assimilé à un test physique.
+
+- [Installation Android sans ordinateur et scénarios](docs/device-validation/guide-android.md)
+- [Grille pour les deux appareils](docs/device-validation/grille-appareils.csv)
+- [Retour à remplir par appareil](docs/device-validation/retour-utilisateur.md)
+- [Rapport, correctif reproduit et résultats](docs/mission-006.md)
+
+Dans le workflow de la branche `test/interface-device-006`, télécharger l’artefact
+**jarvis-interface-device-kit** : APK application, guide, fiches, commit et empreintes.
+Le kit peut aussi être généré localement après compilation :
+
+```sh
+python3 scripts/package_device_kit.py
+```
+
+En fenêtre courte/texte agrandi, l’en-tête défile indépendamment pour garder la grille
+atteignable. Faire défiler sa zone pour retrouver les boutons et le statut de sauvegarde.
+Ne pas désinstaller une ancienne version pour contourner un conflit de signature :
+cela supprimerait les dispositions ; voir le guide avant toute mise à jour.

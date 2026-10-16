@@ -36,51 +36,62 @@ fun JarvisApp(viewModel: HomeViewModel) {
         viewModel.dispatch(if (state.settingsOpen) HomeAction.CloseSettings else HomeAction.ExitEditing)
     }
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
-        Column(Modifier.fillMaxSize().semantics { testTagsAsResourceId = true }.padding(padding).padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("JARVIS INTERFACE", style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary)
-            Text("INTERFACE TACTIQUE • 0.1.0", style = MaterialTheme.typography.labelLarge)
-            HorizontalDivider()
-            StorageStatus(ui.storage, viewModel::retryStorage)
-            if (ui.storage.phase == SavePhase.LOADING) {
-                CircularProgressIndicator()
-            } else if (state.settingsOpen) {
-                Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
+        BoxWithConstraints(Modifier.fillMaxSize().padding(padding).padding(12.dp)) {
+            // Keep one minimum-height panel reachable in a short window.
+            // Header overflow scrolls instead of starving the dashboard.
+            val headerLimit = (maxHeight - 168.dp - 8.dp).coerceAtLeast(48.dp)
+            Column(Modifier.fillMaxSize().semantics { testTagsAsResourceId = true },
+                verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(Modifier.fillMaxWidth().heightIn(max = headerLimit)
+                    .verticalScroll(rememberScrollState()).testTag("app-header"),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Paramètres", style = MaterialTheme.typography.headlineMedium)
-                    Text("Les modifications validées sont enregistrées automatiquement sur cet appareil. Le statut indique quand leur sauvegarde est terminée.")
-                    OutlinedButton(onClick = { confirmReset = true },
-                        enabled = ui.storage.phase != SavePhase.SAVING,
-                        modifier = Modifier.testTag("reset-layouts")) {
-                        Text("Restaurer la disposition par défaut")
+                    Text("JARVIS INTERFACE", style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary)
+                    Text("INTERFACE TACTIQUE • 0.1.0", style = MaterialTheme.typography.labelLarge)
+                    HorizontalDivider()
+                    StorageStatus(ui.storage, viewModel::retryStorage)
+                    if (ui.storage.phase != SavePhase.LOADING && !state.settingsOpen) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedButton(onClick = { viewModel.dispatch(HomeAction.OpenSettings) },
+                                modifier = Modifier.testTag("open-settings")) { Text("Paramètres") }
+                            Button(onClick = { viewModel.dispatch(HomeAction.ToggleEditing) },
+                                enabled = ui.storage.canEdit,
+                                modifier = Modifier.testTag("toggle-edit")) {
+                                Text(if (state.editing) "Terminer" else "Modifier")
+                            }
+                        }
+                        if (state.editing) Text("Édition : poignées Déplacer / Taille. ○ libre, ● verrouillé. Défilez pour explorer la grille.",
+                            style = MaterialTheme.typography.bodySmall)
+                        val message = when (state.placementError) {
+                            PlacementError.OVERLAP -> "Position refusée : chevauchement."
+                            PlacementError.OUT_OF_BOUNDS -> "Position refusée : limite de la grille."
+                            PlacementError.TOO_SMALL -> "Taille refusée : minimum 3×3 cellules."
+                            PlacementError.LOCKED -> "Panneau verrouillé."
+                            PlacementError.UNKNOWN_PANEL -> "Panneau inconnu."
+                            null -> null
+                        }
+                        if (message != null) Text(message, color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                     }
-                    Button(onClick = { viewModel.dispatch(HomeAction.CloseSettings) },
-                        modifier = Modifier.testTag("close-settings")) { Text("Retour au tableau de bord") }
                 }
-            } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = { viewModel.dispatch(HomeAction.OpenSettings) },
-                        modifier = Modifier.testTag("open-settings")) { Text("Paramètres") }
-                    Button(onClick = { viewModel.dispatch(HomeAction.ToggleEditing) },
-                        enabled = ui.storage.canEdit,
-                        modifier = Modifier.testTag("toggle-edit")) {
-                        Text(if (state.editing) "Terminer" else "Modifier")
+                if (ui.storage.phase == SavePhase.LOADING) {
+                    CircularProgressIndicator()
+                } else if (state.settingsOpen) {
+                    Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Paramètres", style = MaterialTheme.typography.headlineMedium)
+                        Text("Les modifications validées sont enregistrées automatiquement sur cet appareil. Le statut indique quand leur sauvegarde est terminée.")
+                        OutlinedButton(onClick = { confirmReset = true },
+                            enabled = ui.storage.phase != SavePhase.SAVING,
+                            modifier = Modifier.testTag("reset-layouts")) {
+                            Text("Restaurer la disposition par défaut")
+                        }
+                        Button(onClick = { viewModel.dispatch(HomeAction.CloseSettings) },
+                            modifier = Modifier.testTag("close-settings")) { Text("Retour au tableau de bord") }
                     }
+                } else {
+                    DashboardGrid(state, viewModel::dispatch, Modifier.weight(1f).fillMaxWidth())
                 }
-                if (state.editing) Text("Édition : poignées Déplacer / Taille. ○ libre, ● verrouillé. Défilez pour explorer la grille.",
-                    style = MaterialTheme.typography.bodySmall)
-                val message = when (state.placementError) {
-                    PlacementError.OVERLAP -> "Position refusée : chevauchement."
-                    PlacementError.OUT_OF_BOUNDS -> "Position refusée : limite de la grille."
-                    PlacementError.TOO_SMALL -> "Taille refusée : minimum 3×3 cellules."
-                    PlacementError.LOCKED -> "Panneau verrouillé."
-                    PlacementError.UNKNOWN_PANEL -> "Panneau inconnu."
-                    null -> null
-                }
-                if (message != null) Text(message, color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                DashboardGrid(state, viewModel::dispatch, Modifier.weight(1f).fillMaxWidth())
             }
         }
     }

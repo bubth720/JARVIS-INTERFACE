@@ -1,0 +1,27 @@
+{
+  "serial": "emulator-5554",
+  "cases": {
+    "first_installation_without_layout_file": true,
+    "compact_move_resize_lock_saved": true,
+    "wide_saved_independently": true,
+    "invalid_placement_does_not_write": true,
+    "real_process_death_restores_wide_and_temporary_state_is_absent": {
+      "old_pid": "3377",
+      "stopped_before_launch": true,
+      "new_pid": "4038"
+    },
+    "real_process_death_from_settings_restores_home": {
+      "old_pid": "4038",
+      "stopped_before_launch": true,
+      "new_pid": "4409"
+    },
+    "confirmed_reset_survives_real_process_death": {
+      "old_pid": "4409",
+      "stopped_before_launch": true,
+      "new_pid": "4698"
+    },
+    "corrupt_file_preserved_until_confirmed_reset_and_archived": true,
+    "unknown_version_preserved_until_confirmed_reset_and_archived": true,
+    "other_app_data_untouched_by_reset": true
+  }
+}

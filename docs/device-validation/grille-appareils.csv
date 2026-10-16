@@ -1,0 +1,22 @@
+ID;Scénario;POCO X8 Pro résultat;POCO observations;Redmi Pad SE résultat;Redmi observations
+T01;Installation et lancement;NON TESTÉ;;NON TESTÉ;
+T02;Mode avion;NON TESTÉ;;NON TESTÉ;
+T03;Quatre panneaux;NON TESTÉ;;NON TESTÉ;
+T04;Entrée et sortie édition;NON TESTÉ;;NON TESTÉ;
+T05;Déplacement tactile et défilement;NON TESTÉ;;NON TESTÉ;
+T06;Taille et verrouillage;NON TESTÉ;;NON TESTÉ;
+T07;Refus collision hors grille minimum;NON TESTÉ;;NON TESTÉ;
+T08;Sauvegarde après fermeture;NON TESTÉ;;NON TESTÉ;
+T09;Restauration après Forcer l’arrêt;NON TESTÉ;;NON TESTÉ;
+T10;Profils compact et large indépendants;NON TESTÉ;;NON TESTÉ;
+T11;Portrait paysage fenêtre partagée;NON TESTÉ;;NON TESTÉ;
+T12a;Texte maximal et fenêtres courtes;NON TESTÉ;;NON TESTÉ;
+T12b;TalkBack réel;NON TESTÉ;;NON TESTÉ;
+T13;Annulation reset puis confirmation durable;NON TESTÉ;;NON TESTÉ;
+T14;Arrière-plan puis reprise;NON TESTÉ;;NON TESTÉ;
+P01;Démarrage cinq durées et conditions;NON MESURÉ;;NON MESURÉ;
+P02;Fluidité trente secondes et fréquence écran;NON MESURÉ;;NON MESURÉ;
+P03;RAM PSS repos gestes arrière-plan;NON MESURÉ;;NON MESURÉ;
+P04;CPU fenêtre de mesure et conditions;NON MESURÉ;;NON MESURÉ;
+P05;Thermique avant après cinq minutes;NON MESURÉ;;NON MESURÉ;
+P06;Activité après cinq minutes arrière-plan;NON MESURÉ;;NON MESURÉ;

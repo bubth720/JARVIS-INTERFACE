@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.jarvis.interfaceapp.ErgonomicsTest" tests="4" failures="1" errors="0" skipped="0" time="41.489" timestamp="2026-10-16T10:15:21" hostname="localhost">
+  <properties>
+    <property name="device" value="emulator-5554 - 8.0.0" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="scrollingPanelContentInEditingModeDoesNotMoveIt" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="10.755" />
+  <testcase name="shortWindowKeepsEditingHandlesReachable" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="7.15" />
+  <testcase name="doubleTextInShortWindowKeepsSettingsAndSavedStatusReachable" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="7.359">
+    <failure>java.lang.AssertionError: Assert failed: The component is not displayed!
+at androidx.compose.ui.test.AssertionsKt.assertIsDisplayed(Assertions.kt:34)
+at com.jarvis.interfaceapp.ErgonomicsTest.reach(ErgonomicsTest.kt:48)
+at com.jarvis.interfaceapp.ErgonomicsTest.doubleTextInShortWindowKeepsSettingsAndSavedStatusReachable(ErgonomicsTest.kt:68)
+</failure>
+  </testcase>
+  <testcase name="accessibilityActionsPersistAndRespectLocksAndMinimumSizes" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="6.958" />
+</testsuite>

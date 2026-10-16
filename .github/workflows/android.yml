@@ -45,6 +45,14 @@ jobs:
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
               stream.write(summary)
           PY
+      - name: Prepare physical-device validation kit
+        run: python3 scripts/package_device_kit.py
+      - name: Upload physical-device validation kit
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: jarvis-interface-device-kit
+          if-no-files-found: error
+          path: app/build/device-kit/
       - name: Upload APKs
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

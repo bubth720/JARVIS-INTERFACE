@@ -75,4 +75,15 @@ class StorageInteractionTest {
         awaitWrites()
         assertArrayEquals(before, bytes())
     }
+    @Test fun backgroundThenResumeKeepsSavedLayoutsAndLocks() {
+        configureBoth()
+        val expected = controller.state.value.home.layouts
+        val stored = bytes()
+        compose.activityRule.scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+        compose.activityRule.scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
+        awaitWrites()
+        assertEquals(expected, controller.state.value.home.layouts)
+        assertArrayEquals(stored, bytes())
+        compose.onNodeWithTag("dashboard").assertIsDisplayed()
+    }
 }
