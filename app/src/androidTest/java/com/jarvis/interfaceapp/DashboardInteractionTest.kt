@@ -5,6 +5,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -79,6 +80,7 @@ class DashboardInteractionTest {
             swipe(center, center + Offset(0f, cell), durationMillis = 500)
         }
         val moved = geometry()
+        assertTrue(moved.startsWith("0,1 "))
         compose.activityRule.scenario.recreate()
         assertEquals(moved, geometry())
         compose.onNodeWithTag("move-AVATAR").assertIsDisplayed()

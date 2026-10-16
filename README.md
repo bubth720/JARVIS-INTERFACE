@@ -4,14 +4,38 @@ Application Android native autonome — mission 002, version 0.1.0.
 
 ## Fonctionnement
 
-Accueil sombre, en-tête, zone de dashboard, emplacement rectangulaire d’avatar,
-paramètres provisoires et état local. Aucun moteur IA, lecteur vidéo, connecteur,
-service permanent ou permission INTERNET. AndroidX ajoute une permission interne
-de protection des récepteurs, sans autorisation demandée à l’utilisateur. Les autres applications JARVIS ne sont
-ni recherchées ni démarrées. Le texte « opérationnel » décrit uniquement cette interface.
+Application autonome : accueil sombre, paramètres, état local et quatre panneaux :
+**Avatar**, **État système**, **Applications JARVIS**, **Commandes**. Les trois
+intégrations sont des emplacements provisoires ; aucun moteur d’avatar, connecteur,
+service permanent, client réseau ou permission INTERNET n’est ajouté. Le texte
+« opérationnel » décrit uniquement l’interface locale.
 
-L’écran utilise une colonne sur téléphone et deux panneaux côte à côte à partir
-de 700 dp de largeur disponible. Le contenu reste défilable avec texte agrandi.
+### Dashboard tactile — mission 004
+
+- Appuyer sur **Modifier** pour afficher grille, poignées et verrouillage.
+- Glisser **Déplacer** pour proposer une position, ou **Taille** pour changer les
+  dimensions depuis le coin inférieur droit logique. L’aperçu s’aligne sur les cellules.
+- Le cadre primaire signale une proposition valide, le cadre rouge une proposition
+  invalide. Relâcher valide ou refuse l’opération entière, sans déplacer les voisins.
+- Chevauchements, sorties de grille et dimensions inférieures à **3×3 cellules**
+  sont refusés ; le panneau reste à sa dernière disposition valide.
+- **○** verrouille un panneau ; **●** le déverrouille. Les poignées sont désactivées
+  tant que le panneau est verrouillé.
+- **Terminer**, Retour Android ou l’ouverture des paramètres quittent l’édition.
+  En mode normal, les poignées et leurs détecteurs de glissement sont absents.
+- Les poignées proposent aussi des actions TalkBack par cellule pour déplacer
+  et redimensionner ; les refus sont annoncés par une zone de statut accessible.
+
+La grille compacte utilise **6 colonnes × 12 lignes** ; à partir de 700 dp de
+largeur disponible, la grille large utilise **12 × 10**. Chaque profil garde sa
+disposition en mémoire dans le ViewModel. Les cellules n’utilisent pas de pixels
+persistés. La hauteur d’une cellule est au moins 56 dp ; la grille défile si la
+fenêtre est trop courte. Les panneaux ont leur propre contenu défilable.
+
+Les dispositions et verrouillages survivent aux recréations d’activité pendant
+la session. Ils reviennent aux valeurs initiales après mort du processus : la
+persistance définitive est hors du périmètre de cette mission. Les panneaux ne
+s’échangent pas automatiquement et le glissement ne déclenche pas d’auto-défilement.
 
 ## Compilation
 
@@ -53,7 +77,10 @@ Ne pas utiliser cette signature pour une publication définitive.
 ./gradlew connectedDebugAndroidTest
 ```
 
-Les tests instrumentés vérifient lancement, navigation et recréation d’activité.
+Les tests instrumentés vérifient lancement, navigation, recréation d’activité,
+présence des quatre panneaux, entrée/sortie d’édition, déplacement et agrandissement
+par geste, verrouillage et absence de déplacement en mode normal. Exécuter les
+scénarios tactiles automatisés en portrait avec la taille de police par défaut.
 Le mode avion et l’absence d’autres apps sont des préconditions manuelles ; la suite
 ne modifie pas les réglages du téléphone. Pour plusieurs appareils, utiliser
 `ANDROID_SERIAL` afin de choisir la cible. Android minimum : API 26.
@@ -61,16 +88,18 @@ ne modifie pas les réglages du téléphone. Pour plusieurs appareils, utiliser
 ## Organisation
 
 - `MainActivity.kt` : point d’entrée, edge-to-edge, assemblage Compose.
-- `domain/HomeState.kt` : état immutable, actions et réduction pure.
+- `domain/HomeState.kt` : état immuable, dispositions par profil, actions et réduction pure.
+- `domain/Dashboard.kt` : modèles de grille/panneau, contraintes et validation atomique.
+- `ui/DashboardGrid.kt` : rendu adaptatif, grille, aperçu, gestes et actions accessibles.
 - `ui/HomeViewModel.kt` : exposition StateFlow et traitement des actions.
 - `ui/JarvisApp.kt` : rendu de l’état et émission des actions tactiles.
 - `ui/JarvisTheme.kt` : palette Material 3 provisoire.
 - `avatar/AvatarContract.kt` : frontière préliminaire MP4/2D/hybride, sans moteur.
-- `src/test` : tests JVM de l’état et de la navigation.
+- `src/test` : règles de placement et réduction d’état, dont séquence déterministe de 3 000 propositions.
 - `src/androidTest` : tests de démarrage Android.
 
 Un seul module Gradle `app` : les frontières de packages permettent une extraction
-ultérieure. Aucun stockage ni widget extensible n’est implémenté à ce stade.
+ultérieure. Aucun stockage durable ni chargement de widgets externes n’est implémenté.
 Voir [les décisions](docs/decisions.md) et [le rapport](docs/mission-002.md).
 
 ## Validation continue — mission 003
@@ -91,8 +120,25 @@ applicatives et le minimum API 26 restent inchangés. Les patches JDK et l’ima
 hébergée peuvent évoluer ; cette configuration ne promet pas des APK identiques
 bit à bit. Voir le [rapport de stabilisation](docs/mission-003.md).
 
+## Validation manuelle du dashboard
+
+Sur POCO X8 Pro et Redmi Pad SE, hors ligne et sans autre application JARVIS :
+
+1. Vérifier les quatre panneaux ; faire défiler la grille si nécessaire.
+2. En mode normal, balayer les contenus : aucun panneau ne doit changer de position.
+3. Activer Modifier, déplacer Avatar d’une ligne vers le bas dans l’espace libre.
+4. Essayer un chevauchement et une sortie de grille : refus, sans déplacement des voisins.
+5. Depuis la disposition initiale, agrandir Avatar d’une ligne : accepté ; une ligne
+   supplémentaire doit rencontrer le panneau Applications et être refusée.
+6. Réduire un panneau à 3×3, puis tenter plus petit : refus.
+7. Verrouiller un panneau : aucune modification possible ; déverrouiller et réessayer.
+8. Quitter l’édition, ouvrir/fermer les paramètres et tourner l’appareil : vérifier les
+   dispositions séparées et le retour au profil précédent sans perte durant la session.
+9. Vérifier paysage, fenêtre partagée, texte agrandi, TalkBack et reprise d’arrière-plan.
+10. Arrêter le processus puis relancer : retour aux dispositions initiales attendu.
+
 ## Suite envisagée
 
-Après validation de la stabilisation CI : définir la prochaine mission consacrée
-aux panneaux et dispositions. Aucun nouveau dashboard ni animation n’est développé
-par la mission 003.
+Après validation de la mission 004 : définir la sauvegarde locale versionnée des
+dispositions et sa restauration. Aucun connecteur externe ni animation n’est engagé.
+Voir le [rapport de mission 004](docs/mission-004.md).

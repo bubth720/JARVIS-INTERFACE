@@ -2,6 +2,8 @@ package com.jarvis.interfaceapp.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,10 +31,13 @@ fun JarvisApp(viewModel: HomeViewModel) {
             Text("INTERFACE TACTIQUE • 0.1.0", style = MaterialTheme.typography.labelLarge)
             HorizontalDivider()
             if (state.settingsOpen) {
-                Text("Paramètres", style = MaterialTheme.typography.headlineMedium)
-                Text("Configuration locale. Thème sombre provisoire. Les dispositions sont conservées en mémoire durant la session ; le stockage sera ajouté ultérieurement.")
-                Button(onClick = { viewModel.dispatch(HomeAction.CloseSettings) },
-                    modifier = Modifier.testTag("close-settings")) { Text("Retour au tableau de bord") }
+                Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Paramètres", style = MaterialTheme.typography.headlineMedium)
+                    Text("Configuration locale. Thème sombre provisoire. Les dispositions sont conservées en mémoire durant la session ; le stockage sera ajouté ultérieurement.")
+                    Button(onClick = { viewModel.dispatch(HomeAction.CloseSettings) },
+                        modifier = Modifier.testTag("close-settings")) { Text("Retour au tableau de bord") }
+                }
             } else {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(onClick = { viewModel.dispatch(HomeAction.OpenSettings) },
