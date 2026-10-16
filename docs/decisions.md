@@ -45,3 +45,34 @@
 - Layouts et verrous restent en mémoire ViewModel. La persistance durable et ses
   migrations sont reportées ; aucun stockage, service ou permission n’est ajouté.
 - Aucun rendu d’avatar : le contrat MP4/2D/hybride existant reste inchangé.
+
+## Mission 005 — persistance locale
+
+Ces décisions remplacent le comportement sans persistance des missions précédentes.
+
+- DataStore Core 1.1.7, JSON kotlinx.serialization 1.8.1, coroutines 1.10.2 : un seul
+  fichier petit et versionné, sans base relationnelle ni plugin de génération inutile.
+- Domaine indépendant : `LayoutRepository`, identifiants typés et géométrie entière.
+  Les minimums viennent des règles métier, jamais du fichier sauvegardé.
+- Un DataStore par fichier/processus, propriété de l’Application. Un acteur traite
+  les commandes et écritures FIFO ; `updateData` assure la transaction atomique.
+  Les I/O utilisent Dispatchers.IO et les suspensions ne bloquent pas le thread UI.
+- L’état affiché est provisoire jusqu’au retour réussi d’updateData. Géométrie et
+  statut non durable sont publiés ensemble. Un échec garde les changements visibles
+  avec un avertissement explicite et une possibilité de réessayer. Aucun flush de
+  cycle de vie supposé fiable ; tuer le processus avant l’accusé peut perdre l’édition.
+- JSON v1 contient compact/large, id/x/y/width/height/locked. Taille maximale 64 Kio,
+  profondeur limitée, UTF-8 et types stricts, clés uniques, panneaux complets uniques,
+  collisions et limites validées. Aucune position invalide n’atteint le rendu.
+- Pas de remplacement silencieux d’un fichier illisible, futur ou avec widget inconnu.
+  Afficher les valeurs initiales et protéger le fichier. Reset explicite avec archive
+  des octets d’origine ; échec d’archive = reset refusé. Les champs supplémentaires
+  des versions supportées sont conservés lors des sauvegardes/réinitialisations.
+- Ajouter un widget exige une migration explicite versionnée : préserver les anciens
+  identifiants et réglages, placer le nouveau dans une zone valide, tester la migration
+  complète avant écriture. Sans migration, un document incomplet/inconnu est protégé.
+  Une future migration doit produire et valider les deux profils atomiquement ; ne
+  jamais réinterpréter une version supérieure comme la version courante.
+- Pas d’export ni de backup distant dans cette mission. Les archives restent privées
+  et sont supprimées avec les données de l’application. Aucun service, réseau,
+  permission, connecteur ou moteur d’avatar ajouté. API 26 et CI conservées.

@@ -1,15 +1,21 @@
 package com.jarvis.interfaceapp.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.jarvis.interfaceapp.domain.HomeAction
-import com.jarvis.interfaceapp.domain.HomeState
-import com.jarvis.interfaceapp.domain.reduceHome
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
-class HomeViewModel : ViewModel() {
-    private val mutableState = MutableStateFlow(HomeState())
-    val state = mutableState.asStateFlow()
-    fun dispatch(action: HomeAction) { mutableState.update { reduceHome(it, action) } }
+class HomeViewModel(private val controller: DashboardController) : ViewModel() {
+    val state = controller.state
+    init { controller.startSession() }
+    fun dispatch(action: HomeAction) = controller.dispatch(action)
+    fun resetLayouts() = controller.reset()
+    fun retryStorage() = controller.retry()
+
+    class Factory(private val controller: DashboardController) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            require(modelClass.isAssignableFrom(HomeViewModel::class.java))
+            @Suppress("UNCHECKED_CAST")
+            return HomeViewModel(controller) as T
+        }
+    }
 }

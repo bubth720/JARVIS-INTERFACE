@@ -6,12 +6,14 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 /** Portrait device, standalone / airplane mode. Actual execution requires a device. */
 class DashboardInteractionTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @Before fun resetFixture() { compose.resetLayoutFixture() }
     private fun geometry() = compose.onNodeWithTag("panel-AVATAR").fetchSemanticsNode()
         .config[SemanticsProperties.StateDescription]
     private fun cellHeight(): Float {

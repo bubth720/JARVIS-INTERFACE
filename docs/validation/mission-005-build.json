@@ -1,0 +1,65 @@
+{
+  "gradle_tasks": [
+    "assembleDebug",
+    "testDebugUnitTest",
+    "lintDebug",
+    "assembleDebugAndroidTest"
+  ],
+  "result": "BUILD SUCCESSFUL",
+  "jvm": {
+    "tests": 59,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": {
+    "com.jarvis.interfaceapp.storage.DataStoreLayoutRepositoryTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.DashboardTest": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.DashboardControllerTest": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.HomeStateTest": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.LayoutCodecTest": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "lint": "No issues found.",
+  "local_apks": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 9867894,
+      "sha256": "8155879b31ace92a43cfd2e2e811299e46ff3ec7613454c842439a13a7158d00"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1098706,
+      "sha256": "1eb7549080e6301e10046ee6748cdaf238285eac9635a90a8d7174fc558f32a8"
+    }
+  },
+  "environment": {
+    "jdk": "17.0.16+8",
+    "sdk": 35,
+    "build_tools": "35.0.0",
+    "gradle": "8.13",
+    "instrumentation": "Android 8.0 API 26 x86_64 emulator, software rendering, airplane mode, no CORE/VOICE/SERVICES"
+  }
+}

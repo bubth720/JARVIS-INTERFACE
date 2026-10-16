@@ -1,6 +1,6 @@
 # JARVIS INTERFACE
 
-Application Android native autonome — mission 002, version 0.1.0.
+Application Android native autonome — mission 005, version 0.1.0.
 
 ## Fonctionnement
 
@@ -28,14 +28,31 @@ service permanent, client réseau ou permission INTERNET n’est ajouté. Le tex
 
 La grille compacte utilise **6 colonnes × 12 lignes** ; à partir de 700 dp de
 largeur disponible, la grille large utilise **12 × 10**. Chaque profil garde sa
-disposition en mémoire dans le ViewModel. Les cellules n’utilisent pas de pixels
-persistés. La hauteur d’une cellule est au moins 56 dp ; la grille défile si la
+disposition enregistrée indépendamment dans le stockage privé local. Les cellules
+n’utilisent pas de pixels persistés. La hauteur d’une cellule est au moins 56 dp ; la grille défile si la
 fenêtre est trop courte. Les panneaux ont leur propre contenu défilable.
 
-Les dispositions et verrouillages survivent aux recréations d’activité pendant
-la session. Ils reviennent aux valeurs initiales après mort du processus : la
-persistance définitive est hors du périmètre de cette mission. Les panneaux ne
-s’échangent pas automatiquement et le glissement ne déclenche pas d’auto-défilement.
+### Sauvegarde locale — mission 005
+
+Les déplacements, tailles et verrouillages **validés** sont enregistrés automatiquement
+avec Jetpack DataStore, hors du fil principal. Aucun enregistrement pendant l’aperçu
+tactile, ni pour un placement refusé, un changement de navigation ou le mode édition.
+Le statut **Disposition enregistrée** confirme la fin de l’écriture ; attendre ce
+statut avant un arrêt forcé. Une écriture encore en cours peut être perdue si Android
+tue le processus. Les erreurs sont affichées avec une action Réessayer.
+
+Au démarrage, les deux profils sont restaurés et validés avant affichage. Sans
+sauvegarde, les valeurs initiales sont utilisées. Un fichier corrompu ou incompatible
+est conservé et l’édition désactivée pour éviter de l’écraser. Dans **Paramètres →
+Restaurer la disposition par défaut**, une confirmation réinitialise les deux profils
+et leurs verrouillages, puis enregistre le résultat. Un fichier protégé est archivé
+localement avant remplacement ; aucune autre donnée n’est effacée.
+
+Format JSON v1 : `files/datastore/dashboard.json`, privé à l’application. Aucun état
+transitoire n’y figure. Le mode édition et les paramètres ne sont pas restaurés après
+mort du processus. Désinstaller/effacer les données supprime le stockage local ; la
+sauvegarde Android distante reste désactivée. Les panneaux ne s’échangent pas
+automatiquement et le glissement ne déclenche pas d’auto-défilement.
 
 ## Compilation
 
@@ -91,15 +108,20 @@ ne modifie pas les réglages du téléphone. Pour plusieurs appareils, utiliser
 - `domain/HomeState.kt` : état immuable, dispositions par profil, actions et réduction pure.
 - `domain/Dashboard.kt` : modèles de grille/panneau, contraintes et validation atomique.
 - `ui/DashboardGrid.kt` : rendu adaptatif, grille, aperçu, gestes et actions accessibles.
-- `ui/HomeViewModel.kt` : exposition StateFlow et traitement des actions.
+- `domain/LayoutRepository.kt` : contrat de stockage indépendant d’Android.
+- `storage/LayoutCodec.kt` : format v1, contrôle d’intégrité et conservation des extensions.
+- `storage/DataStoreLayoutRepository.kt` : stockage atomique et archivage avant reset protégé.
+- `JarvisApplication.kt` : instance unique du stockage et contrôleur pendant le processus.
+- `ui/DashboardController.kt` : file d’actions/écritures ordonnée, restauration et statut durable.
+- `ui/HomeViewModel.kt` : exposition StateFlow et délégation des actions.
 - `ui/JarvisApp.kt` : rendu de l’état et émission des actions tactiles.
 - `ui/JarvisTheme.kt` : palette Material 3 provisoire.
 - `avatar/AvatarContract.kt` : frontière préliminaire MP4/2D/hybride, sans moteur.
-- `src/test` : règles de placement et réduction d’état, dont séquence déterministe de 3 000 propositions.
-- `src/androidTest` : tests de démarrage Android.
+- `src/test` : règles, codec, DataStore réel et contrôleur, dont séquence de 3 000 placements.
+- `src/androidTest` : démarrage, gestes, confirmation du reset et recréation d’activité.
 
 Un seul module Gradle `app` : les frontières de packages permettent une extraction
-ultérieure. Aucun stockage durable ni chargement de widgets externes n’est implémenté.
+ultérieure. Aucun chargement de widgets externes n’est implémenté.
 Voir [les décisions](docs/decisions.md) et [le rapport](docs/mission-002.md).
 
 ## Validation continue — mission 003
@@ -124,7 +146,8 @@ bit à bit. Voir le [rapport de stabilisation](docs/mission-003.md).
 
 Sur POCO X8 Pro et Redmi Pad SE, hors ligne et sans autre application JARVIS :
 
-1. Vérifier les quatre panneaux ; faire défiler la grille si nécessaire.
+1. Sur une installation de test, restaurer les dispositions par défaut puis vérifier
+   les quatre panneaux ; faire défiler la grille si nécessaire.
 2. En mode normal, balayer les contenus : aucun panneau ne doit changer de position.
 3. Activer Modifier, déplacer Avatar d’une ligne vers le bas dans l’espace libre.
 4. Essayer un chevauchement et une sortie de grille : refus, sans déplacement des voisins.
@@ -135,10 +158,31 @@ Sur POCO X8 Pro et Redmi Pad SE, hors ligne et sans autre application JARVIS :
 8. Quitter l’édition, ouvrir/fermer les paramètres et tourner l’appareil : vérifier les
    dispositions séparées et le retour au profil précédent sans perte durant la session.
 9. Vérifier paysage, fenêtre partagée, texte agrandi, TalkBack et reprise d’arrière-plan.
-10. Arrêter le processus puis relancer : retour aux dispositions initiales attendu.
+10. Attendre **Disposition enregistrée**, puis `adb shell am force-stop com.jarvis.interfaceapp`.
+    Relancer l’application : les positions, tailles et verrous doivent être identiques.
+    Le mode édition doit être désactivé. Ce test est distinct d’une rotation d’écran.
+11. Redémarrer l’appareil et vérifier les deux profils sans connexion réseau.
+12. Annuler la réinitialisation : rien ne change. Confirmer : les deux profils et
+    verrous reviennent aux valeurs initiales, également après arrêt forcé et relance.
 
 ## Suite envisagée
 
-Après validation de la mission 004 : définir la sauvegarde locale versionnée des
-dispositions et sa restauration. Aucun connecteur externe ni animation n’est engagé.
-Voir le [rapport de mission 004](docs/mission-004.md).
+Après validation de la mission 005 : confirmer l’ergonomie et la restauration sur
+POCO X8 Pro / Redmi Pad SE, puis définir la mission 006. Aucun connecteur externe ni
+animation n’est engagé. Voir le [rapport de mission 005](docs/mission-005.md).
+
+### Vérification de mort du processus sur émulateur jetable
+
+Ce scénario réinitialise les dispositions de l’application de test, change la taille
+de l’émulateur et peut le redémarrer. Ne pas utiliser sur un environnement contenant
+des dispositions à conserver. Il refuse les numéros de série des téléphones.
+
+```sh
+python3 scripts/verify_storage_restart.py --serial emulator-5554 --allow-layout-reset --reboot
+```
+
+Il installe l’APK debug, vérifie les deux profils, tailles/verrous, les vrais arrêts
+`am force-stop` (PID supprimé puis différent), le redémarrage (boot ID différent),
+les fichiers invalides protégés et la réinitialisation. Les preuves sont écrites dans
+`app/build/reports/storage-restart/`. Les tests Android ordinaires réinitialisent eux
+aussi les dispositions via les paramètres métier ; utiliser un appareil de test.

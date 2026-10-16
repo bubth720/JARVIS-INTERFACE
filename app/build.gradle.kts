@@ -22,6 +22,10 @@ android {
     kotlinOptions { jvmTarget = "17" }
 }
 dependencies {
+    implementation(libs.datastore.core)
+    implementation(libs.serialization.json)
+    implementation(libs.coroutines.android)
+    testImplementation(libs.coroutines.test)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
