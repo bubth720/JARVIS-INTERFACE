@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.jarvis.interfaceapp.domain.*
+import com.jarvis.interfaceapp.avatar.AvatarDemo
 import kotlin.math.roundToInt
 
 private data class Preview(val original: DashboardPanel, val resize: Boolean, val dx: Int, val dy: Int) {
@@ -149,7 +150,8 @@ private fun PanelCard(
                 }
             }
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).testTag(contentTag)) {
-                Text(body, style = MaterialTheme.typography.bodySmall)
+                if (panel.id == PanelId.AVATAR) AvatarDemo(Modifier.fillMaxWidth())
+                else Text(body, style = MaterialTheme.typography.bodySmall)
                 if (editing) Text("${panel.x},${panel.y} • ${panel.width}×${panel.height}\nMinimum ${panel.minWidth}×${panel.minHeight}",
                     style = MaterialTheme.typography.labelSmall)
             }

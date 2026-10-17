@@ -1,13 +1,14 @@
 # JARVIS INTERFACE
 
-Application Android native autonome — mission 006 en attente de validation physique, version 0.1.0.
+Application Android native autonome — prototype AVATAR-001, version 0.1.0.
+La validation physique multiappareils de mission 006 reste en attente.
 
 ## Fonctionnement
 
 Application autonome : accueil sombre, paramètres, état local et quatre panneaux :
-**Avatar**, **État système**, **Applications JARVIS**, **Commandes**. Les trois
-intégrations sont des emplacements provisoires ; aucun moteur d’avatar, connecteur,
-service permanent, client réseau ou permission INTERNET n’est ajouté. Le texte
+**Avatar**, **État système**, **Applications JARVIS**, **Commandes**. L’avatar dispose
+d’un prototype vectoriel 2.5D local ; les accès externes restent provisoires. Aucun
+connecteur, service permanent, client réseau ou permission INTERNET n’est ajouté. Le texte
 « opérationnel » décrit uniquement l’interface locale.
 
 ### Dashboard tactile — mission 004
@@ -116,7 +117,10 @@ ne modifie pas les réglages du téléphone. Pour plusieurs appareils, utiliser
 - `ui/HomeViewModel.kt` : exposition StateFlow et délégation des actions.
 - `ui/JarvisApp.kt` : rendu de l’état et émission des actions tactiles.
 - `ui/JarvisTheme.kt` : palette Material 3 provisoire.
-- `avatar/AvatarContract.kt` : frontière préliminaire MP4/2D/hybride, sans moteur.
+- `avatar/AvatarContract.kt` : frontière de session/médias, MP4/2D/hybride futurs.
+- `avatar/AvatarAnimationController.kt` : poses, commandes et horloge sans Android.
+- `avatar/AvatarArtwork.kt` : calques originaux remplaçables et secours statique.
+- `avatar/AvatarDemo.kt` : hôte visible, lifecycle, Canvas et prévisualisation.
 - `src/test` : règles, codec, DataStore réel et contrôleur, dont séquence de 3 000 placements.
 - `src/androidTest` : démarrage, gestes, confirmation du reset et recréation d’activité.
 
@@ -209,3 +213,31 @@ En fenêtre courte/texte agrandi, l’en-tête défile indépendamment pour gard
 atteignable. Faire défiler sa zone pour retrouver les boutons et le statut de sauvegarde.
 Ne pas désinstaller une ancienne version pour contourner un conflit de signature :
 cela supprimerait les dispositions ; voir le guide avant toute mise à jour.
+
+## AVATAR-001 — prototype animé local
+
+Le panneau Avatar affiche un personnage féminin adulte provisoire original, composé
+avec des formes indépendantes (pas une illustration aplatie). Respiration IDLE,
+paupières BLINK et inclinaison HEAD_TILT sont combinables. **Démo 2.5D** ouvre les
+commandes manuelles, l’arrêt progressif et la réinitialisation de l’avatar seul.
+Les états LISTENING/THINKING/SPEAKING sont des contrats sans animation de parole.
+
+Le calcul s’arrête lorsque le dessin est entièrement hors écran, l’activité en
+arrière-plan, le rendu en échec ou l’hôte détruit. Aucun état avatar n’est écrit dans
+DataStore ; la sauvegarde V1 des dispositions reste inchangée. La recréation rebâtit
+un avatar en IDLE. Les animations reprennent sans rattrapage du temps caché.
+
+- [Architecture, choix du moteur et validation](docs/avatar/architecture-et-validation.md)
+- [Installation et essais des animations](docs/avatar/guide-test.md)
+- [Liste des assets nécessaires au personnage définitif](docs/avatar/assets-definitifs.md)
+
+Télécharger **jarvis-interface-avatar-kit** dans le workflow de la branche
+`feature/interface-avatar-001` (APK, guide, rapport et provenance). Emballage local :
+
+```sh
+python3 scripts/package_device_kit.py --avatar
+```
+
+Aucun SDK externe ni nouvelle dépendance Gradle. Le personnage artistique définitif,
+les images de référence, la voix, les visèmes et le lip-sync ne sont pas développés.
+Aucun résultat physique ni gain de performances n’est revendiqué.

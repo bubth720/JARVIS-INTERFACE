@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.jarvis.interfaceapp.AvatarDashboardTest" tests="29" failures="0" errors="0" skipped="0" time="135.365" timestamp="2026-10-16T22:06:55" hostname="localhost">
+  <properties>
+    <property name="device" value="emulator-5554 - 8.0.0" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="activityRecreationRebuildsAvatarWithoutLosingLayout" classname="com.jarvis.interfaceapp.AvatarDashboardTest" time="12.035" />
+  <testcase name="previewCommandsNeverChangeSavedDashboardLayouts" classname="com.jarvis.interfaceapp.AvatarDashboardTest" time="12.22" />
+  <testcase name="resizingKeepsTheSameControllerAndContinuesDrawing" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="3.247" />
+  <testcase name="backgroundCancelsClockEvenWhenLifecycleFlowCollectionIsStopped" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="3.253" />
+  <testcase name="eachAnimationChangesRenderedPixelsAndStopsAtNeutral" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="4.103" />
+  <testcase name="disposalReleasesControllerAndStopsFramesPermanently" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="2.576" />
+  <testcase name="realAndroidActivityStopAndResumeSuspendActualCalculations" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="3.971" />
+  <testcase name="clippedOffscreenSurfaceFreezesActualFrameCounterThenResumes" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="2.77" />
+  <testcase name="rendererFailureLatchesAStaticFallbackWithoutRepeatedExceptions" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="2.691" />
+  <testcase name="draggingResizeHandleAddsOneRow" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="5.229" />
+  <testcase name="collisionRefusesGestureAndShowsReason" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="4.903" />
+  <testcase name="recreationKeepsEditedSessionLayout" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="5.982" />
+  <testcase name="fourPanelsAndEditModeAreAvailable" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="3.568" />
+  <testcase name="lockDisablesBothGestureHandles" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="4.404" />
+  <testcase name="normalModeSwipeCannotMovePanel" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="3.958" />
+  <testcase name="draggingMoveHandleSnapsToNextRow" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="4.02" />
+  <testcase name="scrollingPanelContentInEditingModeDoesNotMoveIt" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="3.796" />
+  <testcase name="shortWindowKeepsEditingHandlesReachable" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="4.222" />
+  <testcase name="doubleTextInShortWindowKeepsSettingsAndSavedStatusReachable" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="5.131" />
+  <testcase name="accessibilityActionsPersistAndRespectLocksAndMinimumSizes" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="3.598" />
+  <testcase name="settingsReturnsToDashboard" classname="com.jarvis.interfaceapp.StandaloneStartupTest" time="3.171" />
+  <testcase name="recreationRestoresUsableInterface" classname="com.jarvis.interfaceapp.StandaloneStartupTest" time="2.691" />
+  <testcase name="launchesDashboardAndAvatarWithoutPartners" classname="com.jarvis.interfaceapp.StandaloneStartupTest" time="2.287" />
+  <testcase name="activityRecreationRetainsSavedGeometryAndLocks" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="3.634" />
+  <testcase name="confirmedResetPersistsBothProfilesAndUnlocksAllPanels" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="4.66" />
+  <testcase name="rejectedPlacementDoesNotChangeTheStoredDocument" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="2.395" />
+  <testcase name="backgroundThenResumeKeepsSavedLayoutsAndLocks" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="4.469" />
+  <testcase name="navigationAndEditingAreNotWrittenToDisk" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="2.953" />
+  <testcase name="resetRequiresConfirmationAndCancelPreservesDiskBytes" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="4.229" />
+</testsuite>

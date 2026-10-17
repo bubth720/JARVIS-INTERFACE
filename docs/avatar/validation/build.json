@@ -1,0 +1,60 @@
+{
+  "base": "ebd6c5fc873054d3f04bb2388d53e407dc73b7b7",
+  "jvm": {
+    "com.jarvis.interfaceapp.avatar.AvatarAnimationControllerTest": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.DataStoreLayoutRepositoryTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.DashboardTest": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.DashboardControllerTest": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.HomeStateTest": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.LayoutCodecTest": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "instrumented": {
+    "tests": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "environment": "Android 8.0 API26 x86_64 emulator, 720x1280 320dpi, software GPU without KVM, airplane mode",
+  "lint": "No issues found.",
+  "apks": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 9869802,
+      "sha256": "0f8eed7c05edcaeb0adf6a4e2366ac19bce576773a98aed762587d14938baa71"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1119254,
+      "sha256": "c9f45c7be22f04b51208ff597ea30044ae8bd4a666fc6d6ccb72a83da984187a"
+    }
+  },
+  "physical_performance": "NOT MEASURED, POCO X8 Pro and Redmi Pad SE not attached"
+}
