@@ -1,0 +1,21 @@
+{
+  "mission": "AVA-01",
+  "base": "50f5f61708d5ce6b141dec98fe0c73d89eaf00e3",
+  "jvm": {
+    "tests": 84,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint_issues": 0,
+  "build": "SUCCESS",
+  "instrumented_new_compiled": 3,
+  "instrumented_executed": false,
+  "physical_test_executed": false,
+  "apk_sha256": "3058949ffd6491e111bf6398a2ebb2d19a806ca455dacddaa49c50cdf7ce5236",
+  "commands": [
+    "./scripts/check.sh --no-daemon --console=plain --max-workers=1",
+    "python3 scripts/check_avatar_assets.py",
+    "git diff --check"
+  ]
+}

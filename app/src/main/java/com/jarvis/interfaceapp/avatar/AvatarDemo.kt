@@ -34,6 +34,7 @@ fun AvatarDemo(
     modifier: Modifier = Modifier,
     controller: AvatarAnimationController = remember { AvatarAnimationController() },
     artwork: AvatarArtwork = remember { DemoAvatarArtwork() },
+    showAssetButton: Boolean = true,
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     var resumed by remember(lifecycle) { mutableStateOf(lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) }
@@ -42,6 +43,7 @@ fun AvatarDemo(
     var panelSize by remember { mutableStateOf(IntSize.Zero) }
     var previewSize by remember { mutableStateOf(IntSize.Zero) }
     var preview by remember { mutableStateOf(false) }
+    var assetsPreview by remember { mutableStateOf(false) }
     var failed by remember(artwork) { mutableStateOf(false) }
     var lifecycleGeneration by remember { mutableIntStateOf(0) }
     val pose = remember(controller) { mutableStateOf(controller.pose) }
@@ -59,14 +61,14 @@ fun AvatarDemo(
     DisposableEffect(artwork) { onDispose { artwork.release() } }
     SideEffect {
         controller.setForeground(resumed)
-        controller.setVisible(!failed && if (preview) previewVisible else panelVisible)
+        controller.setVisible(!assetsPreview && !failed && if (preview) previewVisible else panelVisible)
         val size = if (preview) previewSize else panelSize
         controller.resize(size.width, size.height)
     }
     // Do not rely only on a lifecycle-aware Flow collector: it stops collecting
     // below STARTED, so local lifecycle/visibility gates must cancel the clock too.
     val viewport = if (preview) previewSize else panelSize
-    val active = resumed && !failed && (if (preview) previewVisible else panelVisible) &&
+    val active = resumed && !assetsPreview && !failed && (if (preview) previewVisible else panelVisible) &&
         viewport.width > 0 && viewport.height > 0 && status.advancing
     LaunchedEffect(controller, active, lifecycleGeneration) {
         if (active) {
@@ -107,6 +109,11 @@ fun AvatarDemo(
             Text("Démo 2.5D", style = MaterialTheme.typography.labelSmall)
         }
     }
+    if (assetsPreview) Dialog(onDismissRequest = { assetsPreview = false }) {
+        Surface(shape = MaterialTheme.shapes.large) {
+            com.jarvis.interfaceapp.avatar.assets.AvatarPreviewPanel { assetsPreview = false }
+        }
+    }
     val scope = rememberCoroutineScope()
     val previewScroll = rememberScrollState()
     if (preview) Dialog(onDismissRequest = { preview = false; previewVisible = false }) {
@@ -122,6 +129,8 @@ fun AvatarDemo(
                     onViewport = { visible, size -> previewVisible = visible; previewSize = size })
                 Text(if (failed) "Rendu indisponible · secours statique" else "État local : ${status.state}",
                     modifier = Modifier.testTag("avatar-engine-status"))
+                if (showAssetButton) OutlinedButton(onClick = { preview = false; assetsPreview = true },
+                    modifier = Modifier.fillMaxWidth().testTag("avatar-assets")) { Text("Ressources et calques locaux") }
                 for (animation in AvatarAnimationId.entries) {
                     OutlinedButton(onClick = {
                         command(AvatarCommand.Play(animation))

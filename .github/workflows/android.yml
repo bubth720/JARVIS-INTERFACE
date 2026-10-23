@@ -19,6 +19,8 @@ jobs:
           # Override the obsolete default "tools platform-tools" completely.
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
           log-accepted-android-sdk-licenses: false
+      - name: Verify synthetic layered avatar assets
+        run: python3 scripts/check_avatar_assets.py
       - name: Build APK, run JVM tests and Lint, compile instrumented APK
         run: ./scripts/check.sh --no-daemon
       - name: Verify APKs and executed JVM tests
