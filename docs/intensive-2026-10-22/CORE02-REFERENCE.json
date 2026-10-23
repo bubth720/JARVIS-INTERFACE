@@ -1,0 +1,13 @@
+{
+  "repository": "bubth720/JAVIS-Local-v2",
+  "branch": "feat/core-02-intensive",
+  "commit": "e86107b8213b0aeaf9d22025cf6bef91a8e544a5",
+  "source": "app/src/main/java/com/stark/jarvislocal/events/CoreEventBus.kt",
+  "sha256": "61b7aca246a3af2d2a13d2bc16fbec3a747fb977e705de3150af3ebca920ad86",
+  "usage": "EXACT_TEST_SOURCE_ONLY_NOT_PACKAGED",
+  "limitations": "Metadata only; no response text, external submission API, permissions or IPC. UI proposal does not extend CORE contract.",
+  "additional_sources": {
+    "app/src/main/java/com/stark/jarvislocal/events/CoreSessionEvents.kt": "556ccfe690ceae9c3adcd915e8fe98e25382f6df0df722bbffcc2437f2c78279",
+    "app/src/main/java/com/stark/jarvislocal/events/ModuleConnector.kt": "059cc5dcde55fc0403ec16ce0c6d89c21948c55795483f6c2da8bf96cfe8422f"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "format": "jarvis.campaign-validation/1",
+  "mission": "UI-01",
+  "base_commit": "139bfdc4aac5d2fc9b841c5b804c3b89bfc57ec6",
+  "initial_commit": "0c6d8a1bdeabe8f23fe8f98263cfe88d8c3c216e",
+  "dependency_commits": {
+    "CORE-02": "e86107b8213b0aeaf9d22025cf6bef91a8e544a5"
+  },
+  "qualification": "software_tested",
+  "status": "PARTIAL",
+  "capabilities": [
+    "interface.chat_screen",
+    "interface.correlated_event_projection",
+    "interface.explicit_non_ai_fixture"
+  ],
+  "blocking_limitations": [
+    "CORE02 exposes metadata only; real response content and submission transport are not connected or authorized",
+    "No inter-APK connection or real inference conversation qualified",
+    "Two new Compose interaction tests compiled but not executed; no emulator/system image/KVM or personal device used"
+  ],
+  "checks": [
+    {
+      "command": [
+        "./gradlew",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:lintDebug",
+        ":app:assembleDebugAndroidTest",
+        "--no-daemon",
+        "--max-workers=2"
+      ],
+      "exit_code": 0,
+      "passed": 94,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_ui01_scope.py",
+        "--apk"
+      ],
+      "exit_code": 0,
+      "passed": 52,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_avatar_assets.py"
+      ],
+      "exit_code": 0,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "jvm": {
+    "tests": 94,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint_issues": 0,
+  "instrumented_new_compiled": 2,
+  "instrumented_executed": false,
+  "physical_executed": false,
+  "apk_sha256": "2b6ac9487839a28843b097be631b9a5450bf9fe7b026110d17e777542898fe61",
+  "permissions": [
+    "com.jarvis.interfaceapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+  ],
+  "signature_sha256": "cdf575be3e7dda774dfc85036fb96f07e6cd17fa537305e77c4613b575e7d133"
+}

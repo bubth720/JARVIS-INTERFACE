@@ -19,10 +19,14 @@ jobs:
           # Override the obsolete default "tools platform-tools" completely.
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
           log-accepted-android-sdk-licenses: false
+      - name: Verify UI scope and pinned CORE test source
+        run: python3 scripts/check_ui01_scope.py
       - name: Verify synthetic layered avatar assets
         run: python3 scripts/check_avatar_assets.py
       - name: Build APK, run JVM tests and Lint, compile instrumented APK
         run: ./scripts/check.sh --no-daemon
+      - name: Verify CORE reference is not packaged
+        run: python3 scripts/check_ui01_scope.py --apk
       - name: Verify APKs and executed JVM tests
         shell: bash
         run: |

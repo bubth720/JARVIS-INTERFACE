@@ -6,6 +6,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.lifecycle.viewmodel.compose.viewModel as composeViewModel
+import com.jarvis.interfaceapp.ui.chat.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -18,7 +21,16 @@ import com.jarvis.interfaceapp.domain.HomeAction
 import com.jarvis.interfaceapp.domain.PlacementError
 
 @Composable
-fun JarvisApp(viewModel: HomeViewModel) {
+fun JarvisApp(viewModel: HomeViewModel,chatViewModel: ChatViewModel=composeViewModel()) {
+    var chatOpen by rememberSaveable { mutableStateOf(false) }
+    val chat by chatViewModel.state.collectAsStateWithLifecycle()
+    BackHandler(enabled=chatOpen){if(chat.busy)chatViewModel.cancel();chatOpen=false}
+    if(chatOpen){
+        Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing).padding(12.dp)) {
+            ChatScreen(chat,chatViewModel::send,chatViewModel::cancel,chatViewModel::demonstrate,{if(chat.busy)chatViewModel.cancel();chatOpen=false})
+        }
+        return
+    }
     val ui by viewModel.state.collectAsStateWithLifecycle()
     val state = ui.home
     var confirmReset by remember { mutableStateOf(false) }
@@ -48,6 +60,7 @@ fun JarvisApp(viewModel: HomeViewModel) {
                     Text("JARVIS INTERFACE", style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary)
                     Text("INTERFACE TACTIQUE • 0.1.0", style = MaterialTheme.typography.labelLarge)
+                    OutlinedButton(onClick={chatOpen=true},modifier=Modifier.testTag("open-conversation")){Text("Conversation — local expérimental")}
                     HorizontalDivider()
                     StorageStatus(ui.storage, viewModel::retryStorage)
                     if (ui.storage.phase != SavePhase.LOADING && !state.settingsOpen) {
