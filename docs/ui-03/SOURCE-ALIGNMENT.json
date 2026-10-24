@@ -1,0 +1,36 @@
+{
+  "sources": [
+    {
+      "repository": "bubth720/JAVIS-Local-v2",
+      "commit": "e86107b8213b0aeaf9d22025cf6bef91a8e544a5",
+      "path": "app/src/main/java/com/stark/jarvislocal/events/CoreEventBus.kt",
+      "sha256": "61b7aca246a3af2d2a13d2bc16fbec3a747fb977e705de3150af3ebca920ad86"
+    },
+    {
+      "repository": "bubth720/JAVIS-Local-v2",
+      "commit": "e86107b8213b0aeaf9d22025cf6bef91a8e544a5",
+      "path": "app/src/main/java/com/stark/jarvislocal/events/ModuleConnector.kt",
+      "sha256": "059cc5dcde55fc0403ec16ce0c6d89c21948c55795483f6c2da8bf96cfe8422f"
+    },
+    {
+      "repository": "bubth720/JAVIS-Local-v2",
+      "commit": "e86107b8213b0aeaf9d22025cf6bef91a8e544a5",
+      "path": "app/src/mvp2/java/com/stark/jarvislocal/CoreConversationAdapter.kt",
+      "sha256": "03e8024f929fe2c2844a547abc1c76e1746286f29b703e0ac8bf8000cda3e5d2"
+    },
+    {
+      "repository": "bubth720/JAVIS-Local-v2",
+      "commit": "aea5ac859ac551d54fe16187c1883a487dbee9d6",
+      "path": "docs/intensive-2026-10-22/REPORT-CORE-03.md",
+      "sha256": "9aa6232782e3a74897b896a01fe85aea867969455631762e6e1ec258d6cc995d"
+    },
+    {
+      "repository": "bubth720/JARVIS-UNIFIED",
+      "commit": "329f304115c9bc5b6dd6ccc2d68d19bf455b5e6c",
+      "path": "contracts/v1/SEMANTICS.md",
+      "sha256": "632427a7fd262a1e602cdf0e4459f2d04577624f28d0304a6326b9b68b818bab"
+    }
+  ],
+  "externalRepositoriesModified": false,
+  "realCoreConnected": false
+}

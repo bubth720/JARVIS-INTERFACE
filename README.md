@@ -290,3 +290,20 @@ python3 scripts/package_device_kit.py --avatar
 Aucun SDK externe ni nouvelle dépendance Gradle. Le personnage artistique définitif,
 les images de référence, la voix, les visèmes et le lip-sync ne sont pas développés.
 Aucun résultat physique ni gain de performances n’est revendiqué.
+
+## Livraisons AVA-04, UI-02 et UI-03
+
+- [AVA-04 : ressources premium en revue privée et galerie Android](docs/avatar/v3/DELIVERY.md).
+  Les propositions artistiques ne sont ni publiées ni activées définitivement ;
+  elles restent des portraits interchangeables, sans rig articulé définitif.
+- [UI-02 : éditeur de personnalité et consentements](docs/ui-02/DELIVERY.md).
+  Éditeur et laboratoire RAM disponibles ; propriétaire CORE non raccordé.
+- [UI-03 : proposition de client et diagnostic](docs/ui-03/DELIVERY.md).
+  Client local testé, véritable CORE **non connecté** ; contrat de contenu et
+  authentification inter-APK à approuver avant toute connexion sensible.
+
+AVA-05 reste en attente : portraits de parole ≠ visèmes ou couches articulées.
+Les assets approuvés (yeux/paupières/bouche/buste séparés) et les futurs signaux
+VOICE manquent pour livrer une synchronisation labiale réelle. Aucun lip-sync
+ou moteur vocal n'est présenté comme terminé. Aucune fusion ni installation
+sur appareil personnel n'est effectuée.

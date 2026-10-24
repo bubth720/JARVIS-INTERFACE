@@ -2,10 +2,10 @@
 """Protect storage/avatar/permissions and pin CORE metadata test provenance. No network or source writes."""
 from pathlib import Path
 import subprocess,json,hashlib,sys,zipfile
-BASE='283ed2f3cd361d5b0b6bc927432bf836af8db1f6'
+BASE='4842ef1f47ac2a1efc29e77408dbdb3ec42768bb'
 paths=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'--','app','gradle','settings.gradle.kts','build.gradle.kts'],text=True).splitlines()
-# UI-02 adds navigation only; every existing avatar/storage/contract file stays pinned.
-allowed={'app/src/main/java/com/jarvis/interfaceapp/ui/JarvisApp.kt'}
+# UI-03 adds a separate diagnostic entry; every previous avatar/settings/contract file stays pinned.
+allowed={'app/src/main/java/com/jarvis/interfaceapp/ui/chat/ChatScreen.kt'}
 for name in paths:
     if name not in allowed:assert Path(name).read_bytes()==subprocess.check_output(['git','show',BASE+':'+name]),name
 r=json.loads(Path('docs/intensive-2026-10-22/CORE02-REFERENCE.json').read_text())

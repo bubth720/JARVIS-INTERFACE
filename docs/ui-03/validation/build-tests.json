@@ -1,0 +1,36 @@
+{
+  "mission": "UI-03",
+  "branch": "feat/ui-03-delivery",
+  "base": "4842ef1f47ac2a1efc29e77408dbdb3ec42768bb",
+  "status": "PARTIAL_CLIENT_PROPOSAL_REAL_CORE_BLOCKED",
+  "commands": [
+    "./scripts/check.sh connectedDebugAndroidTest --no-daemon"
+  ],
+  "jvm": {
+    "tests": 167,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "android": {
+    "tests": 55,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "environment": "API26 x86_64 software emulator, 720x1280 density320, airplane mode; no physical device",
+  "build": "SUCCESSFUL in 6m 28s",
+  "lint": "No issues found.",
+  "realCoreConnected": false,
+  "sensitiveInterApkActivated": false,
+  "apk": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 10495895,
+      "sha256": "a45ba24eb1d6c1713afec441d2f47ccc58a73fa5182685f2b1b9aa25d72402ca"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1200980,
+      "sha256": "4601b93db8fb21af4ff6099e206bb6fe68bd061756aa59c9822651bc543fbd97"
+    }
+  }
+}

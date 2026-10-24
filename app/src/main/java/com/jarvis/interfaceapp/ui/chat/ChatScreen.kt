@@ -1,6 +1,7 @@
 package com.jarvis.interfaceapp.ui.chat
 
 import androidx.compose.foundation.layout.*
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,11 +15,18 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ChatScreen(state: SessionUiState,onSend: (String)->Boolean,onCancel: ()->Unit,onDemo: (Boolean)->Unit,onBack: ()->Unit) {
+    var diagnosticsOpen by remember { mutableStateOf(false) }
+    BackHandler(enabled=diagnosticsOpen) { diagnosticsOpen=false }
+    if(diagnosticsOpen) {
+        com.jarvis.interfaceapp.ui.chat.core.CoreConnectionDiagnosticsScreen { diagnosticsOpen=false }
+        return
+    }
     var draft by remember { mutableStateOf("") }
     var pageSize by remember { mutableIntStateOf(20) }
     val lastAccepted=state.messages.lastOrNull { it.user }
     LaunchedEffect(lastAccepted?.id){if(lastAccepted?.text==draft)draft=""}
-    BoxWithConstraints(Modifier.fillMaxSize().imePadding().testTag("chat-screen")) {
+    Surface(Modifier.fillMaxSize(),color=MaterialTheme.colorScheme.background,contentColor=MaterialTheme.colorScheme.onBackground) {
+    BoxWithConstraints(Modifier.fillMaxSize().imePadding().testTag("chat-screen").semantics { testTagsAsResourceId=true }) {
     val headerLimit=minOf(180.dp,maxHeight*0.3f).coerceAtLeast(48.dp)
     val composerLimit=(maxHeight*0.5f).coerceAtLeast(48.dp)
     Column(Modifier.fillMaxSize(),verticalArrangement=Arrangement.spacedBy(8.dp)) {
@@ -34,6 +42,7 @@ fun ChatScreen(state: SessionUiState,onSend: (String)->Boolean,onCancel: ()->Uni
                 modifier=Modifier.testTag("chat-demo").semantics { contentDescription="Activer la démonstration logicielle sans IA" })
         }
         Text(state.phase,modifier=Modifier.testTag("chat-phase").semantics { liveRegion=LiveRegionMode.Polite })
+        OutlinedButton(enabled=!state.busy,onClick={diagnosticsOpen=true},modifier=Modifier.testTag("open-core-diagnostics")) { Text("Diagnostic du raccordement CORE") }
         if(state.messages.size>pageSize) TextButton(onClick={pageSize=(pageSize+20).coerceAtMost(200)}){Text("Messages précédents (mémoire vive)")}
         state.notifications.lastOrNull()?.let { Text(it,style=MaterialTheme.typography.bodySmall,modifier=Modifier.testTag("chat-notification")) }
     }
@@ -43,6 +52,7 @@ fun ChatScreen(state: SessionUiState,onSend: (String)->Boolean,onCancel: ()->Uni
             !state.busy && state.connection in setOf(PortConnection.CONNECTED,PortConnection.DEMONSTRATION),
             {onSend(draft)},onCancel,state.busy)
         Text("Messages temporaires, non enregistrés. Outils et mémoire : aucune action raccordée.",style=MaterialTheme.typography.labelSmall)
+    }
     }
     }
     }
