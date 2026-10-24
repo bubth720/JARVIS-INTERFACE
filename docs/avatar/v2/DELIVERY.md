@@ -208,6 +208,20 @@ Captures du **vrai Compose, démonstration uniquement** :
 Les cinq captures artistiques premium demandées ne sont pas réalisées, faute de
 leurs ressources ; ces captures techniques ne les remplacent pas.
 
+### Stabilisation CI
+
+Le premier commit `2b81fdd` a déclenché le [run 40082703792](https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40082703792),
+qui a échoué à la vérification du périmètre avant compilation (SDK configuré avec
+succès). Le checkout par défaut est superficiel et ne fournit pas l'objet UI-01
+`48db1ec…` utilisé par le vérificateur. Le défaut a été reproduit dans une copie
+locale de profondeur 1 : `fatal: not a tree object` (git ls-tree sur le SHA UI-01).
+
+Après récupération de l’historique dans cette même copie, le contrôle passe.
+Le workflow récupère désormais l’historique avec `fetch-depth: 0`. Aucun contrôle
+n'est désactivé : le même script protège les fichiers et vérifie le fixture CORE.
+Cette correction de configuration ne modifie ni le code Android validé ni ses APK
+locaux. Le kit CI porte le SHA du commit final et ses propres empreintes.
+
 ## Limites et risques
 
 - Pas d'assets premium : impossible de valider les huit expressions et cinq captures
