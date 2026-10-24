@@ -1,0 +1,23 @@
+{
+  "avatarCodeCommit": "1d10ddb52e1df4b609824d5666a095df4b361a63",
+  "gallerySourceSha256": "8d19431653cced8148050df3b540e8d291bdec8283b0f2f06adb2beee582d3bc",
+  "validationContext": "UI-02 integration worktree, identical AVA-04 gallery code; same API26 emulator",
+  "integratedRegression": {
+    "jvmPassed": 149,
+    "androidPassed": 53,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "privateFinalRunsPassed": 2,
+  "privateRunsPassedTotal": 5,
+  "privateCaptures": 26,
+  "formats": [
+    "720x1280",
+    "1280x720"
+  ],
+  "publicationApproved": false,
+  "permanentActivationApproved": false,
+  "artApproved": false,
+  "rigReady": false
+}

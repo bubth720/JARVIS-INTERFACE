@@ -80,8 +80,15 @@ L'examen réel des captures a révélé un fond de fenêtre non opaque et des l�
 noires sur les cartes sombres dans le contexte de test sans Surface parent.
 La galerie fournit désormais sa propre Surface et ses couleurs de contenu, sans
 dépendre de l'hôte. Ce correctif de contraste ne modifie ni les images ni leur
-manifeste, ni le renderer ou les consentements. Les captures privées doivent être
-rafraîchies après ce correctif ; la validation finale est détaillée dans le bilan.
+manifeste, ni le renderer ou les consentements. Les captures privées ont été
+rafraîchies après ce correctif : 26 images, mêmes formats. Deux parcours privés
+supplémentaires passent après correction (5 exécutions privées réussies au total).
+La régression de la base commune UI-02 passe aussi :149 JVM/53 Android, sans échec.
+Le code exact de galerie est identique au commit AVA-04 `1d10ddb` (SHA fichier
+vérifié) ; les classes UI-02 n'interviennent pas dans ce composant de revue.
+[Preuve du correctif](validation/surface-fix-validation.json). Les reçus initiaux
+`build-tests.json` restent les observations antérieures à cette correction ; ils
+ne sont pas présentés comme le hash d'un nouvel APK autonome AVA-04.
 
 ## Prochaine étape
 
