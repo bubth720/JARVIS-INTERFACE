@@ -1,0 +1,105 @@
+{
+  "mission": "AVA-04",
+  "base": "ab0a3f5a992a90ca53dc20c9c56d3bd8a0c2b3a0",
+  "codeStatus": "REVIEW_PIPELINE_READY",
+  "artStatus": "ART_REVIEW_PENDING",
+  "rigStatus": "RIG_PENDING",
+  "publicationApproved": false,
+  "permanentActivationApproved": false,
+  "jvm": {
+    "com.jarvis.interfaceapp.avatar.AvatarAnimationControllerTest": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.chat.ChatControllerTest": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.DataStoreLayoutRepositoryTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.avatar.assets.AvatarAssetTest": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.DashboardTest": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.DashboardControllerTest": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.avatar.v2.PremiumAvatarTest": {
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.HomeStateTest": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.LayoutCodecTest": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.avatar.review.ArtApprovalReceiptTest": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "android": {
+    "tests": 48,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "python": {
+    "tests": 9,
+    "failures": 0
+  },
+  "physicalDevices": [],
+  "privateArtBundled": false,
+  "apk": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 10167901,
+      "sha256": "e9f7890326e0aa3120fd867c0ab8bc95c179cffe534466152ec1f698cc25c454"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1161783,
+      "sha256": "c59bbf6b587f782123c7188f5db6be728ccdb83b2838eb152e15ad0eede0e135"
+    }
+  },
+  "privateReviewRuns": {
+    "passed": 3,
+    "failed": 0,
+    "finalFormats": [
+      "720x1280",
+      "1280x720"
+    ],
+    "finalPrivateCaptures": 26,
+    "privateAssetsInRepository": false,
+    "mode": "IMAGE_REPLACEMENT",
+    "rigApproved": false
+  }
+}

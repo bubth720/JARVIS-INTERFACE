@@ -8,3 +8,6 @@ local.properties
 # Private artistic reference: never publish the user-provided source.
 ATHENA_REFERENCE_OFFICIELLE.png
 .private-avatar/
+# AVA-04 proposals and approval receipts remain private until explicit review.
+/artifacts/athena-private/
+__pycache__/

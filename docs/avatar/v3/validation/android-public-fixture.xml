@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.jarvis.interfaceapp.AvatarDashboardTest" tests="48" failures="0" errors="0" skipped="0" time="232.188" timestamp="2026-10-24T10:29:44" hostname="localhost">
+  <properties>
+    <property name="device" value="emulator-5554 - 8.0.0" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="activityRecreationRebuildsAvatarWithoutLosingLayout" classname="com.jarvis.interfaceapp.AvatarDashboardTest" time="17.532" />
+  <testcase name="previewCommandsNeverChangeSavedDashboardLayouts" classname="com.jarvis.interfaceapp.AvatarDashboardTest" time="14.593" />
+  <testcase name="resizingKeepsTheSameControllerAndContinuesDrawing" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="4.721" />
+  <testcase name="backgroundCancelsClockEvenWhenLifecycleFlowCollectionIsStopped" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="4.102" />
+  <testcase name="eachAnimationChangesRenderedPixelsAndStopsAtNeutral" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="5.063" />
+  <testcase name="disposalReleasesControllerAndStopsFramesPermanently" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="2.949" />
+  <testcase name="realAndroidActivityStopAndResumeSuspendActualCalculations" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="4.863" />
+  <testcase name="clippedOffscreenSurfaceFreezesActualFrameCounterThenResumes" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="3.886" />
+  <testcase name="rendererFailureLatchesAStaticFallbackWithoutRepeatedExceptions" classname="com.jarvis.interfaceapp.AvatarMotionTest" time="3.107" />
+  <testcase name="draggingResizeHandleAddsOneRow" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="7.452" />
+  <testcase name="collisionRefusesGestureAndShowsReason" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="6.102" />
+  <testcase name="recreationKeepsEditedSessionLayout" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="8.063" />
+  <testcase name="fourPanelsAndEditModeAreAvailable" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="5.703" />
+  <testcase name="lockDisablesBothGestureHandles" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="5.921" />
+  <testcase name="normalModeSwipeCannotMovePanel" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="4.796" />
+  <testcase name="draggingMoveHandleSnapsToNextRow" classname="com.jarvis.interfaceapp.DashboardInteractionTest" time="5.588" />
+  <testcase name="scrollingPanelContentInEditingModeDoesNotMoveIt" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="4.66" />
+  <testcase name="shortWindowKeepsEditingHandlesReachable" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="4.652" />
+  <testcase name="doubleTextInShortWindowKeepsSettingsAndSavedStatusReachable" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="4.653" />
+  <testcase name="accessibilityActionsPersistAndRespectLocksAndMinimumSizes" classname="com.jarvis.interfaceapp.ErgonomicsTest" time="3.693" />
+  <testcase name="settingsReturnsToDashboard" classname="com.jarvis.interfaceapp.StandaloneStartupTest" time="3.712" />
+  <testcase name="recreationRestoresUsableInterface" classname="com.jarvis.interfaceapp.StandaloneStartupTest" time="3.361" />
+  <testcase name="launchesDashboardAndAvatarWithoutPartners" classname="com.jarvis.interfaceapp.StandaloneStartupTest" time="2.931" />
+  <testcase name="activityRecreationRetainsSavedGeometryAndLocks" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="4.564" />
+  <testcase name="confirmedResetPersistsBothProfilesAndUnlocksAllPanels" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="5.119" />
+  <testcase name="rejectedPlacementDoesNotChangeTheStoredDocument" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="2.676" />
+  <testcase name="backgroundThenResumeKeepsSavedLayoutsAndLocks" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="4.936" />
+  <testcase name="navigationAndEditingAreNotWrittenToDisk" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="3.602" />
+  <testcase name="resetRequiresConfirmationAndCancelPreservesDiskBytes" classname="com.jarvis.interfaceapp.StorageInteractionTest" time="5.323" />
+  <testcase name="changedTextureIsRefusedBeforeDecoding" classname="com.jarvis.interfaceapp.avatar.assets.AvatarAssetAndroidTest" time="0.103" />
+  <testcase name="realPixelsMoveAndReturnToNeutral" classname="com.jarvis.interfaceapp.avatar.assets.AvatarAssetAndroidTest" time="1.261" />
+  <testcase name="packagedPngsDecodeWithFiveIndependentLayersAndRelease" classname="com.jarvis.interfaceapp.avatar.assets.AvatarAssetAndroidTest" time="0.249" />
+  <testcase name="galleryIsReviewOnlyAndUsesTheRealV2Validator" classname="com.jarvis.interfaceapp.avatar.review.AthenaGalleryAndroidTest" time="3.097" />
+  <testcase name="productionEntryApplyAndActivityRecreationKeepLayoutBytesAndFourPanels" classname="com.jarvis.interfaceapp.avatar.v2.AvatarV2DashboardTest" time="8.225" />
+  <testcase name="comparisonRecreatesReleasedRendererAndCapturesActualComposeDemo" classname="com.jarvis.interfaceapp.avatar.v2.AvatarV2PreviewInteractionTest" time="4.321" />
+  <testcase name="unsupportedStateShowsExplicitErrorAndDoesNotChangeRenderedState" classname="com.jarvis.interfaceapp.avatar.v2.AvatarV2PreviewInteractionTest" time="4.023" />
+  <testcase name="explicitConfirmationRequiredAndApplicationIsSessionOnly" classname="com.jarvis.interfaceapp.avatar.v2.AvatarV2PreviewInteractionTest" time="3.832" />
+  <testcase name="pendingFadeIsSuspendedWithActualActivityInBackground" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="3.874" />
+  <testcase name="realDecoderRejectsOpaqueAndCorruptResourcesEvenWhenHashMatches" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="2.486" />
+  <testcase name="pendingFadeGetsExistingClockEvenWhenAllIdleAnimationsStopped" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="2.605" />
+  <testcase name="articulatedEyesAndSimulatedMouthUseSeparateLayersAndReturnToNeutral" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="2.809" />
+  <testcase name="actualPixelCrossfadeIsContinuousRefusesInterruptionsAndResets" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="3.154" />
+  <testcase name="liveLayerTransformsChangePixelsAndReturnExactlyToNeutral" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="2.403" />
+  <testcase name="pendingFadeIsSuspendedOffscreenAndResumes" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="2.318" />
+  <testcase name="missingArtCannotChangeStateOrSimulatePhonemes" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="2.626" />
+  <testcase name="realPngDecodeHasBoundedResidencyAndNoFalseArtReadiness" classname="com.jarvis.interfaceapp.avatar.v2.PremiumAvatarAndroidTest" time="1.92" />
+  <testcase name="demoFixtureIsVisibleAndComposerDoesNotClaimAnAiReply" classname="com.jarvis.interfaceapp.ui.chat.ChatInteractionTest" time="4.567" />
+  <testcase name="disconnectedScreenHasAccessibleInputButNeverOffersARealSend" classname="com.jarvis.interfaceapp.ui.chat.ChatInteractionTest" time="5.714" />
+</testsuite>

@@ -28,6 +28,10 @@ jobs:
         run: python3 scripts/check_avatar_assets.py
       - name: Verify AVA-03 technical fixture and honest art status
         run: python3 scripts/check_avatar_v2_assets.py
+      - name: Verify AVA-04 privacy, scope and packager
+        run: |
+          python3 tools/avatar/check_ava04_scope.py
+          python3 -m unittest discover -s tools/avatar -p 'test_*.py' -v
       - name: Build APK, run JVM tests and Lint, compile instrumented APK
         run: ./scripts/check.sh --no-daemon
       - name: Verify CORE reference is not packaged

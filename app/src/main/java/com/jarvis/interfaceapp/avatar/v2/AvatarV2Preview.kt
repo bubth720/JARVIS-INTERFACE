@@ -29,6 +29,7 @@ fun AvatarV2Preview(repository: AvatarPackRepository, packs: MutableMap<String, 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scroll = rememberScrollState()
+    var gallery by remember { mutableStateOf(false) }
     var candidate by remember { mutableStateOf<LoadedPremiumPack?>(null) }
     var issue by remember { mutableStateOf<String?>(null) }
     var busy by remember { mutableStateOf(false) }
@@ -73,6 +74,10 @@ fun AvatarV2Preview(repository: AvatarPackRepository, packs: MutableMap<String, 
     }
     LaunchedEffect(Unit) { load() }
     LaunchedEffect(issue) { if (issue != null) scroll.scrollTo(0) }
+    if (gallery && candidate != null) {
+        com.jarvis.interfaceapp.avatar.review.AthenaGalleryScreen(candidate!!) { gallery = false }
+        return
+    }
     Column(Modifier.fillMaxWidth().heightIn(max = 700.dp).padding(16.dp).verticalScroll(scroll)
         .testTag("avatar-v2-preview"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("Athéna V2 · prévisualisation locale", style = MaterialTheme.typography.titleMedium)
@@ -98,6 +103,7 @@ fun AvatarV2Preview(repository: AvatarPackRepository, packs: MutableMap<String, 
                 issue = result.issue?.let { if (it == "TRANSITION_IN_PROGRESS") "Transition en cours · réessayer après le fondu." else "ART_ASSET_UNAVAILABLE · demande refusée, état conservé." }
             }
             Text("${pack.manifest.id} · ${pack.manifest.artGrade}")
+            OutlinedButton(onClick = { gallery = true }, modifier = Modifier.testTag("athena-open-gallery")) { Text("Galerie de revue du pack") }
             Text("${pack.manifest.resources.size} textures · ${pack.decodedBytes} octets RGBA théoriques")
             AvatarDemo(artwork = renderer, showAssetButton = false)
             Text("${current.state} · ${current.expression} · ${current.perspective}", Modifier.testTag("avatar-v2-current"))

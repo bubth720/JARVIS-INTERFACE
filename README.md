@@ -4,6 +4,18 @@ Application Android native autonome — fondations AVA-03, version 0.1.0.
 **Livraison AVA-03 partielle : moteur V2 disponible, assets Athéna premium manquants.**
 La validation physique multiappareils de mission 006 reste en attente.
 
+## AVA-04 — revue artistique privée
+
+Le pipeline de production et la galerie Compose sont développés sur
+`feat/ava-04-delivery`. Douze portraits semi-réalistes ont été créés et rendus dans
+un espace privé pour examen. **ART_REVIEW_PENDING / RIG_PENDING** : ils ne sont
+ni publiés ni intégrés à l’APK par défaut. Les médias ne sont pas des placeholders,
+mais restent des propositions pleine pose, sans prétendre des calques articulés.
+
+[Rapport AVA-04](docs/avatar/v3/DELIVERY.md) · [Spécification artistique](docs/avatar/v3/ART-SPEC.md).
+La galerie de revue est accessible depuis la preview V2 pour un pack importé
+volontairement. Aucun consentement de diffusion ou d’activation n’en est déduit.
+
 ## Fonctionnement
 
 Application autonome : accueil sombre, paramètres, état local et quatre panneaux :
