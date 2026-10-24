@@ -1,6 +1,7 @@
 # JARVIS INTERFACE
 
-Application Android native autonome — prototype AVATAR-001, version 0.1.0.
+Application Android native autonome — fondations AVA-03, version 0.1.0.
+**Livraison AVA-03 partielle : moteur V2 disponible, assets Athéna premium manquants.**
 La validation physique multiappareils de mission 006 reste en attente.
 
 ## Fonctionnement
@@ -10,6 +11,35 @@ Application autonome : accueil sombre, paramètres, état local et quatre pannea
 d’un prototype vectoriel 2.5D local ; les accès externes restent provisoires. Aucun
 connecteur, service permanent, client réseau ou permission INTERNET n’est ajouté. Le texte
 « opérationnel » décrit uniquement l’interface locale.
+
+### Athéna V2 — AVA-03
+
+Depuis Avatar → **Démo 2.5D** → **Athéna V2 · packs et comparaison** : importer
+volontairement un ZIP V2 local, comparer au rendu V1, parcourir ses états disponibles
+et confirmer son utilisation **pour la session**. Le rendu V1 reste sélectionné par
+défaut ; DataStore et les profils de dashboard ne sont pas modifiés.
+
+**ART_ASSETS_MISSING** : la planche privée fournie n'est pas un rig. Aucun visage
+ni découpage de cette référence n'est publié. Les cinq PNG synthétiques déjà publics
+constituent uniquement une démo technique avec IDLE/NEUTRAL/FACE ; les états sans
+ressource sont refusés. Ce n'est pas Athéna premium finale et UI-03 n'est pas lancée.
+
+[Guide APK/import](docs/avatar/v2/GUIDE.md) · [Architecture et validation](docs/avatar/v2/DELIVERY.md) ·
+[Assets réels, empreintes et manquants](docs/avatar/v2/ASSET-MAP.md) ·
+[Revue artistique](docs/avatar/v2/ART-REVIEW.md).
+
+```sh
+python3 scripts/check_avatar_assets.py
+python3 scripts/check_avatar_v2_assets.py
+python3 scripts/check_ui01_scope.py
+./scripts/check.sh --no-daemon
+python3 scripts/package_device_kit.py --avatar-v2
+```
+
+Le workflow conserve les artefacts précédents et ajoute
+`jarvis-interface-ava03-partial-kit` (APK, documentation, vrai ZIP technique,
+provenance et empreintes). La CI exécute les tests JVM/Lint et compile les tests
+Android ; les exécutions sur émulateur sont rapportées séparément.
 
 ### Dashboard tactile — mission 004
 

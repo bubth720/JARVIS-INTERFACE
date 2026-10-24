@@ -1,0 +1,16 @@
+{
+  "id": "athena.premium.v2",
+  "status": "ART_ASSETS_MISSING",
+  "referenceSha256": "5d226d51391248b8e5f55771f9be341696c75ba1105de996303247386543f84c",
+  "publicationAuthorized": false,
+  "requiredStates": [
+    "IDLE",
+    "LISTENING",
+    "THINKING",
+    "SPEAKING",
+    "WAITING",
+    "WORKING",
+    "REACTION",
+    "ERROR"
+  ]
+}

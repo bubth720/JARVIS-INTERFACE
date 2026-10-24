@@ -1,0 +1,35 @@
+{
+  "environment": "API26 x86_64 software emulator 720x1280 320dpi; airplane mode; no physical measurements",
+  "memory": {
+    "default-v1": {
+      "totalPssKiB": [
+        43893,
+        43756,
+        42520
+      ],
+      "medianKiB": 43756
+    },
+    "v2-preview": {
+      "totalPssKiB": [
+        47306,
+        46366,
+        46259
+      ],
+      "medianKiB": 46366
+    },
+    "comparisonNote": "Same APK/process for V1 versus V2 preview; includes entire preview UI and caches, not isolated renderer cost. No GC forced, 3 one-second-spaced samples, software emulator only."
+  },
+  "cases": {
+    "fresh_emulator_baseline_saved_through_confirmed_ui": true,
+    "v2_preview_real_compose_and_explicit_missing_art": true,
+    "missing_state_refused": true,
+    "explicit_confirmation_applies_session_pack": true,
+    "real_process_death_preserves_layout_bytes": {
+      "oldPid": "5220",
+      "newPid": "5804",
+      "stoppedBeforeLaunch": true
+    }
+  },
+  "layoutSha256Before": "ca93c802fcfa71da7d3b3a831a74314755f7cb71da3dd2f4f1ea9a4f42bab099",
+  "layoutSha256After": "ca93c802fcfa71da7d3b3a831a74314755f7cb71da3dd2f4f1ea9a4f42bab099"
+}

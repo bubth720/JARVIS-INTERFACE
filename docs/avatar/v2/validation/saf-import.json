@@ -1,0 +1,7 @@
+{
+  "environment": "API26 software emulator only; real Android OpenDocument picker",
+  "cases": {
+    "real_saf_import_validated_and_rendered_changed_id": true,
+    "real_saf_unknown_version_refused_previous_candidate_kept": true
+  }
+}

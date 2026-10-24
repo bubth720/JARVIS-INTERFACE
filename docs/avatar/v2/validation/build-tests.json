@@ -1,0 +1,88 @@
+{
+  "mission": "AVA-03",
+  "status": "PARTIAL",
+  "CODE_READY": true,
+  "ART_ASSETS_READY": false,
+  "artStatus": "ART_ASSETS_MISSING",
+  "deviceStatus": "DEVICE_NOT_QUALIFIED",
+  "base": "48db1ecbb40dfa5b90a8e696fe6c2a62228f5ce9",
+  "ava01": "0c6d8a1bdeabe8f23fe8f98263cfe88d8c3c216e",
+  "branch": "feat/ava-03-athena-premium",
+  "command": "./scripts/check.sh connectedDebugAndroidTest --no-daemon",
+  "result": "BUILD SUCCESSFUL in 6m 4s; 77 tasks: 21 executed, 56 up-to-date",
+  "jvm": {
+    "com.jarvis.interfaceapp.avatar.AvatarAnimationControllerTest": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.chat.ChatControllerTest": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.DataStoreLayoutRepositoryTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.avatar.assets.AvatarAssetTest": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.DashboardTest": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.DashboardControllerTest": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.avatar.v2.PremiumAvatarTest": {
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.HomeStateTest": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.LayoutCodecTest": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "instrumented": {
+    "tests": 47,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": "No issues found.",
+  "physicalDevices": [],
+  "environment": "Android 8.0 API26 x86_64 emulator, 720x1280 320dpi, software GPU, no KVM, two vCPU, 2 GiB RAM, airplane mode",
+  "apks": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 10166319,
+      "sha256": "b4d3f1b6326bd2f368b2ce59c91abf95160cf78672bce039ad93de021706f0c3"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1154142,
+      "sha256": "58c66267a54dbb9b16f12d917d9165ad26de44c6cdcc18ebe9567d773d56607e"
+    }
+  }
+}

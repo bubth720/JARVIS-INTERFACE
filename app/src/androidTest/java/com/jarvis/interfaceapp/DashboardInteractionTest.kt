@@ -9,6 +9,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 /** Portrait device, standalone / airplane mode. Actual execution requires a device. */
 class DashboardInteractionTest {
@@ -58,9 +60,15 @@ class DashboardInteractionTest {
     @Test fun lockDisablesBothGestureHandles() {
         compose.onNodeWithTag("toggle-edit").performClick()
         compose.onNodeWithTag("lock-AVATAR").performClick()
+        // The actor saves asynchronously; Compose idleness alone is not its barrier.
+        runBlocking { withTimeout(30_000) { (compose.activity.application as JarvisApplication).dashboard.awaitIdle() } }
+        compose.waitForIdle()
         compose.onNodeWithTag("move-AVATAR").assertIsNotEnabled()
         compose.onNodeWithTag("resize-AVATAR").assertIsNotEnabled()
         compose.onNodeWithTag("lock-AVATAR").performClick()
+        // The actor saves asynchronously; Compose idleness alone is not its barrier.
+        runBlocking { withTimeout(30_000) { (compose.activity.application as JarvisApplication).dashboard.awaitIdle() } }
+        compose.waitForIdle()
         compose.onNodeWithTag("move-AVATAR").assertIsEnabled()
     }
     @Test fun collisionRefusesGestureAndShowsReason() {

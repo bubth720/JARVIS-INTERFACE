@@ -36,6 +36,14 @@ fun AvatarDemo(
     artwork: AvatarArtwork = remember { DemoAvatarArtwork() },
     showAssetButton: Boolean = true,
 ) {
+    var v2Preview by remember { mutableStateOf(false) }
+    val packRepository = remember { com.jarvis.interfaceapp.avatar.v2.AvatarPackRepository() }
+    val loadedPacks = remember { mutableMapOf<String, com.jarvis.interfaceapp.avatar.v2.LoadedPremiumPack>() }
+    var selectedArtwork by remember { mutableStateOf<AvatarArtwork?>(null) }
+    val effectiveArtwork = selectedArtwork ?: artwork
+    val frameArtwork = effectiveArtwork as? com.jarvis.interfaceapp.avatar.v2.FrameDrivenAvatarArtwork
+    val noPendingFrames = remember { kotlinx.coroutines.flow.MutableStateFlow(false) }
+    val artworkPending by (frameArtwork?.pendingFrames ?: noPendingFrames).collectAsStateWithLifecycle()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     var resumed by remember(lifecycle) { mutableStateOf(lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) }
     var panelVisible by remember { mutableStateOf(false) }
@@ -44,7 +52,7 @@ fun AvatarDemo(
     var previewSize by remember { mutableStateOf(IntSize.Zero) }
     var preview by remember { mutableStateOf(false) }
     var assetsPreview by remember { mutableStateOf(false) }
-    var failed by remember(artwork) { mutableStateOf(false) }
+    var failed by remember(effectiveArtwork) { mutableStateOf(false) }
     var lifecycleGeneration by remember { mutableIntStateOf(0) }
     val pose = remember(controller) { mutableStateOf(controller.pose) }
     val status by controller.status.collectAsStateWithLifecycle()
@@ -58,19 +66,19 @@ fun AvatarDemo(
         onDispose { lifecycle.removeObserver(observer); controller.setForeground(false) }
     }
     DisposableEffect(controller) { onDispose { controller.release() } }
-    DisposableEffect(artwork) { onDispose { artwork.release() } }
+    DisposableEffect(effectiveArtwork) { onDispose { effectiveArtwork.release() } }
     SideEffect {
         controller.setForeground(resumed)
-        controller.setVisible(!assetsPreview && !failed && if (preview) previewVisible else panelVisible)
+        controller.setVisible(!assetsPreview && !v2Preview && !failed && if (preview) previewVisible else panelVisible)
         val size = if (preview) previewSize else panelSize
         controller.resize(size.width, size.height)
     }
     // Do not rely only on a lifecycle-aware Flow collector: it stops collecting
     // below STARTED, so local lifecycle/visibility gates must cancel the clock too.
     val viewport = if (preview) previewSize else panelSize
-    val active = resumed && !assetsPreview && !failed && (if (preview) previewVisible else panelVisible) &&
-        viewport.width > 0 && viewport.height > 0 && status.advancing
-    LaunchedEffect(controller, active, lifecycleGeneration) {
+    val active = resumed && !assetsPreview && !v2Preview && !failed && (if (preview) previewVisible else panelVisible) &&
+        viewport.width > 0 && viewport.height > 0 && (status.advancing || artworkPending)
+    LaunchedEffect(controller, effectiveArtwork, active, lifecycleGeneration) {
         if (active) {
             var previous = 0L
             var pending = 0.0
@@ -86,6 +94,7 @@ fun AvatarDemo(
                     previous = now
                     if (pending >= 1000.0 / 30.0) {
                         controller.advanceBy(elapsed)
+                        frameArtwork?.advanceBy(elapsed)
                         pose.value = controller.pose
                         pending %= (1000.0 / 30.0)
                         elapsed = 0.0
@@ -100,13 +109,20 @@ fun AvatarDemo(
     }
     val frozenPanel = remember(preview) { controller.pose }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        AvatarSurface(pose = { if (preview) frozenPanel else pose.value }, artwork = artwork,
+        AvatarSurface(pose = { if (preview) frozenPanel else pose.value }, artwork = effectiveArtwork,
             failed = failed, onFailure = { failed = true },
             modifier = Modifier.fillMaxWidth().height(112.dp).testTag("avatar-renderer")
                 .semantics { stateDescription = if (status.advancing && !preview) "Animé" else "Suspendu" },
             onViewport = { visible, size -> panelVisible = visible; panelSize = size })
         OutlinedButton(onClick = { preview = true }, modifier = Modifier.fillMaxWidth().testTag("avatar-preview")) {
             Text("Démo 2.5D", style = MaterialTheme.typography.labelSmall)
+        }
+    }
+    if (v2Preview) Dialog(onDismissRequest = { v2Preview = false }) {
+        Surface(shape = MaterialTheme.shapes.large) {
+            com.jarvis.interfaceapp.avatar.v2.AvatarV2Preview(packRepository, loadedPacks,
+                onApply = { pack -> selectedArtwork = pack?.let { com.jarvis.interfaceapp.avatar.v2.PremiumAvatarArtwork(it) } },
+                onClose = { v2Preview = false })
         }
     }
     if (assetsPreview) Dialog(onDismissRequest = { assetsPreview = false }) {
@@ -123,7 +139,7 @@ fun AvatarDemo(
                 Text("Avatar 2.5D · prototype", style = MaterialTheme.typography.titleMedium)
                 Text("Personnage provisoire original. Buste, paupières et tête indépendants.",
                     style = MaterialTheme.typography.bodySmall)
-                AvatarSurface(pose = { pose.value }, artwork = artwork, failed = failed,
+                AvatarSurface(pose = { pose.value }, artwork = effectiveArtwork, failed = failed,
                     onFailure = { failed = true },
                     modifier = Modifier.fillMaxWidth().height(240.dp).testTag("avatar-preview-renderer"),
                     onViewport = { visible, size -> previewVisible = visible; previewSize = size })
@@ -131,6 +147,8 @@ fun AvatarDemo(
                     modifier = Modifier.testTag("avatar-engine-status"))
                 if (showAssetButton) OutlinedButton(onClick = { preview = false; assetsPreview = true },
                     modifier = Modifier.fillMaxWidth().testTag("avatar-assets")) { Text("Ressources et calques locaux") }
+                if (showAssetButton) OutlinedButton(onClick = { preview = false; v2Preview = true },
+                    modifier = Modifier.fillMaxWidth().testTag("avatar-v2-open")) { Text("Athéna V2 · packs et comparaison") }
                 for (animation in AvatarAnimationId.entries) {
                     OutlinedButton(onClick = {
                         command(AvatarCommand.Play(animation))

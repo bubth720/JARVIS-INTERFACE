@@ -4,3 +4,7 @@
 local.properties
 **/build/
 .idea/
+
+# Private artistic reference: never publish the user-provided source.
+ATHENA_REFERENCE_OFFICIELLE.png
+.private-avatar/

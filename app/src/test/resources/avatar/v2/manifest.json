@@ -1,0 +1,128 @@
+{
+  "version": 2,
+  "id": "jarvis.synthetic.v2.demo",
+  "author": "JARVIS AVA-01 synthetic demonstration",
+  "license": "Repository demonstration assets; not Athena premium artwork",
+  "artGrade": "DEMONSTRATION",
+  "width": 240,
+  "height": 320,
+  "resources": [
+    {
+      "id": "back-hair",
+      "file": "back-hair.png",
+      "sha256": "8f9d72a5099b80b2e2d8f63663990342b28f66e38cae467e2d896f7fdba1ab44",
+      "width": 80,
+      "height": 100
+    },
+    {
+      "id": "body",
+      "file": "body.png",
+      "sha256": "4d57d3b749dd89a3d00471ebda559fe74427547dd52ab85bd5f57c2ebe0b6db2",
+      "width": 80,
+      "height": 100
+    },
+    {
+      "id": "face",
+      "file": "face.png",
+      "sha256": "00e2aeceba199c58c4a59e40ac4c785417cbf9043b898f21b8f250cc71742d47",
+      "width": 80,
+      "height": 100
+    },
+    {
+      "id": "eyes",
+      "file": "eyes.png",
+      "sha256": "d3241ade53c3590aa52709b3c577d529dcb693490e27daf7ccfde9bf2c0f913d",
+      "width": 80,
+      "height": 100
+    },
+    {
+      "id": "front-hair",
+      "file": "front-hair.png",
+      "sha256": "ef495f0e5d7ecacd0b992bd322b4624e18f9079139300be50a1944d743d08d05",
+      "width": 80,
+      "height": 100
+    }
+  ],
+  "layers": [
+    {
+      "id": "back-hair",
+      "resource": "back-hair",
+      "order": 0,
+      "x": 0,
+      "y": 0,
+      "width": 240,
+      "height": 320,
+      "pivotX": 120,
+      "pivotY": 188,
+      "depth": 0.2,
+      "channel": "BACK_HAIR"
+    },
+    {
+      "id": "body",
+      "resource": "body",
+      "order": 2,
+      "x": 0,
+      "y": 0,
+      "width": 240,
+      "height": 320,
+      "pivotX": 120,
+      "pivotY": 188,
+      "depth": 0.4,
+      "channel": "BODY"
+    },
+    {
+      "id": "face",
+      "resource": "face",
+      "order": 3,
+      "x": 0,
+      "y": 0,
+      "width": 240,
+      "height": 320,
+      "pivotX": 120,
+      "pivotY": 188,
+      "depth": 0.6,
+      "channel": "HEAD"
+    },
+    {
+      "id": "eyes",
+      "resource": "eyes",
+      "order": 4,
+      "x": 0,
+      "y": 0,
+      "width": 240,
+      "height": 320,
+      "pivotX": 120,
+      "pivotY": 188,
+      "depth": 0.8,
+      "channel": "HEAD"
+    },
+    {
+      "id": "front-hair",
+      "resource": "front-hair",
+      "order": 5,
+      "x": 0,
+      "y": 0,
+      "width": 240,
+      "height": 320,
+      "pivotX": 120,
+      "pivotY": 188,
+      "depth": 1.0,
+      "channel": "HEAD"
+    }
+  ],
+  "frames": [
+    {
+      "state": "IDLE",
+      "expression": "NEUTRAL",
+      "perspective": "FACE",
+      "layers": [
+        "back-hair",
+        "body",
+        "face",
+        "eyes",
+        "front-hair"
+      ],
+      "mode": "LAYERS"
+    }
+  ]
+}
