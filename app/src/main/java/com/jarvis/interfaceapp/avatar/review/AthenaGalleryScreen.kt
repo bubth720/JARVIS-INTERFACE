@@ -21,7 +21,9 @@ import com.jarvis.interfaceapp.avatar.v2.*
 /** Review only, uses already decoded session textures. No copy/export, approval or activation. */
 @Composable
 fun AthenaGalleryScreen(pack: LoadedPremiumPack, onClose: () -> Unit) {
-    Column(Modifier.fillMaxWidth().heightIn(max=700.dp).padding(16.dp)
+    Surface(Modifier.fillMaxWidth().heightIn(max=700.dp), color=MaterialTheme.colorScheme.background,
+        contentColor=MaterialTheme.colorScheme.onBackground) {
+    Column(Modifier.fillMaxSize().padding(16.dp)
         .verticalScroll(rememberScrollState()).testTag("athena-review-gallery"),
         verticalArrangement=Arrangement.spacedBy(8.dp)) {
         Text("Athéna · galerie de revue privée",style=MaterialTheme.typography.titleLarge)
@@ -39,7 +41,7 @@ fun AthenaGalleryScreen(pack: LoadedPremiumPack, onClose: () -> Unit) {
                             it.dispatch(ExpressionEvent.Select(frame.key));repeat(3) { _ -> it.advanceBy(100.0) }
                         } }
                         DisposableEffect(art) { onDispose { art.release() } }
-                        Surface(Modifier.weight(1f),shape=MaterialTheme.shapes.medium,color=Color(0xFF122337)) {
+                        Surface(Modifier.weight(1f),shape=MaterialTheme.shapes.medium,color=Color(0xFF122337),contentColor=MaterialTheme.colorScheme.onSurface) {
                             Column(Modifier.padding(6.dp)) {
                                 Canvas(Modifier.fillMaxWidth().height(180.dp).testTag("athena-review-${frame.key.state}-${frame.key.expression}-${frame.key.perspective}")
                                     .semantics { contentDescription="${frame.key.state} ${frame.key.expression} ${frame.key.perspective}" }) {
@@ -60,4 +62,5 @@ fun AthenaGalleryScreen(pack: LoadedPremiumPack, onClose: () -> Unit) {
         Text("La confirmation temporaire du sélecteur V2 ne vaut pas accord de diffusion. Les dispositions du dashboard restent indépendantes.")
         Button(onClick=onClose,modifier=Modifier.testTag("athena-review-close")) { Text("Retour à la prévisualisation") }
     }
+}
 }

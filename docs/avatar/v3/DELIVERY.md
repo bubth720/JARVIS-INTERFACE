@@ -74,6 +74,15 @@ privés ne sont jamais transmis au runner. Les accords esthétique, publication 
 activation sont indépendants et restent faux ; une sélection temporaire n'accorde
 aucun de ces droits.
 
+## Correctif de revue visuelle
+
+L'examen réel des captures a révélé un fond de fenêtre non opaque et des légendes
+noires sur les cartes sombres dans le contexte de test sans Surface parent.
+La galerie fournit désormais sa propre Surface et ses couleurs de contenu, sans
+dépendre de l'hôte. Ce correctif de contraste ne modifie ni les images ni leur
+manifeste, ni le renderer ou les consentements. Les captures privées doivent être
+rafraîchies après ce correctif ; la validation finale est détaillée dans le bilan.
+
 ## Prochaine étape
 
 Faire examiner les visuels privés par l'utilisateur et corriger les détails demandés,
