@@ -1,0 +1,95 @@
+{
+  "mission": "UI-02",
+  "base": "1d10ddb52e1df4b609824d5666a095df4b361a63",
+  "branch": "feat/ui-02-delivery",
+  "status": "LAB_CODE_READY_OWNER_UNAVAILABLE",
+  "realCoreConnected": false,
+  "identityActivated": false,
+  "profilePersistence": "CORE_OWNER_ONLY_NOT_CONNECTED",
+  "jvm": {
+    "com.jarvis.interfaceapp.avatar.AvatarAnimationControllerTest": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.chat.ChatControllerTest": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.DataStoreLayoutRepositoryTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.avatar.assets.AvatarAssetTest": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.DashboardTest": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.DashboardControllerTest": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.avatar.v2.PremiumAvatarTest": {
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.ui.identity.IdentitySettingsTest": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.domain.HomeStateTest": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.storage.LayoutCodecTest": {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "com.jarvis.interfaceapp.avatar.review.ArtApprovalReceiptTest": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "android": {
+    "tests": 53,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": "No issues found.",
+  "environment": "Android API26 software emulator 720x1280 320dpi, no physical device",
+  "apk": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 10365251,
+      "sha256": "a190289b4f7e77dded992482b25ee93425b81d24b2ce31016718a98418c14dd6"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1200922,
+      "sha256": "49fba8bdf37c7fac883df72a2e04d118fb47e8649bdbeb58248170746ae74e6c"
+    }
+  }
+}

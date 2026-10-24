@@ -1,0 +1,31 @@
+{
+  "mission": "UI-02",
+  "base": "ab0a3f5a992a90ca53dc20c9c56d3bd8a0c2b3a0",
+  "validationWorkspace": "temporary isolated validation copy; primary checkout untouched by UI02 agent",
+  "command": "./gradlew testDebugUnitTest assembleDebug lintDebug assembleDebugAndroidTest --no-daemon --max-workers=1",
+  "result": "BUILD SUCCESSFUL in 1m 10s; 21 tasks executed, 55 up-to-date",
+  "jvm": {
+    "tests": 145,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "newJvmTests": 20,
+  "lint": "No issues found.",
+  "newAndroidTests": 5,
+  "androidTestsExecuted": false,
+  "realCoreConnected": false,
+  "persistentOwnerApprovalTested": false,
+  "files": {
+    "app/src/androidTest/java/com/jarvis/interfaceapp/ui/identity/IdentitySettingsInteractionTest.kt": "30064b826375c5a4081d956ffbcf09f7c940c64eb4b3f10eb432c6b4136363a4",
+    "app/src/test/java/com/jarvis/interfaceapp/ui/identity/IdentitySettingsTest.kt": "327d733ad8c6bcc083c3c613d8169fd93556dad4f4ac7ea7579d20209d5aa7d1",
+    "app/src/main/java/com/jarvis/interfaceapp/ui/memory/ConfirmedMemoryPanel.kt": "0ed4b6fe188731a8c50ee1f99bc6a3c137744d394e69c4791aa69dd6d6bc520c",
+    "app/src/main/java/com/jarvis/interfaceapp/ui/memory/MemoryConsentUiPort.kt": "6d19fedf04c7dbeb8a522c17d2af77e538ba2fdf836d5f2155ae106b2b3c2c5c",
+    "app/src/main/java/com/jarvis/interfaceapp/ui/identity/IdentitySettingsScreen.kt": "c17b74d5cfdfe0c170df7d17c92773269f20fda5a096ac1c5480995a62aeff00",
+    "app/src/main/java/com/jarvis/interfaceapp/ui/identity/PersonaSettingsViewModel.kt": "bb725539638a3cfed3c5aa74b2503569994de5ca21b157849209b0b53d3016cb",
+    "app/src/main/java/com/jarvis/interfaceapp/ui/identity/IdentitySettingsController.kt": "8af7512b3abfe25a425e44603ec5b11e67efc1ceba043326071861d11caf428d",
+    "app/src/main/java/com/jarvis/interfaceapp/ui/identity/LaboratoryIdentitySettingsPort.kt": "a2e52fd91bd00e85e9e34eb1589fea4a18ddf03ecb38874f071e1355d4ff9c6c",
+    "app/src/main/java/com/jarvis/interfaceapp/ui/identity/ProfileDiffUi.kt": "97586f867f865d25deb9ebc8a86a5228af15581717d414690551116618c2b00d",
+    "app/src/main/java/com/jarvis/interfaceapp/ui/identity/IdentitySettingsPort.kt": "64a3d69589447a47e34e7d3c2f007bb1fe064e45861795a9a2a1094094fc4876"
+  }
+}

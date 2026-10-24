@@ -1,0 +1,71 @@
+{
+  "repository": "bubth720/JAVIS-Local-v2",
+  "usage": "READ_ONLY_REFERENCE; NOT COPIED INTO APK; NOT WIRE CONTRACT EXTENSION",
+  "sources": [
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/profiles/IdentityProfile.kt",
+      "sha256": "4e237dbb4eb970ecfb940806458df95243a8fdccfed50e659dfd9c6a19487a08"
+    },
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/profiles/ProfileRepository.kt",
+      "sha256": "cfb7ad8d37dc8e63c2605a0df7ecd4f50e9c27932d97c3b9d29c8f5ad05624d5"
+    },
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/profiles/ProfilePreviewEngine.kt",
+      "sha256": "2c2f9f95a9cdc5f61780daf17933345715fc9d32f7c4ef321c8ce82da4e3a7b8"
+    },
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/IdentityChangeJournal.kt",
+      "sha256": "a574dcd2b47fd4d342f89a1d00dcae951a01f748f43373f8959cb9a9155c2c69"
+    },
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/ContextStylePolicy.kt",
+      "sha256": "372451e28bd1976714824eae9377da62ff55fe394da8f50a3ef845b2f43b6080"
+    },
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/LanguageRuleEngine.kt",
+      "sha256": "6dd3876fb07fa7e9b5dc35f8af25606baafe6b661f1af77421293668c66e62a6"
+    },
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/PersonaInterestCatalog.kt",
+      "sha256": "cd9408c53cbc910d84e47968cd665e9579346f3abd617a473abc63057691c4db"
+    },
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/IdentityTypes.kt",
+      "sha256": "d4b3304cc76e31ff67866ea204b234bf8ebdd90dff4dac28a12197f52289b11d"
+    },
+    {
+      "commit": "283423cb8b9d567539f33cf7f2f1fafa602cf974",
+      "path": "app/src/main/java/com/stark/jarvislocal/identity/IdentityPort.kt",
+      "sha256": "3576043d91443dcbec74df3501120b0d96792dc13f4547eb1280d6209dcfc264"
+    },
+    {
+      "commit": "49ad428e94edd75c2a1d115c8c2504f26609eace",
+      "path": "app/src/main/java/com/stark/jarvislocal/memory/ConfirmedMemoryStore.kt",
+      "sha256": "5545e25d494119d71c745aaebda96837c6edf76db1fc7d84bb207d9be3495e7d"
+    },
+    {
+      "commit": "49ad428e94edd75c2a1d115c8c2504f26609eace",
+      "path": "app/src/main/java/com/stark/jarvislocal/memory/MemoryApprovalWorkflow.kt",
+      "sha256": "6a5fd0e6962513f4503feb2dd55cd16311aba21e15b5528b8c437598be83492a"
+    },
+    {
+      "commit": "49ad428e94edd75c2a1d115c8c2504f26609eace",
+      "path": "app/src/main/java/com/stark/jarvislocal/memory/MemoryRecallIndex.kt",
+      "sha256": "0dd9c54a50ef74db7fe3e58280cd494c00f00eb4783f400b076cf0987355cea5"
+    },
+    {
+      "commit": "49ad428e94edd75c2a1d115c8c2504f26609eace",
+      "path": "app/src/main/java/com/stark/jarvislocal/memory/MemoryExportService.kt",
+      "sha256": "3f54f7575d908ad7793f866ee79d79b55dc3f4b8103e0a18a174746a958ac6ea"
+    }
+  ]
+}

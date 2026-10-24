@@ -2,12 +2,10 @@
 """Protect storage/avatar/permissions and pin CORE metadata test provenance. No network or source writes."""
 from pathlib import Path
 import subprocess,json,hashlib,sys,zipfile
-BASE='48db1ecbb40dfa5b90a8e696fe6c2a62228f5ce9'
+BASE='283ed2f3cd361d5b0b6bc927432bf836af8db1f6'
 paths=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'--','app','gradle','settings.gradle.kts','build.gradle.kts'],text=True).splitlines()
-# AVA-03 explicitly authorizes this host integration; the existing lock test only awaits its async transaction; all prior UI-01 files
-# (including its chat, Gradle dependencies and frozen V1 assets) are now protected.
-allowed={'app/src/main/java/com/jarvis/interfaceapp/avatar/AvatarDemo.kt',
-         'app/src/androidTest/java/com/jarvis/interfaceapp/DashboardInteractionTest.kt'}
+# UI-02 adds navigation only; every existing avatar/storage/contract file stays pinned.
+allowed={'app/src/main/java/com/jarvis/interfaceapp/ui/JarvisApp.kt'}
 for name in paths:
     if name not in allowed:assert Path(name).read_bytes()==subprocess.check_output(['git','show',BASE+':'+name]),name
 r=json.loads(Path('docs/intensive-2026-10-22/CORE02-REFERENCE.json').read_text())

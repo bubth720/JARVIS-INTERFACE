@@ -9,6 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.viewmodel.compose.viewModel as composeViewModel
 import com.jarvis.interfaceapp.ui.chat.*
+import com.jarvis.interfaceapp.ui.identity.IdentitySettingsScreen
+import com.jarvis.interfaceapp.ui.identity.PersonaSettingsViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -22,6 +24,14 @@ import com.jarvis.interfaceapp.domain.PlacementError
 
 @Composable
 fun JarvisApp(viewModel: HomeViewModel,chatViewModel: ChatViewModel=composeViewModel()) {
+    var identityOpen by rememberSaveable { mutableStateOf(false) }
+    if(identityOpen) {
+        val persona:PersonaSettingsViewModel=composeViewModel()
+        val closeIdentity={ persona.controller.laboratory(false);identityOpen=false }
+        BackHandler(onBack=closeIdentity)
+        IdentitySettingsScreen(persona.controller,closeIdentity)
+        return
+    }
     var chatOpen by rememberSaveable { mutableStateOf(false) }
     val chat by chatViewModel.state.collectAsStateWithLifecycle()
     BackHandler(enabled=chatOpen){if(chat.busy)chatViewModel.cancel();chatOpen=false}
@@ -61,6 +71,7 @@ fun JarvisApp(viewModel: HomeViewModel,chatViewModel: ChatViewModel=composeViewM
                         color = MaterialTheme.colorScheme.primary)
                     Text("INTERFACE TACTIQUE • 0.1.0", style = MaterialTheme.typography.labelLarge)
                     OutlinedButton(onClick={chatOpen=true},modifier=Modifier.testTag("open-conversation")){Text("Conversation — local expérimental")}
+                    OutlinedButton(onClick={identityOpen=true},modifier=Modifier.testTag("open-personality")){Text("Identité et personnalité")}
                     HorizontalDivider()
                     StorageStatus(ui.storage, viewModel::retryStorage)
                     if (ui.storage.phase != SavePhase.LOADING && !state.settingsOpen) {

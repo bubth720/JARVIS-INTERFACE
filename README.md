@@ -16,6 +16,13 @@ mais restent des propositions pleine pose, sans prétendre des calques articulé
 La galerie de revue est accessible depuis la preview V2 pour un pack importé
 volontairement. Aucun consentement de diffusion ou d’activation n’en est déduit.
 
+## UI-02 — identité et consentements
+
+**Identité et personnalité** ouvre l’éditeur avec un état NON CONNECTÉ sûr.
+Un laboratoire RAM volontaire permet de vérifier profils, contextes hérités,
+diff/approbation, restauration et consentements mémoire. Aucun profil ou souvenir
+CORE n’est lu, persisté ou activé par défaut. [Rapport UI-02](docs/ui-02/DELIVERY.md).
+
 ## Fonctionnement
 
 Application autonome : accueil sombre, paramètres, état local et quatre panneaux :
