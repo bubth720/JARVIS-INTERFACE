@@ -34,6 +34,8 @@ jobs:
           python3 -m unittest discover -s tools/avatar -p 'test_*.py' -v
       - name: Build APK, run JVM tests and Lint, compile instrumented APK
         run: ./scripts/check.sh --no-daemon
+      - name: Verify private Athena is absent from public APK
+        run: python3 scripts/check_athena_distribution.py app/build/outputs/apk/debug/app-debug.apk
       - name: Verify CORE reference is not packaged
         run: python3 scripts/check_ui01_scope.py --apk
       - name: Verify APKs and executed JVM tests
@@ -109,3 +111,11 @@ jobs:
           name: jarvis-interface-final-01-review
           if-no-files-found: error
           path: docs/interface-final-01/
+
+      - name: Upload Athena code validation without private artwork
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: jarvis-athena-code-review
+          if-no-files-found: error
+          path: docs/athena-visible/

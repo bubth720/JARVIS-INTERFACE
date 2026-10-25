@@ -11,6 +11,7 @@ import java.io.File
 class JarvisApplication : Application() {
     private val storeScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val commandScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    val athena by lazy { com.jarvis.interfaceapp.avatar.athena.AthenaResources(this) }
     val workspace by lazy {
         com.jarvis.interfaceapp.workspace.WorkspaceController(
             com.jarvis.interfaceapp.workspace.DataStoreWorkspaceRepository(

@@ -15,6 +15,14 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures { compose = true }
+    providers.gradleProperty("athenaPrivateAssets").orNull?.let { privatePath ->
+        require(!providers.environmentVariable("CI").isPresent) { "Private Athena assets forbidden in CI" }
+        val folder=file(privatePath).canonicalFile
+        require(!folder.toPath().startsWith(rootProject.projectDir.canonicalFile.toPath())) { "Private assets must stay outside the checkout" }
+        require(folder.resolve("athena-private/athena-review.zip").isFile)
+        require(folder.walkTopDown().filter { it.isFile }.map { it.relativeTo(folder).invariantSeparatorsPath }.toSet()==setOf("athena-private/athena-review.zip")) { "Only the reviewed ZIP may enter the private asset source" }
+        sourceSets.getByName("main").assets.srcDir(folder)
+    }
     sourceSets.getByName("test").java.srcDir(rootProject.file("fixtures/core02-reference/src"))
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

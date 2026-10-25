@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 /** Private SAF import in RAM. Neither reference images nor URI grants are persisted. */
 @Composable
 fun AvatarV2Preview(repository: AvatarPackRepository, packs: MutableMap<String, LoadedPremiumPack>,
-    onApply: (LoadedPremiumPack?) -> Unit, onClose: () -> Unit) {
+    onApply: (LoadedPremiumPack?) -> Unit, onClose: () -> Unit,primaryArtworkLabel:String?=null) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scroll = rememberScrollState()
@@ -83,7 +83,7 @@ fun AvatarV2Preview(repository: AvatarPackRepository, packs: MutableMap<String, 
         Text("Athéna V2 · prévisualisation locale", style = MaterialTheme.typography.titleMedium)
         Text("PARTIAL · ART_ASSETS_MISSING", Modifier.testTag("avatar-v2-art-status"))
         Text("Le pack premium officiel n’est pas fourni. Les formes et PNG de démonstration ne représentent pas Athéna finale.")
-        Text("Pack du panneau : ${selection ?: "V1 vectoriel"} · sélection temporaire, sans sauvegarde")
+        Text("Pack du panneau : ${selection ?: primaryArtworkLabel ?: "V1 vectoriel"} · sélection temporaire, sans sauvegarde")
         if (busy) Text("Validation et décodage bornés…")
         issue?.let { Text(it, Modifier.testTag("avatar-v2-issue").semantics { liveRegion = LiveRegionMode.Polite }, color = MaterialTheme.colorScheme.error) }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -136,7 +136,7 @@ fun AvatarV2Preview(repository: AvatarPackRepository, packs: MutableMap<String, 
         HorizontalDivider()
         OutlinedButton(enabled = false, onClick = {}) { Text("Athéna premium · assets manquants") }
         OutlinedButton(enabled = !busy, onClick = { scope.launch { load() } }) { Text("Charger la démo technique V2") }
-        OutlinedButton(enabled = !busy, onClick = { importer.launch(arrayOf("application/zip", "application/x-zip-compressed")) }, modifier = Modifier.testTag("avatar-v2-import")) { Text("Importer volontairement un pack V2") }
+        OutlinedButton(enabled = !busy && primaryArtworkLabel==null, onClick = { importer.launch(arrayOf("application/zip", "application/x-zip-compressed")) }, modifier = Modifier.testTag("avatar-v2-import")) { Text("Importer volontairement un pack V2") }
         Text("Import privé, en mémoire seulement. Aucun pack ni image n’est publié par l’application.")
         Row {
             Checkbox(confirmed, { confirmed = it }, enabled = candidate != null && !busy, modifier = Modifier.testTag("avatar-v2-confirm"))
@@ -144,8 +144,9 @@ fun AvatarV2Preview(repository: AvatarPackRepository, packs: MutableMap<String, 
         }
         Button(enabled = confirmed && candidate != null && !busy, onClick = {
             val pack = candidate!!
-            if (repository.select(pack.manifest.id, confirmed)) { selection = repository.selectedId; onApply(pack); onClose() }
-        }, modifier = Modifier.fillMaxWidth().testTag("avatar-v2-apply")) { Text("Utiliser le pack prévisualisé dans le panneau") }
+            if(primaryArtworkLabel!=null && pack.manifest.artGrade!=ArtGrade.PREMIUM_CANDIDATE) {onClose()}
+            else if (repository.select(pack.manifest.id, confirmed)) { selection = repository.selectedId; onApply(pack); onClose() }
+        }, modifier = Modifier.fillMaxWidth().testTag("avatar-v2-apply")) { Text(if(primaryArtworkLabel!=null && candidate?.manifest?.artGrade!=ArtGrade.PREMIUM_CANDIDATE) "Fermer la comparaison et conserver Athéna" else "Utiliser le pack prévisualisé dans le panneau") }
         OutlinedButton(enabled = !busy, onClick = {
             repository.rollback(); selection = repository.selectedId; onApply(selection?.let { packs[it] }); onClose()
         }, modifier = Modifier.testTag("avatar-v2-rollback")) { Text("Revenir au pack précédent") }

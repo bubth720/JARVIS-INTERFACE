@@ -1,0 +1,22 @@
+{
+  "distribution": "PRIVATE_PREVIEW",
+  "jvm": {
+    "tests": 191,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "android": {
+    "tests": 68,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": "No issues found.",
+  "build": "SUCCESSFUL in7m42s",
+  "command": "./scripts/check.sh connectedDebugAndroidTest -PathenaPrivateAssets=PRIVATE_ASSETS --no-daemon",
+  "apkSha256": "a5e38d004174215a70623e933c130870789cfb40ec41537332c21181504ec208",
+  "bundledZipSha256": "e3fc17885ae285c4380754f1cab04c74226c8407abbd174b3625a71fa0f9c4e0",
+  "physicalDevice": false,
+  "environment": "API26 software emulator only"
+}

@@ -1,0 +1,9 @@
+{
+  "emulator": "API26",
+  "oldPid": "4068",
+  "newPid": "4143",
+  "forceStopConfirmed": true,
+  "premiumOnRestartWithoutImport": true,
+  "dataStoreV1Unchanged": true,
+  "dataStoreSha256": "ca93c802fcfa71da7d3b3a831a74314755f7cb71da3dd2f4f1ea9a4f42bab099"
+}

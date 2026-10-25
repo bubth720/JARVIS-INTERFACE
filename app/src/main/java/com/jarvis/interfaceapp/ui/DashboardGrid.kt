@@ -177,7 +177,7 @@ private fun PanelCard(
                 }
             }
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).testTag(contentTag)) {
-                if (panel.id == PanelId.AVATAR) AvatarDemo(Modifier.fillMaxWidth())
+                if (panel.id == PanelId.AVATAR) com.jarvis.interfaceapp.avatar.athena.AthenaAvatar(Modifier.fillMaxWidth())
                 else {
                     Text(body, style = MaterialTheme.typography.bodySmall)
                     TextButton(onClick={onNavigate(if(panel.id==PanelId.COMMANDS) "Dispositions" else "Modules")},modifier=Modifier.testTag("panel-open-${panel.id}")) {

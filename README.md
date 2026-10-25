@@ -1,3 +1,8 @@
+> Correctif du rendu Athéna : le dashboard et Studio/Avatar utilisent désormais le pack
+> premium fourni au build privé ou importé localement. [Livraison et séparation privée/publique](docs/athena-visible/DELIVERY.md).
+> Les captures INTERFACE-FINAL-01 antérieures sont historiques et montrent l'ancien rendu.
+> L'APK visuel privé et ses nouvelles captures sont remis séparément, sans publier les médias.
+
 # JARVIS INTERFACE
 
 Application Android native autonome — fondations AVA-03, version 0.1.0.
@@ -325,3 +330,12 @@ en simulation. Aucun backend, outil, mémoire CORE ou adaptateur sensible activ�
 à `datastore/workspace-v1.json`, indépendant du propriétaire d'identité CORE.
 Les préférences ne deviennent durables qu'après écriture ; le statut expose les erreurs.
 Les ressources Athéna privées ne sont toujours pas incorporées à l'APK public.
+
+## Correctif Athéna — rendu principal premium
+
+Le panneau du dashboard et **Studio → Avatar** utilisent maintenant le pack premium
+quand il est fourni à la compilation privée ou importé. Le dessin vectoriel ne sert
+plus de rendu normal par défaut. Le livrable visuel est l'APK privé avec ses ressources ;
+le build public/CI n'incorpore aucun média privé et demande un import s'il n'en dispose pas.
+[Cause exacte, intégration, séparation privée/publique et compilation](docs/athena-visible/DELIVERY.md).
+Les portraits sont réels et de haute qualité, mais le rig articulé définitif reste séparé.

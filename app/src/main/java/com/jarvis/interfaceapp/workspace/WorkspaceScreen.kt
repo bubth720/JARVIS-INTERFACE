@@ -38,7 +38,7 @@ fun WorkspaceScreen(controller:WorkspaceController,layouts:Layouts,restore:(Layo
         Text("Autonome · aucun module externe requis",style=MaterialTheme.typography.bodySmall)
         TextButton(onClick=onBack,modifier=Modifier.testTag("studio-back")) { Text("Retour au dashboard") }
         FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            listOf("Accueil","Dispositions","Personnalité","Modules","Apparence","Historique").forEach { name ->
+            listOf("Accueil","Avatar","Dispositions","Personnalité","Modules","Apparence","Historique").forEach { name ->
                 FilterChip(selected=tab==name,onClick={tab=name;notice=null},label={Text(name)},modifier=Modifier.testTag("studio-tab-$name"))
             }
         }
@@ -52,7 +52,7 @@ fun WorkspaceScreen(controller:WorkspaceController,layouts:Layouts,restore:(Layo
                     Text("Quatre panneaux tactiles, des dispositions nommées et des réglages locaux. Les modules absents restent indisponibles.")
                     Button(onClick=onChat) { Text("Ouvrir la conversation") }
                     panelCatalog.forEach { d -> OutlinedCard(onClick={when(d.destination){
-                        "chat"->onChat();"dashboard"->onBack();"tasks"->{tab="Modules";notice="Tâches indisponibles : aucun adaptateur raccordé."};else->tab="Modules"
+                        "chat"->onChat();"dashboard"->if(d.id=="avatar")tab="Avatar" else onBack();"tasks"->{tab="Modules";notice="Tâches indisponibles : aucun adaptateur raccordé."};else->tab="Modules"
                     }},modifier=Modifier.fillMaxWidth()) { Column(Modifier.padding(12.dp)) {
                         Text(d.title,color=MaterialTheme.colorScheme.primary)
                         Text(when(d.id) {
@@ -66,6 +66,7 @@ fun WorkspaceScreen(controller:WorkspaceController,layouts:Layouts,restore:(Layo
                         })
                     } } }
                 }
+                "Avatar" -> com.jarvis.interfaceapp.avatar.athena.AthenaAvatar(Modifier.fillMaxWidth(),portraitHeight=360.dp,studio=true)
                 "Dispositions" -> LayoutLibrary(w,controller,layouts,restore) {notice=it}
                 "Personnalité" -> LocalPersonaEditor(w.persona,{next->controller.change { require(it.persona==w.persona) {"Préférences changées depuis l’aperçu"};it.copy(persona=next) }})
                 "Modules" -> ModuleManager(w.packages,controller)

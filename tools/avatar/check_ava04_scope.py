@@ -5,8 +5,8 @@ import subprocess
 import zipfile
 import hashlib
 root=Path(__file__).resolve().parents[2]
-base='0869b3959d3636deab3c938e6cb98b7e555f19af'
-allowed={'app/src/main/java/com/jarvis/interfaceapp/avatar/AvatarDemo.kt','app/src/main/java/com/jarvis/interfaceapp/ui/JarvisTheme.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/JarvisApp.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/chat/ChatController.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/HomeViewModel.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/chat/ChatScreen.kt', 'app/src/main/java/com/jarvis/interfaceapp/JarvisApplication.kt', 'app/src/main/java/com/jarvis/interfaceapp/MainActivity.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/DashboardGrid.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/chat/ChatViewModel.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/DashboardController.kt'}
+base='db459ba388a3fea992d80320c3989be0edda8500'
+allowed={'app/src/main/java/com/jarvis/interfaceapp/avatar/v2/AvatarV2Preview.kt','app/src/androidTest/java/com/jarvis/interfaceapp/avatar/v2/AvatarV2DashboardTest.kt','app/src/androidTest/java/com/jarvis/interfaceapp/StorageTestSupport.kt', 'app/src/main/java/com/jarvis/interfaceapp/workspace/WorkspaceScreen.kt', 'app/src/main/java/com/jarvis/interfaceapp/JarvisApplication.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/DashboardGrid.kt', 'app/src/main/java/com/jarvis/interfaceapp/avatar/AvatarDemo.kt', 'app/build.gradle.kts'}
 files=subprocess.check_output(['git','ls-tree','-r','--name-only',base,'--','app','gradle','settings.gradle.kts','build.gradle.kts'],cwd=root,text=True).splitlines()
 for f in files:
     if f not in allowed:

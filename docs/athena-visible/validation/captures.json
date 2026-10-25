@@ -1,0 +1,23 @@
+{
+  "test": "premiumIsPrimaryInDashboardAndStudioWithoutManualImport",
+  "result": "OK (1 test)",
+  "seconds": 22.347,
+  "captures": [
+    {
+      "capture": "dashboard",
+      "sha256": "5b4710ab7973c7b5fc486403d5a54b59eb9c4161c94eeacf042c527388448144",
+      "private": true
+    },
+    {
+      "capture": "studio",
+      "sha256": "b47ec23f2da49771080ad62c9ddc4549f1c5a857043c413f2eefe3bfc4547597",
+      "private": true
+    },
+    {
+      "capture": "portrait",
+      "sha256": "058e657a938bc5bfb080003a198756cbfdc5d5331e69b58308bd21945e12f3a6",
+      "private": true
+    }
+  ],
+  "imagesPublished": false
+}

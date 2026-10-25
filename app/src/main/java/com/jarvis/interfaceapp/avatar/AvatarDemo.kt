@@ -35,6 +35,8 @@ fun AvatarDemo(
     controller: AvatarAnimationController = remember { AvatarAnimationController() },
     artwork: AvatarArtwork = remember { DemoAvatarArtwork() },
     showAssetButton: Boolean = true,
+    portraitHeight: androidx.compose.ui.unit.Dp = 112.dp,
+    artworkLabel:String? = null,
 ) {
     val motionEnabled=LocalAvatarMotionEnabled.current
     var v2Preview by remember { mutableStateOf(false) }
@@ -112,18 +114,18 @@ fun AvatarDemo(
     Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         AvatarSurface(pose = { if (preview) frozenPanel else pose.value }, artwork = effectiveArtwork,
             failed = failed, onFailure = { failed = true },
-            modifier = Modifier.fillMaxWidth().height(112.dp).testTag("avatar-renderer")
-                .semantics { stateDescription = if (status.advancing && !preview) "Animé" else "Suspendu" },
-            onViewport = { visible, size -> panelVisible = visible; panelSize = size })
+            modifier = Modifier.fillMaxWidth().height(portraitHeight).testTag("avatar-renderer")
+                .semantics { stateDescription = if(failed) "Secours technique" else if (status.advancing && !preview) "Animé" else "Suspendu" },
+            label=artworkLabel, onViewport = { visible, size -> panelVisible = visible; panelSize = size })
         OutlinedButton(onClick = { preview = true }, modifier = Modifier.fillMaxWidth().testTag("avatar-preview")) {
-            Text("Démo 2.5D", style = MaterialTheme.typography.labelSmall)
+            Text(if(artworkLabel==null) "Démo 2.5D" else "Voir Athéna", style = MaterialTheme.typography.labelSmall)
         }
     }
     if (v2Preview) Dialog(onDismissRequest = { v2Preview = false }) {
         Surface(shape = MaterialTheme.shapes.large) {
             com.jarvis.interfaceapp.avatar.v2.AvatarV2Preview(packRepository, loadedPacks,
                 onApply = { pack -> selectedArtwork = pack?.let { com.jarvis.interfaceapp.avatar.v2.PremiumAvatarArtwork(it) } },
-                onClose = { v2Preview = false })
+                onClose = { v2Preview = false },primaryArtworkLabel=artworkLabel)
         }
     }
     if (assetsPreview) Dialog(onDismissRequest = { assetsPreview = false }) {
@@ -137,13 +139,13 @@ fun AvatarDemo(
         Surface(shape = MaterialTheme.shapes.large) {
             Column(Modifier.fillMaxWidth().heightIn(max = 600.dp).padding(16.dp)
                 .verticalScroll(previewScroll), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Avatar 2.5D · prototype", style = MaterialTheme.typography.titleMedium)
-                Text("Personnage provisoire original. Buste, paupières et tête indépendants.",
+                Text(artworkLabel ?: "Avatar 2.5D · prototype", style = MaterialTheme.typography.titleMedium)
+                Text(if(artworkLabel==null) "Personnage provisoire original. Buste, paupières et tête indépendants." else "Portrait premium · animations locales et ressources de prévisualisation.",
                     style = MaterialTheme.typography.bodySmall)
                 AvatarSurface(pose = { pose.value }, artwork = effectiveArtwork, failed = failed,
                     onFailure = { failed = true },
                     modifier = Modifier.fillMaxWidth().height(240.dp).testTag("avatar-preview-renderer"),
-                    onViewport = { visible, size -> previewVisible = visible; previewSize = size })
+                    label=artworkLabel,onViewport = { visible, size -> previewVisible = visible; previewSize = size })
                 Text(if (failed) "Rendu indisponible · secours statique" else "État local : ${status.state}",
                     modifier = Modifier.testTag("avatar-engine-status"))
                 if (showAssetButton) OutlinedButton(onClick = { preview = false; assetsPreview = true },
@@ -193,11 +195,12 @@ private fun AvatarSurface(
     onFailure: () -> Unit,
     modifier: Modifier,
     onViewport: (Boolean, IntSize) -> Unit,
+    label:String?=null,
 ) {
     Canvas(modifier.onGloballyPositioned {
         val bounds = it.boundsInWindow()
         onViewport(it.isAttached && bounds.width > 1f && bounds.height > 1f, it.size)
-    }.semantics { contentDescription = "Avatar féminin adulte original · démonstration 2.5D" }) {
+    }.semantics { contentDescription = label ?: "Avatar féminin adulte original · démonstration 2.5D" }) {
         drawRect(Color(0xFF101C2C))
         val scale = min(size.width / 240f, size.height / 320f)
         if (scale > 0) withTransform({
