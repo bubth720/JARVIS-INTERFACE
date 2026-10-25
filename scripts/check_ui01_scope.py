@@ -2,10 +2,10 @@
 """Protect storage/avatar/permissions and pin CORE metadata test provenance. No network or source writes."""
 from pathlib import Path
 import subprocess,json,hashlib,sys,zipfile
-BASE='4842ef1f47ac2a1efc29e77408dbdb3ec42768bb'
+BASE='0869b3959d3636deab3c938e6cb98b7e555f19af'
 paths=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'--','app','gradle','settings.gradle.kts','build.gradle.kts'],text=True).splitlines()
-# UI-03 adds a separate diagnostic entry; every previous avatar/settings/contract file stays pinned.
-allowed={'app/src/main/java/com/jarvis/interfaceapp/ui/chat/ChatScreen.kt'}
+# INTERFACE-FINAL-01: explicit UI wiring only; avatar engines, V1 codec, contracts and permissions stay pinned.
+allowed={'app/src/main/java/com/jarvis/interfaceapp/avatar/AvatarDemo.kt','app/src/main/java/com/jarvis/interfaceapp/ui/JarvisTheme.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/JarvisApp.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/chat/ChatController.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/HomeViewModel.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/chat/ChatScreen.kt', 'app/src/main/java/com/jarvis/interfaceapp/JarvisApplication.kt', 'app/src/main/java/com/jarvis/interfaceapp/MainActivity.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/DashboardGrid.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/chat/ChatViewModel.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/DashboardController.kt'}
 for name in paths:
     if name not in allowed:assert Path(name).read_bytes()==subprocess.check_output(['git','show',BASE+':'+name]),name
 r=json.loads(Path('docs/intensive-2026-10-22/CORE02-REFERENCE.json').read_text())
