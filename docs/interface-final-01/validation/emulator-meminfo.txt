@@ -1,0 +1,48 @@
+Applications Memory Usage (in Kilobytes):
+Uptime: 59721168 Realtime: 59721168
+
+** MEMINFO in pid 6811 [com.jarvis.interfaceapp] **
+                   Pss  Private  Private  SwapPss     Heap     Heap     Heap
+                 Total    Dirty    Clean    Dirty     Size    Alloc     Free
+                ------   ------   ------   ------   ------   ------   ------
+  Native Heap     7080     6800        0        0    20480    13226     7253
+  Dalvik Heap     2265     2216        0        0     4288     2144     2144
+ Dalvik Other     3604     3604        0        0
+        Stack      884      884        0        0
+       Ashmem        6        0        0        0
+    Other dev       18        0       16        0
+     .so mmap     2784      228      188        0
+    .apk mmap      572        0        8        0
+    .ttf mmap      188        0      100        0
+    .dex mmap    17333        4    15220        0
+    .oat mmap      649        0        0        0
+    .art mmap     4361     3804        0        0
+   Other mmap      115        4       32        0
+      Unknown     1322     1284        0        0
+        TOTAL    41181    18828    15564        0    24768    15370     9397
+
+ App Summary
+                       Pss(KB)
+                        ------
+           Java Heap:     6020
+         Native Heap:     6800
+                Code:    15748
+               Stack:      884
+            Graphics:        0
+       Private Other:     4940
+              System:     6789
+
+               TOTAL:    41181       TOTAL SWAP PSS:        0
+
+ Objects
+               Views:        6         ViewRootImpl:        1
+         AppContexts:        3           Activities:        1
+              Assets:        2        AssetManagers:        3
+       Local Binders:       10        Proxy Binders:       18
+       Parcel memory:        3         Parcel count:       14
+    Death Recipients:        0      OpenSSL Sockets:        0
+            WebViews:        0
+
+ SQL
+         MEMORY_USED:        0
+  PAGECACHE_OVERFLOW:        0          MALLOC_SIZE:        0

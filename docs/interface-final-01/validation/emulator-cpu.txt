@@ -1,0 +1,6 @@
+Tasks: 1 total,   0 running,   1 sleeping,   0 stopped,   0 zombie
+Mem:   2046988k total,   894052k used,  1152936k free,    13848k buffers
+Swap:        0k total,        0k used,        0k free,   534500k cached
+200%cpu   3%user   0%nice  10%sys 187%idle   0%iow   0%irq   0%sirq   0%host
+  PID USER         PR  NI VIRT  RES  SHR S[%CPU] %MEM     TIME+ ARGS
+ 6811 u0_a99       10 -10 1.6G 101M  76M S  0.0   5.0   0:11.10 com.jarvis.interfaceapp

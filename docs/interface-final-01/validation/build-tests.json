@@ -1,0 +1,39 @@
+{
+  "branch": "feat/interface-final-01",
+  "base": "0869b3959d3636deab3c938e6cb98b7e555f19af",
+  "requestedReference": "ab0a3f5a992a90ca53dc20c9c56d3bd8a0c2b3a0",
+  "commands": [
+    "./scripts/check.sh connectedDebugAndroidTest --no-daemon"
+  ],
+  "jvm": {
+    "tests": 190,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "android": {
+    "tests": 64,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "python": {
+    "tests": 9,
+    "failures": 0
+  },
+  "lint": "No issues found.",
+  "build": "SUCCESSFUL in 6m 17s",
+  "environment": "API26 Android8 x86_64 software emulator 720x1280 density320; no KVM, no physical device",
+  "realCoreConnected": false,
+  "androidInternetPermission": false,
+  "apk": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 10529699,
+      "sha256": "b574711610353b8c755f41c62f1f50fd213844836e0b8ef34111042b435fc3fc"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1193787,
+      "sha256": "bf9cf6581f03ab7696f21e5add123dfd91622d8671de21c50a6d91f3e1693158"
+    }
+  }
+}

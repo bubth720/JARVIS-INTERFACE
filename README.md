@@ -307,3 +307,21 @@ Les assets approuvés (yeux/paupières/bouche/buste séparés) et les futurs sig
 VOICE manquent pour livrer une synchronisation labiale réelle. Aucun lip-sync
 ou moteur vocal n'est présenté comme terminé. Aucune fusion ni installation
 sur appareil personnel n'est effectuée.
+
+## INTERFACE-FINAL-01 — Studio local
+
+Branche `feat/interface-final-01` : dashboard conservé, placement numérique précis,
+12 dispositions nommées, import/export local confirmé, trois thèmes, échelles et
+réduction d'animations, panneaux visibles, profil de formulation local persistant,
+historique opt-in et gestionnaire des cinq modules. Navigation par **Studio**.
+La conversation conserve sa démo explicite et ajoute copie, détails/sources et relance
+en simulation. Aucun backend, outil, mémoire CORE ou adaptateur sensible activé.
+
+- [Architecture, format et limites](docs/interface-final-01/ARCHITECTURE.md)
+- [Installation, navigation et grille POCO/Redmi](docs/interface-final-01/GUIDE.md)
+- [Validation et captures](docs/interface-final-01/VALIDATION.md)
+
+`datastore/dashboard.json` reste V1. Les nouvelles préférences locales appartiennent
+à `datastore/workspace-v1.json`, indépendant du propriétaire d'identité CORE.
+Les préférences ne deviennent durables qu'après écriture ; le statut expose les erreurs.
+Les ressources Athéna privées ne sont toujours pas incorporées à l'APK public.

@@ -1,0 +1,26 @@
+{
+  "device": "Android8/API26 x86_64 software emulator only",
+  "physicalDevice": false,
+  "renderer": "SwiftShader, no KVM",
+  "build": "debug",
+  "screen": "Physical size: 720x1280",
+  "density": "Physical density: 320",
+  "airplaneMode": "1",
+  "conditions": "3 process-cold ActivityManager launches; default dashboard, persisted preferences as shown by process-restart proof; no controlled gesture benchmark",
+  "starts": [
+    "Starting: Intent { cmp=com.jarvis.interfaceapp/.MainActivity }\nStatus: ok\nActivity: com.jarvis.interfaceapp/.MainActivity\nThisTime: 6787\nTotalTime: 6787\nWaitTime: 6927\nComplete",
+    "Starting: Intent { cmp=com.jarvis.interfaceapp/.MainActivity }\nStatus: ok\nActivity: com.jarvis.interfaceapp/.MainActivity\nThisTime: 6809\nTotalTime: 6809\nWaitTime: 6888\nComplete",
+    "Starting: Intent { cmp=com.jarvis.interfaceapp/.MainActivity }\nStatus: ok\nActivity: com.jarvis.interfaceapp/.MainActivity\nThisTime: 6302\nTotalTime: 6302\nWaitTime: 6428\nComplete"
+  ],
+  "activityTotalTimeMs": [
+    6787,
+    6809,
+    6302
+  ],
+  "memory": "Raw emulator-meminfo.txt; emulator-only snapshot, not phone RAM budget",
+  "cpu": "Raw emulator-cpu.txt; emulator-only instantaneous snapshot",
+  "frameTiming": "Raw emulator-gfxinfo.txt; uncontrolled startup/display snapshot, not panel gesture fluidity qualification",
+  "energy": "NOT_MEASURABLE",
+  "thermal": "NOT_MEASURABLE",
+  "pocoRedmiQualification": "NOT_EXECUTED"
+}

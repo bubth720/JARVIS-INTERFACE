@@ -1,0 +1,40 @@
+{
+  "base": "0869b3959d3636deab3c938e6cb98b7e555f19af",
+  "files": {
+    "app/src/main/java/com/jarvis/interfaceapp/domain/Dashboard.kt": {
+      "unchanged": true,
+      "sha256": "5e12d3fb26ba148992ee98e75e0750e7e325c9524d024ee8fd17c21ded219d4f"
+    },
+    "app/src/main/java/com/jarvis/interfaceapp/domain/HomeState.kt": {
+      "unchanged": true,
+      "sha256": "f7bcc73754b566e95e95ffef4d80e171fbe532703757023bad4f39bc0a10eed0"
+    },
+    "app/src/main/java/com/jarvis/interfaceapp/storage/LayoutCodec.kt": {
+      "unchanged": true,
+      "sha256": "41ca0fbd255e8cb28931061d5f4c050fe367d3715e5dfcd57e3f5e7a792a1074"
+    },
+    "app/src/main/java/com/jarvis/interfaceapp/storage/DataStoreLayoutRepository.kt": {
+      "unchanged": true,
+      "sha256": "b465a2847e409bd70e667baae47117dbe21ea9342891ce531eef7a4cb3cb5096"
+    },
+    "app/src/main/java/com/jarvis/interfaceapp/avatar/AvatarAnimationController.kt": {
+      "unchanged": true,
+      "sha256": "69fc23a5de2c2177e8afa441ce0d0253d281e64108c42c4be8887a8e3aee3ad2"
+    },
+    "app/src/main/java/com/jarvis/interfaceapp/avatar/AvatarContract.kt": {
+      "unchanged": true,
+      "sha256": "e23eeb127c47b70842bdeb52b45386c65b14d60824ee285dd38d7cd933ce548e"
+    },
+    "app/src/main/java/com/jarvis/interfaceapp/avatar/v2/AvatarExpressionStateMachine.kt": {
+      "unchanged": true,
+      "sha256": "73c92f027b20d46a6d542737a358e5f61b4f7a80261b8964e1f23cdd428249b0"
+    },
+    "app/src/main/java/com/jarvis/interfaceapp/avatar/v2/PremiumAvatarArtwork.kt": {
+      "unchanged": true,
+      "sha256": "f8d72defa4b5929e7bfd00eaaa00e764d91ecd03764b744be11121539ee63cc6"
+    }
+  },
+  "manifestUnchanged": true,
+  "privateArtPublished": false,
+  "realCoreConnected": false
+}

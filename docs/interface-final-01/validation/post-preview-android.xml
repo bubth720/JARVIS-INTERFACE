@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.jarvis.interfaceapp.workspace.WorkspaceInteractionTest" tests="9" failures="0" errors="0" skipped="0" time="106.597" timestamp="2026-10-25T09:43:13" hostname="localhost">
+  <properties>
+    <property name="device" value="emulator-5554 - 8.0.0" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="localPersonaRequiresConfirmationAndSurvivesRecreation" classname="com.jarvis.interfaceapp.workspace.WorkspaceInteractionTest" time="27.815" />
+  <testcase name="dashboardShortcutOpensRealModuleManagerWithoutConnecting" classname="com.jarvis.interfaceapp.workspace.WorkspaceInteractionTest" time="8.605" />
+  <testcase name="archiveDeletionIsExplicitAndDurable" classname="com.jarvis.interfaceapp.workspace.WorkspaceInteractionTest" time="9.677" />
+  <testcase name="precisePlacementRefusesCollisionWithoutChangingGeometry" classname="com.jarvis.interfaceapp.workspace.WorkspaceInteractionTest" time="10.168" />
+  <testcase name="modulesCannotClaimConnectedAndDoNotSendAnything" classname="com.jarvis.interfaceapp.workspace.WorkspaceInteractionTest" time="7.285" />
+  <testcase name="namedLayoutRestoreIsConfirmedAndKeepsV1Profiles" classname="com.jarvis.interfaceapp.workspace.WorkspaceInteractionTest" time="13.433" />
+  <testcase name="reducedMotionFreezesExistingControllerAndCanResume" classname="com.jarvis.interfaceapp.workspace.MotionPreferenceTest" time="3.345" />
+  <testcase name="optedInArchiveCompletesWhileActivityIsStopped" classname="com.jarvis.interfaceapp.workspace.LocalConversationActionsTest" time="7.542" />
+  <testcase name="copyDetailsAndRetryStayInExplicitSimulation" classname="com.jarvis.interfaceapp.workspace.LocalConversationActionsTest" time="10.226" />
+</testsuite>

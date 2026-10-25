@@ -15,6 +15,15 @@ private val TacticalColors = darkColorScheme(
 )
 
 @Composable
-fun JarvisTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = TacticalColors, content = content)
+fun JarvisTheme(preferences:com.jarvis.interfaceapp.workspace.VisualPreferences=com.jarvis.interfaceapp.workspace.VisualPreferences(),content: @Composable () -> Unit) {
+    val density=androidx.compose.ui.platform.LocalDensity.current
+    val colors=when(preferences.theme) {
+        com.jarvis.interfaceapp.workspace.LocalTheme.NAVY->TacticalColors
+        com.jarvis.interfaceapp.workspace.LocalTheme.GRAPHITE->TacticalColors.copy(background=Color(0xFF111416),surface=Color(0xFF202629),primary=Color(0xFF83E9E1))
+        com.jarvis.interfaceapp.workspace.LocalTheme.DEEP_BLUE->TacticalColors.copy(background=Color(0xFF050B21),surface=Color(0xFF101F40),primary=Color(0xFF80D5FF))
+    }
+    androidx.compose.runtime.CompositionLocalProvider(com.jarvis.interfaceapp.avatar.LocalAvatarMotionEnabled provides !preferences.reduceMotion,androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(
+        density.density*preferences.elementPercent/100f,density.fontScale*preferences.textPercent/100f)) {
+        MaterialTheme(colorScheme=colors,content=content)
+    }
 }

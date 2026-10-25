@@ -6,6 +6,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,15 +19,18 @@ import androidx.compose.ui.semantics.*
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ChatScreen(state: SessionUiState,onSend: (String)->Boolean,onCancel: ()->Unit,onDemo: (Boolean)->Unit,onBack: ()->Unit) {
+fun ChatScreen(state: SessionUiState,onSend: (String)->Boolean,onCancel: ()->Unit,onDemo: (Boolean)->Unit,onBack: ()->Unit,onClear:()->Unit={}) {
     var diagnosticsOpen by remember { mutableStateOf(false) }
     BackHandler(enabled=diagnosticsOpen) { diagnosticsOpen=false }
     if(diagnosticsOpen) {
         com.jarvis.interfaceapp.ui.chat.core.CoreConnectionDiagnosticsScreen { diagnosticsOpen=false }
         return
     }
-    var draft by remember { mutableStateOf("") }
-    var pageSize by remember { mutableIntStateOf(20) }
+    var draft by rememberSaveable { mutableStateOf("") }
+    var pageSize by rememberSaveable { mutableIntStateOf(20) }
+    var confirmClear by remember {mutableStateOf(false)}
+    if(confirmClear)AlertDialog(onDismissRequest={confirmClear=false},title={Text("Effacer cette session RAM ?")},text={Text("L’archive locale éventuelle se gère séparément dans le Studio. Aucune session CORE n’est supprimée.")},
+        confirmButton={TextButton(onClick={onClear();confirmClear=false}){Text("Effacer")}},dismissButton={TextButton(onClick={confirmClear=false}){Text("Annuler")}})
     val lastAccepted=state.messages.lastOrNull { it.user }
     LaunchedEffect(lastAccepted?.id){if(lastAccepted?.text==draft)draft=""}
     Surface(Modifier.fillMaxSize(),color=MaterialTheme.colorScheme.background,contentColor=MaterialTheme.colorScheme.onBackground) {
@@ -43,10 +51,11 @@ fun ChatScreen(state: SessionUiState,onSend: (String)->Boolean,onCancel: ()->Uni
         }
         Text(state.phase,modifier=Modifier.testTag("chat-phase").semantics { liveRegion=LiveRegionMode.Polite })
         OutlinedButton(enabled=!state.busy,onClick={diagnosticsOpen=true},modifier=Modifier.testTag("open-core-diagnostics")) { Text("Diagnostic du raccordement CORE") }
+        TextButton(enabled=!state.busy && state.messages.isNotEmpty(),onClick={confirmClear=true}){Text("Effacer cette session…")}
         if(state.messages.size>pageSize) TextButton(onClick={pageSize=(pageSize+20).coerceAtMost(200)}){Text("Messages précédents (mémoire vive)")}
         state.notifications.lastOrNull()?.let { Text(it,style=MaterialTheme.typography.bodySmall,modifier=Modifier.testTag("chat-notification")) }
     }
-        MessageTimeline(state.messages.takeLast(pageSize),Modifier.weight(1f).fillMaxWidth())
+        MessageTimeline(state.messages.takeLast(pageSize),Modifier.weight(1f).fillMaxWidth(),canRetry=!state.busy && state.connection==PortConnection.DEMONSTRATION,onRetry={onSend(it)})
     Column(Modifier.fillMaxWidth().heightIn(max=composerLimit).verticalScroll(rememberScrollState())) {
         ComposerBar(draft,{draft=it.take(4000)},!state.busy,
             !state.busy && state.connection in setOf(PortConnection.CONNECTED,PortConnection.DEMONSTRATION),
@@ -58,13 +67,31 @@ fun ChatScreen(state: SessionUiState,onSend: (String)->Boolean,onCancel: ()->Uni
     }
 }
 @Composable
-fun MessageTimeline(messages: List<ConversationMessage>,modifier: Modifier=Modifier) {
-    LazyColumn(modifier.testTag("chat-timeline"),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+fun MessageTimeline(messages: List<ConversationMessage>,modifier: Modifier=Modifier,canRetry:Boolean=false,onRetry:(String)->Unit={}) {
+    val list=rememberLazyListState()
+    val clipboard=LocalClipboardManager.current
+    var details by remember {mutableStateOf<ConversationMessage?>(null)}
+    LaunchedEffect(messages.size) {
+        if(messages.isNotEmpty() && (list.layoutInfo.visibleItemsInfo.lastOrNull()?.index?:0)>=messages.size-4)list.animateScrollToItem(messages.lastIndex)
+    }
+    details?.let {m->AlertDialog(onDismissRequest={details=null},title={Text("Détails du message")},text={Text("Identifiant : ${m.id}\nOrigine : ${if(m.demo) "SIMULATION locale" else "contenu reçu"}\n${m.text.length} caractères\nSources documentaires : ${m.sources.size}. Aucun outil ou moteur IA attesté.")},confirmButton={TextButton(onClick={details=null}){Text("Fermer")}})}
+    LazyColumn(modifier.testTag("chat-timeline"),state=list,verticalArrangement=Arrangement.spacedBy(8.dp)) {
         items(messages,key={it.id}) { message ->
             Surface(Modifier.fillMaxWidth(),tonalElevation=1.dp) {
                 Column(Modifier.padding(12.dp)) {
                     Text(if(message.user) "Toi${if(message.demo) " • démo" else ""}" else "FIXTURE — PAS UNE RÉPONSE IA",style=MaterialTheme.typography.labelLarge)
-                    Text(message.text)
+                    SelectionContainer {Text(message.text)}
+                    if(message.sources.isNotEmpty()) {
+                        Text("Sources documentaires fournies",style=MaterialTheme.typography.labelLarge)
+                        message.sources.forEach {source->Text(source.title);if(source.excerpt.isNotBlank())Text(source.excerpt,style=MaterialTheme.typography.bodySmall)}
+                    }
+                    FlowRow {
+                        TextButton(onClick={clipboard.setText(AnnotatedString(message.text))},modifier=Modifier.testTag("copy-${message.id}")){Text("Copier")}
+                        TextButton(onClick={details=message}){Text("Détails / sources")}
+                        val index=messages.indexOfFirst {it.id==message.id}
+                        val question=messages.take(index+1).lastOrNull {it.user}?.text
+                        if(message.demo && question!=null)TextButton(enabled=canRetry,onClick={onRetry(question)},modifier=Modifier.testTag("retry-${message.id}")){Text("Relancer en simulation")}
+                    }
                 }
             }
         }

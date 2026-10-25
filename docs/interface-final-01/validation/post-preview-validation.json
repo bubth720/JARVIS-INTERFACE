@@ -1,0 +1,55 @@
+{
+  "branch": "feat/interface-final-01",
+  "build": "SUCCESSFUL in2m48s",
+  "command": "./scripts/check.sh connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.jarvis.interfaceapp.workspace.WorkspaceInteractionTest,com.jarvis.interfaceapp.workspace.MotionPreferenceTest,com.jarvis.interfaceapp.workspace.LocalConversationActionsTest --no-daemon",
+  "jvm": {
+    "tests": 191,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "android": {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "changesSinceFull64Suite": [
+    "Persona preview templates now reflect all style controls",
+    "User-facing studio wording no longer shows internal destination/contract labels"
+  ],
+  "lint": "No issues found.",
+  "apk": {
+    "app/build/outputs/apk/debug/app-debug.apk": {
+      "bytes": 10653454,
+      "sha256": "8aa5ace76c2223487826a7b527391ceb4f1cfd9ab0d7bf736f2ce799500767ce"
+    },
+    "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk": {
+      "bytes": 1193787,
+      "sha256": "c84a91b221407f5c2b4714c7ad4b59458b0f2144a945acf29aa3f0c6c8d7d90a"
+    }
+  },
+  "finalReadableDifferenceRevalidation": {
+    "build": "SUCCESSFUL in3m45s",
+    "jvm": {
+      "tests": 191,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "android": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "changes": "French display formatting of the exact diff only; no data/consent/controller changes"
+  },
+  "captureHelperValidation": {
+    "command": "assembleDebugAndroidTest, then am instrument -e captureReview true for localPersonaRequiresConfirmationAndSurvivesRecreation",
+    "build": "SUCCESSFUL in20s",
+    "androidInvocations": 1,
+    "failures": 0,
+    "note": "Native display screenshot after modal synchronization; Compose dialog capture unsupported below API28. Production APK unchanged."
+  }
+}

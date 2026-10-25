@@ -2,6 +2,7 @@ package com.jarvis.interfaceapp.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -30,12 +31,14 @@ private data class Preview(val original: DashboardPanel, val resize: Boolean, va
 }
 
 @Composable
-fun DashboardGrid(state: HomeState, dispatch: (HomeAction) -> Unit, modifier: Modifier = Modifier) {
+fun DashboardGrid(state: HomeState, dispatch: (HomeAction) -> Unit, modifier: Modifier = Modifier,
+    visible:Set<PanelId> = PanelId.entries.toSet(),mode:com.jarvis.interfaceapp.workspace.DisplayMode=com.jarvis.interfaceapp.workspace.DisplayMode.AUTOMATIC,onNavigate:(String)->Unit={}) {
     BoxWithConstraints(modifier.testTag("dashboard")) {
-        val profile = if (maxWidth >= 700.dp) DashboardProfile.WIDE else DashboardProfile.COMPACT
+        val profile = if (mode==com.jarvis.interfaceapp.workspace.DisplayMode.EXTENDED || (mode==com.jarvis.interfaceapp.workspace.DisplayMode.AUTOMATIC && maxWidth >= 700.dp)) DashboardProfile.WIDE else DashboardProfile.COMPACT
         val grid = profile.grid
         val panels = state.layouts.getValue(profile)
-        val cellWidth = maxWidth / grid.columns
+        val canvasWidth=maxOf(maxWidth,48.dp*grid.columns)
+        val cellWidth = canvasWidth / grid.columns
         // A bounded scrollable canvas preserves usable targets in short windows / large text.
         val cellHeight = maxOf(56.dp, maxHeight / grid.rows)
         val density = LocalDensity.current
@@ -43,8 +46,12 @@ fun DashboardGrid(state: HomeState, dispatch: (HomeAction) -> Unit, modifier: Mo
         val cellHeightPx = with(density) { cellHeight.toPx() }
         var preview by remember(profile, state.editing) { mutableStateOf<Preview?>(null) }
         val scroll = rememberScrollState()
-        Box(Modifier.fillMaxSize().verticalScroll(scroll)) {
-            Box(Modifier.fillMaxWidth().height(cellHeight * grid.rows).clipToBounds()
+        val horizontal=rememberScrollState()
+        // Separate layout nodes: merging ScrollBy semantics for both axes prevents
+        // accessibility/bringIntoView from reaching panels below the viewport.
+        Box(Modifier.fillMaxSize().then(if(canvasWidth>maxWidth)Modifier.horizontalScroll(horizontal) else Modifier)) {
+          Box(Modifier.width(canvasWidth).fillMaxHeight().verticalScroll(scroll)) {
+            Box(Modifier.width(canvasWidth).height(cellHeight * grid.rows).clipToBounds()
                 .background(MaterialTheme.colorScheme.background)) {
                 if (state.editing) {
                     val lineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
@@ -55,7 +62,7 @@ fun DashboardGrid(state: HomeState, dispatch: (HomeAction) -> Unit, modifier: Mo
                             Offset(0f, row * cellHeightPx), Offset(size.width, row * cellHeightPx))
                     }
                 }
-                for (panel in panels) {
+                for (panel in panels.filter { it.id in visible }) {
                     key(panel.id) {
                         val position = "${panel.x},${panel.y} ${panel.width}x${panel.height}"
                         PanelCard(panel, state.editing,
@@ -65,6 +72,8 @@ fun DashboardGrid(state: HomeState, dispatch: (HomeAction) -> Unit, modifier: Mo
                                 .padding(4.dp).testTag("panel-${panel.id}")
                                 .semantics { stateDescription = position },
                             onLock = { dispatch(HomeAction.ToggleLock(profile, panel.id)) },
+                            onNavigate=onNavigate,
+                            onPrecise={x,y,w,h->dispatch(HomeAction.Place(profile,panel.id,x,y,w,h))},
                             handle = { resize ->
                                 fun commit(candidate: DashboardPanel) {
                                     dispatch(HomeAction.Place(profile, panel.id, candidate.x, candidate.y,
@@ -112,6 +121,7 @@ fun DashboardGrid(state: HomeState, dispatch: (HomeAction) -> Unit, modifier: Mo
         }
     }
 }
+}
 
 @Composable
 private fun PanelCard(
@@ -119,8 +129,25 @@ private fun PanelCard(
     editing: Boolean,
     modifier: Modifier,
     onLock: () -> Unit,
+    onNavigate:(String)->Unit,
+    onPrecise:(Int,Int,Int,Int)->Unit,
     handle: @Composable RowScope.(Boolean) -> Unit,
 ) {
+    var precise by remember { mutableStateOf(false) }
+    if(precise && editing && !panel.locked) {
+        var x by remember(panel) { mutableStateOf(panel.x.toString()) };var y by remember(panel) {mutableStateOf(panel.y.toString())}
+        var width by remember(panel) {mutableStateOf(panel.width.toString())};var height by remember(panel) {mutableStateOf(panel.height.toString())}
+        AlertDialog(onDismissRequest={precise=false},title={Text("Placement précis · ${panel.id}")},text={
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                Text("Cellules logiques. Collisions, limites et verrouillages restent contrôlés.")
+                listOf("X" to (x to {v:String->x=v}),"Y" to (y to {v:String->y=v}),"Largeur" to (width to {v:String->width=v}),"Hauteur" to (height to {v:String->height=v})).forEach { (label,pair)->
+                    OutlinedTextField(pair.first,{pair.second(it.take(3))},label={Text(label)},modifier=Modifier.testTag("precise-$label"))
+                }
+            }
+        },confirmButton={TextButton(enabled=listOf(x,y,width,height).all {it.toIntOrNull()!=null},onClick={
+            onPrecise(x.toInt(),y.toInt(),width.toInt(),height.toInt());precise=false
+        },modifier=Modifier.testTag("precise-confirm")){Text("Appliquer")}},dismissButton={TextButton(onClick={precise=false}){Text("Annuler")}})
+    }
     val title = when (panel.id) {
         PanelId.AVATAR -> "Avatar"
         PanelId.SYSTEM -> "État système"
@@ -130,8 +157,8 @@ private fun PanelCard(
     val body = when (panel.id) {
         PanelId.AVATAR -> "Emplacement réservé.\nMP4 et/ou animation 2D à venir."
         PanelId.SYSTEM -> "État local : opérationnel\nInterface autonome • hors ligne\nAucun service JARVIS requis."
-        PanelId.APPLICATIONS -> "Accès aux applications à venir.\nAucune application externe requise ni démarrée."
-        PanelId.COMMANDS -> "Commandes à venir.\nAucune action externe disponible."
+        PanelId.APPLICATIONS -> "Modules vérifiables localement.\nAucune connexion externe activée."
+        PanelId.COMMANDS -> "Actions locales de personnalisation.\nAucune commande externe exécutée."
     }
     val contentTag = when (panel.id) {
         PanelId.AVATAR -> "avatar-placeholder"
@@ -151,10 +178,16 @@ private fun PanelCard(
             }
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).testTag(contentTag)) {
                 if (panel.id == PanelId.AVATAR) AvatarDemo(Modifier.fillMaxWidth())
-                else Text(body, style = MaterialTheme.typography.bodySmall)
+                else {
+                    Text(body, style = MaterialTheme.typography.bodySmall)
+                    TextButton(onClick={onNavigate(if(panel.id==PanelId.COMMANDS) "Dispositions" else "Modules")},modifier=Modifier.testTag("panel-open-${panel.id}")) {
+                        Text(if(panel.id==PanelId.COMMANDS) "Mes dispositions" else "Voir les modules")
+                    }
+                }
                 if (editing) Text("${panel.x},${panel.y} • ${panel.width}×${panel.height}\nMinimum ${panel.minWidth}×${panel.minHeight}",
                     style = MaterialTheme.typography.labelSmall)
             }
+            if(editing) TextButton(onClick={precise=true},enabled=!panel.locked,modifier=Modifier.testTag("precise-${panel.id}")){Text("Précision")}
             if (editing) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 handle(false)
                 handle(true)

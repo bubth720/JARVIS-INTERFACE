@@ -1,0 +1,16 @@
+{
+  "device": "API26 emulator only",
+  "oldPid": "5656",
+  "newPid": "6563",
+  "realForceStop": true,
+  "workspaceSha256": "cc392689185812629787825bc02b6fd4ce52b53c203456ecbce08233a4b518e9",
+  "namedLayoutPresent": true,
+  "localPersonaRestored": true,
+  "reducedMotionRestored": true,
+  "compactAndWideProfiles": [
+    "compact",
+    "wide"
+  ],
+  "startOutput": "Starting: Intent { cmp=com.jarvis.interfaceapp/.MainActivity }\nStatus: ok\nActivity: com.jarvis.interfaceapp/.MainActivity\nThisTime: 6185\nTotalTime: 6185\nWaitTime: 6337\nComplete",
+  "physicalDevice": false
+}

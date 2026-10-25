@@ -1,0 +1,30 @@
+{
+  "initialAndroidSuite": {
+    "tests": 60,
+    "failures": 0,
+    "skipped": 0
+  },
+  "horizontalScrollRegression": {
+    "runCompleted": false,
+    "completedBeforeInterruption": 16,
+    "finding": "Combined horizontal/vertical ScrollBy semantics prevented outer-panel access; run deliberately interrupted and not counted successful.",
+    "fix": "Separate layout nodes and horizontal scroll only when needed"
+  },
+  "first64Suite": {
+    "tests": 64,
+    "failures": 2,
+    "passed": 62,
+    "skipped": 0,
+    "findings": [
+      "Retry assertion counted composed visible LazyColumn items instead of session messages",
+      "Shortcut test scrolled inner panel content without revealing outer panel"
+    ]
+  },
+  "targetedConfirmation": {
+    "tests": 2,
+    "failures": 1,
+    "passed": 1,
+    "finding": "Retry session-count assertion passed; shortcut failure tree proved button outside physical viewport",
+    "testCorrection": "Scroll outer panel first, assert button displayed, then click; original expected module state unchanged"
+  }
+}

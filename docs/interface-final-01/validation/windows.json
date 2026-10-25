@@ -1,0 +1,15 @@
+{
+  "device": "API26 software emulator only",
+  "physicalQualification": false,
+  "captures": {
+    "phone-landscape.png": "actual display rotation1280x720, density320; compact grid",
+    "tablet-window.png": "same physical display1280x720 with density160, logical tablet-like wide grid"
+  },
+  "systemLargeFontCapture": "NOT_CONFIRMED; extra host check did not observe its fixed title-height threshold. Automatic Android Compose fontScale2 tests passed in the full64 suite. No physical TalkBack claim.",
+  "originalSettingsRestored": {
+    "physicalSize": "720x1280",
+    "physicalDensity": 320,
+    "fontScale": 1.0
+  },
+  "wmPixelOverride": "did not change physical screenshot size; not presented as a real tablet"
+}

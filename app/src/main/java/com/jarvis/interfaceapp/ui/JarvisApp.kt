@@ -23,7 +23,18 @@ import com.jarvis.interfaceapp.domain.HomeAction
 import com.jarvis.interfaceapp.domain.PlacementError
 
 @Composable
-fun JarvisApp(viewModel: HomeViewModel,chatViewModel: ChatViewModel=composeViewModel()) {
+fun JarvisApp(viewModel: HomeViewModel,chatViewModel: ChatViewModel=composeViewModel(),workspace:com.jarvis.interfaceapp.workspace.WorkspaceController?=null) {
+    var studioInitial by rememberSaveable { mutableStateOf("Accueil") }
+    var studioOpen by rememberSaveable { mutableStateOf(false) }
+    var studioChat by rememberSaveable { mutableStateOf(false) }
+    val workspaceUi=workspace?.state?.collectAsStateWithLifecycle()?.value
+    LaunchedEffect(workspace) {if(workspace!=null)chatViewModel.attachArchive(workspace)}
+    if(studioOpen && workspace!=null) {
+        val home by viewModel.state.collectAsStateWithLifecycle()
+        BackHandler {studioOpen=false}
+        com.jarvis.interfaceapp.workspace.WorkspaceScreen(workspace,home.home.layouts,viewModel::restoreLayouts,{studioOpen=false},{studioOpen=false;studioChat=true},initialTab=studioInitial)
+        return
+    }
     var identityOpen by rememberSaveable { mutableStateOf(false) }
     if(identityOpen) {
         val persona:PersonaSettingsViewModel=composeViewModel()
@@ -33,11 +44,12 @@ fun JarvisApp(viewModel: HomeViewModel,chatViewModel: ChatViewModel=composeViewM
         return
     }
     var chatOpen by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(studioChat) {if(studioChat){chatOpen=true;studioChat=false}}
     val chat by chatViewModel.state.collectAsStateWithLifecycle()
     BackHandler(enabled=chatOpen){if(chat.busy)chatViewModel.cancel();chatOpen=false}
     if(chatOpen){
         Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing).padding(12.dp)) {
-            ChatScreen(chat,chatViewModel::send,chatViewModel::cancel,chatViewModel::demonstrate,{if(chat.busy)chatViewModel.cancel();chatOpen=false})
+            ChatScreen(chat,chatViewModel::send,chatViewModel::cancel,chatViewModel::demonstrate,{if(chat.busy)chatViewModel.cancel();chatOpen=false},chatViewModel::clearMessages)
         }
         return
     }
@@ -69,9 +81,12 @@ fun JarvisApp(viewModel: HomeViewModel,chatViewModel: ChatViewModel=composeViewM
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("JARVIS INTERFACE", style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary)
-                    Text("INTERFACE TACTIQUE • 0.1.0", style = MaterialTheme.typography.labelLarge)
-                    OutlinedButton(onClick={chatOpen=true},modifier=Modifier.testTag("open-conversation")){Text("Conversation — local expérimental")}
-                    OutlinedButton(onClick={identityOpen=true},modifier=Modifier.testTag("open-personality")){Text("Identité et personnalité")}
+                    Text("ESPACE LOCAL • INTERFACE FINAL-01", style = MaterialTheme.typography.labelLarge)
+                    FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                        if(workspace!=null) Button(onClick={studioInitial="Accueil";studioOpen=true},modifier=Modifier.testTag("open-studio")){Text("Studio")}
+                        OutlinedButton(onClick={chatOpen=true},modifier=Modifier.testTag("open-conversation")){Text("Conversation")}
+                        TextButton(onClick={identityOpen=true},modifier=Modifier.testTag("open-personality")){Text("Identité")}
+                    }
                     HorizontalDivider()
                     StorageStatus(ui.storage, viewModel::retryStorage)
                     if (ui.storage.phase != SavePhase.LOADING && !state.settingsOpen) {
@@ -114,7 +129,10 @@ fun JarvisApp(viewModel: HomeViewModel,chatViewModel: ChatViewModel=composeViewM
                             modifier = Modifier.testTag("close-settings")) { Text("Retour au tableau de bord") }
                     }
                 } else {
-                    DashboardGrid(state, viewModel::dispatch, Modifier.weight(1f).fillMaxWidth())
+                    DashboardGrid(state, viewModel::dispatch, Modifier.weight(1f).fillMaxWidth(),
+                        visible=workspaceUi?.value?.visual?.visible?:com.jarvis.interfaceapp.domain.PanelId.entries.toSet(),
+                        mode=workspaceUi?.value?.visual?.mode?:com.jarvis.interfaceapp.workspace.DisplayMode.AUTOMATIC,
+                        onNavigate={destination->if(workspace!=null){studioInitial=destination;studioOpen=true}})
                 }
             }
         }

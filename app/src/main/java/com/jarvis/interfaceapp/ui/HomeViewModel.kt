@@ -8,6 +8,7 @@ class HomeViewModel(private val controller: DashboardController) : ViewModel() {
     val state = controller.state
     init { controller.startSession() }
     fun dispatch(action: HomeAction) = controller.dispatch(action)
+    fun restoreLayouts(layouts:com.jarvis.interfaceapp.domain.Layouts)=controller.restore(layouts)
     fun resetLayouts() = controller.reset()
     fun retryStorage() = controller.retry()
 

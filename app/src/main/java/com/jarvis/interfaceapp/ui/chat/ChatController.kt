@@ -5,7 +5,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 /** Ephemeral UI state only; never written to DataStore, logs, disk or saved instance state. */
-data class ConversationMessage(val id: String, val text: String, val demo: Boolean, val user: Boolean)
+data class ConversationMessage(val id: String, val text: String, val demo: Boolean, val user: Boolean,val sources:List<com.jarvis.interfaceapp.domain.DocumentSource> = emptyList()) { init {require(sources.size<=8)} }
 data class SessionUiState(val connection: PortConnection = PortConnection.UNAVAILABLE,
     val key: CoreRequestKey? = null, val generation: Long = -1, val busy: Boolean = false,
     val phase: String = "NON CONNECTÉ", val messages: List<ConversationMessage> = emptyList(),
@@ -118,5 +118,6 @@ class ChatController(private val port: CoreEventUiPort, private val scope: Corou
             catch (_: Exception) { phase("Annulation non confirmée ; attente du port") }
         } }
     }
+    fun clearMessages() { if(!mutable.value.busy)mutable.update {it.copy(messages=emptyList())} }
     fun close() { jobs.forEach { it.cancel() }; port.close() }
 }

@@ -101,3 +101,11 @@ jobs:
             app/build/test-results/testDebugUnitTest/
             app/build/reports/tests/testDebugUnitTest/
             app/build/reports/lint-results-debug.*
+
+      - name: Upload INTERFACE-FINAL-01 review documentation
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: jarvis-interface-final-01-review
+          if-no-files-found: error
+          path: docs/interface-final-01/

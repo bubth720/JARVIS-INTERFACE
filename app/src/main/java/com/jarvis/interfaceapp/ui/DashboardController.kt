@@ -28,6 +28,7 @@ class DashboardController(private val repository: LayoutRepository, scope: Corou
     private sealed interface Command {
         data class Action(val action: HomeAction) : Command
         data object Session : Command
+        data class Restore(val layouts:Layouts) : Command
         data object Reset : Command
         data object Retry : Command
         data class Barrier(val completed: CompletableDeferred<Unit>) : Command
@@ -44,6 +45,20 @@ class DashboardController(private val repository: LayoutRepository, scope: Corou
                 Command.Session -> mutableState.value = mutableState.value.let {
                     it.copy(home = it.home.copy(settingsOpen = false, editing = false, placementError = null))
                 }
+                is Command.Restore -> {
+                    val before=mutableState.value
+                    if(before.storage.canEdit) {
+                        try {
+                            com.jarvis.interfaceapp.workspace.validateLayouts(command.layouts)
+                            mutableState.value=before.copy(storage=StorageState(SavePhase.SAVING,canEdit=false))
+                            repository.save(command.layouts)
+                            mutableState.value=DashboardUiState(before.home.copy(layouts=command.layouts,editing=false,placementError=null),StorageState(SavePhase.SAVED,canEdit=true,durable=true))
+                        } catch(e:Exception) {
+                            if(e is CancellationException)throw e
+                            mutableState.value=before.copy(storage=before.storage.copy(phase=SavePhase.ERROR,failure=StorageFailure.RESET))
+                        }
+                    }
+                }
                 Command.Reset -> resetNow()
                 is Command.Barrier -> command.completed.complete(Unit)
                 Command.Retry -> if (mutableState.value.storage.failure == StorageFailure.READ) load()
@@ -53,6 +68,7 @@ class DashboardController(private val repository: LayoutRepository, scope: Corou
     }
     fun dispatch(action: HomeAction) { commands.trySend(Command.Action(action)).getOrThrow() }
     fun startSession() { commands.trySend(Command.Session).getOrThrow() }
+    fun restore(layouts:Layouts) { commands.trySend(Command.Restore(layouts)).getOrThrow() }
     fun reset() { commands.trySend(Command.Reset).getOrThrow() }
     fun retry() { commands.trySend(Command.Retry).getOrThrow() }
 
