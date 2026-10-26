@@ -1,0 +1,62 @@
+{
+  "module": "INTERFACE",
+  "mission": "FUSION-02",
+  "branch": "feat/fusion-02-interface",
+  "base": "1d0a89f3d92cba64122db08cc7b326239f85c08d",
+  "headResolution": "git rev-parse HEAD (code SHA recorded after validation)",
+  "primary": {
+    "repository": "bubth720/JARVIS-INTERFACE",
+    "branch": "fix/athena-premium-default",
+    "commit": "1d0a89f3d92cba64122db08cc7b326239f85c08d"
+  },
+  "alternatives": [
+    {
+      "branch": "feat/ui-03-delivery",
+      "commit": "0869b3959d3636deab3c938e6cb98b7e555f19af",
+      "relation": "ancestor of base"
+    },
+    {
+      "branch": "feat/interface-final-01",
+      "commit": "db459ba388a3fea992d80320c3989be0edda8500",
+      "relation": "direct parent of base"
+    }
+  ],
+  "consumed": [],
+  "readOnlyReferences": [
+    {
+      "repository": "bubth720/JAVIS-Local-v2",
+      "commit": "36761cea101b5f88b87cd4136dc075d28a1adb96",
+      "path": "docs/fusion-01/CONVERSATION-DESIGN.md",
+      "sha256": "c9e46521cd5186e18d8c40d931791c2675522e04498c3629d5595466e377dc2e"
+    }
+  ],
+  "issues": [
+    {
+      "url": "https://github.com/bubth720/JARVIS-UNIFIED/issues/5",
+      "bodySha256": "4245119987d47e975d76244d99695f866e769272d80db5039960d457eec9ec0e"
+    },
+    {
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/issues/6",
+      "bodySha256": "394d9ca7f70367ba3db23384075a3341d7f2ff35bc0d45887558230cc6d30e26"
+    },
+    {
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/issues/4",
+      "bodySha256": "7a47021ef4d680ebca66fb1cffd3b61edb57d586aaa2cbd1e0eabc792c262e42"
+    }
+  ],
+  "runtime": {
+    "minSdk": 26,
+    "contract": "local presentation proposal /2; UI03 unchanged external contract",
+    "dataSchema": "dashboard JSON V1 unchanged; workspace V1 unchanged",
+    "ipc": "DISABLED",
+    "siblingRepositoriesModified": false,
+    "privateArtPublished": false
+  },
+  "dependencies": {
+    "gradle": "distributionBase=GRADLE_USER_HOME\ndistributionPath=wrapper/dists\ndistributionSha256Sum=20f1b1176237254a6fc204d8434196fa11a4cfb387567519c61556e8710aed78\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-8.13-bin.zip\nnetworkTimeout=10000\nvalidateDistributionUrl=true\nzipStoreBase=GRADLE_USER_HOME\nzipStorePath=wrapper/dists\n",
+    "versionsTomlSha256": "808a3ebcfe393e42a0b4addcccd2aa78f96406cc936948810d527dcd68d4ccce",
+    "newDependencies": []
+  },
+  "remoteAudit": "evidence/remote-refs.json",
+  "ciAudit": "evidence/upstream-ci.json"
+}

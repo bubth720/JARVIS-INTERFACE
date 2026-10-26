@@ -12,9 +12,15 @@ data class ContentClientState(val link:CoreTextLink=CoreTextLink.UNAVAILABLE,
     val text:String="",val phase:String="CORE NON CONNECTÉ · contrat de contenu/transport non approuvé",
     val toolsPending:List<String> = emptyList())
 
+/** Local consumer limits; does not negotiate or amend an external wire contract. */
+data class ContentClientBudget(val questionBytes:Int=16*1024,val chunkBytes:Int=16*1024) {
+    init {require(questionBytes in 1..16*1024 && chunkBytes in 1..16*1024)}
+    companion object {val Fusion02Review=ContentClientBudget(questionBytes=1024,chunkBytes=4096)}
+}
+
 /** UI-dispatcher confined prototype. No real-CORE implementation is supplied or activated.
  * CORE metadata alone can never create assistant content or attest native release. */
-class CoreConversationClientAdapter(private val transport:CoreConversationTransport,private val scope:CoroutineScope) {
+class CoreConversationClientAdapter(private val transport:CoreConversationTransport,private val scope:CoroutineScope,private val budget:ContentClientBudget=ContentClientBudget()) {
     private val mutable=MutableStateFlow(ContentClientState(transport.connection.value,transport.origin))
     val state=mutable.asStateFlow()
     private var closed=false
@@ -53,7 +59,7 @@ class CoreConversationClientAdapter(private val transport:CoreConversationTransp
         if(text.length !in 1..16*1024)return false
         if(closed || streamClosed || text.isBlank() || mutable.value.busy || awaiting || mutable.value.link!=CoreTextLink.READY ||
             transport.origin!=CoreTextOrigin.LABORATORY) return false
-        val submission=try { SubmitUserText(UUID.randomUUID().toString(),text) } catch(_:Exception) { return false }
+        val submission=try { textBytes(text,budget.questionBytes);SubmitUserText(UUID.randomUUID().toString(),text) } catch(_:Exception) { return false }
         awaiting=true;terminal=false;cancelled=false;lastSequence=0;totalBytes=0;chunkCount=0;early.clear();ordered.clear();seen.clear()
         mutable.update { it.copy(key=null,busy=true,text="",toolsPending=emptyList(),phase="LAB · attente ACK, aucun CORE connecté") }
         localScope.launch {
@@ -64,7 +70,7 @@ class CoreConversationClientAdapter(private val transport:CoreConversationTransp
                 require(ack.submissionId==submission.submissionId && ack.key !in acknowledgedKeys && acknowledgedKeys.size<128)
                 acknowledgedKeys.add(ack.key)
                 mutable.update { it.copy(key=ack.key,phase="LAB · ACK corrélé, attente du contenu") }
-                if(cancelled && !transport.stop(ack.key)) unknown("Arrêt logique non confirmé")
+                if(cancelled) stopWithDeadline(ack.key)
             } catch(e:TimeoutCancellationException) { unknown("ACK expiré ; aucun redémarrage présumé sûr") }
             catch(e:CancellationException) { throw e }
             catch(_:Exception) { unknown("ACK invalide ou perdu") }
@@ -91,7 +97,9 @@ class CoreConversationClientAdapter(private val transport:CoreConversationTransp
         lastSequence=event.sequence;seen.add(event.eventId);while(seen.size>256)seen.remove(seen.first())
         when(val body=event.body) {
             is ContentBody.AssistantTextChunk -> if(!cancelled) {
-                totalBytes+=textBytes(body.text,16*1024);chunkCount++
+                val bytes=runCatching {textBytes(body.text,budget.chunkBytes)}.getOrNull()
+                if(bytes==null) {unknown("Chunk hors budget du consommateur");return}
+                totalBytes+=bytes;chunkCount++
                 if(totalBytes>256*1024 || chunkCount>256) unknown("Budget de contenu dépassé")
                 else mutable.update { it.copy(text=it.text+body.text,phase="LAB · contenu de test, aucune inférence") }
             }
@@ -116,10 +124,16 @@ class CoreConversationClientAdapter(private val transport:CoreConversationTransp
     fun cancel() {
         if(!mutable.value.busy || mutable.value.link==CoreTextLink.UNKNOWN) return
         cancelled=true;mutable.update { it.copy(phase="Arrêt demandé · attente confirmation logique") }
-        mutable.value.key?.let { key -> localScope.launch {
-            try { if(!transport.stop(key)) unknown("Arrêt non confirmé") }
-            catch(e:CancellationException) { throw e } catch(_:Exception) { unknown("Port d’arrêt indisponible") }
-        } }
+        mutable.value.key?.let { key -> localScope.launch { stopWithDeadline(key) } }
+    }
+    private suspend fun stopWithDeadline(key:ContentKey) {
+        try {
+            val accepted=withTimeout(5000) { transport.stop(key) }
+            if(!accepted && !terminal) unknown("Arrêt non confirmé")
+        } catch(_:TimeoutCancellationException) {
+            if(!terminal) unknown("Délai d’arrêt expiré ; fin effective inconnue")
+        } catch(e:CancellationException) { throw e }
+        catch(_:Exception) { if(!terminal) unknown("Port d’arrêt indisponible") }
     }
     private fun unknown(message:String) { if(closed)return;ordered.clear();early.clear();mutable.update { it.copy(link=CoreTextLink.UNKNOWN,busy=true,phase="$message · nouveau lancement bloqué") } }
     fun close() { closed=true;ownedJob.cancel();transport.close();cancelled=true;terminal=true;early.clear();ordered.clear();mutable.value=ContentClientState(link=CoreTextLink.DISABLED,phase="Banc fermé, contenu RAM effacé") }

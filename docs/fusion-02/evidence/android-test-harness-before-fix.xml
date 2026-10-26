@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.jarvis.interfaceapp.avatar.v2.AvatarV2PreviewInteractionTest" tests="8" failures="3" errors="0" skipped="0" time="97.123" timestamp="2026-10-26T07:33:29" hostname="localhost">
+  <properties>
+    <property name="device" value="emulator-5554 - 8.0.0" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="comparisonRecreatesReleasedRendererAndCapturesActualComposeDemo" classname="com.jarvis.interfaceapp.avatar.v2.AvatarV2PreviewInteractionTest" time="15.92" />
+  <testcase name="unsupportedStateShowsExplicitErrorAndDoesNotChangeRenderedState" classname="com.jarvis.interfaceapp.avatar.v2.AvatarV2PreviewInteractionTest" time="8.885" />
+  <testcase name="explicitConfirmationRequiredAndApplicationIsSessionOnly" classname="com.jarvis.interfaceapp.avatar.v2.AvatarV2PreviewInteractionTest" time="7.928" />
+  <testcase name="defaultShowsNoConnectionAndNoReadyClaims" classname="com.jarvis.interfaceapp.fusion.FusionInteractionTest" time="16.371" />
+  <testcase name="committingSimulationDoesNotWriteFilesOrConsent" classname="com.jarvis.interfaceapp.fusion.FusionInteractionTest" time="5.513">
+    <failure>java.io.FileNotFoundException: /data/user/0/com.jarvis.interfaceapp/files/datastore/workspace-v1.json (No such file or directory)
+at java.io.FileInputStream.open0(Native Method)
+at java.io.FileInputStream.open(FileInputStream.java:200)
+at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:150)
+at kotlin.io.FilesKt__FileReadWriteKt.readBytes(FileReadWrite.kt:69)
+at com.jarvis.interfaceapp.fusion.FusionInteractionTest.committingSimulationDoesNotWriteFilesOrConsent(FusionInteractionTest.kt:69)
+</failure>
+  </testcase>
+  <testcase name="cancellationDoesNotCommitAndRotationKeepsDraft" classname="com.jarvis.interfaceapp.fusion.FusionInteractionTest" time="10.207">
+    <failure>java.lang.AssertionError: Semantic Node has no parent layout with a Scroll SemanticsAction
+at androidx.compose.ui.test.ActionsKt.scrollToNode(Actions.kt:98)
+at androidx.compose.ui.test.ActionsKt.performScrollTo(Actions.kt:83)
+at com.jarvis.interfaceapp.fusion.FusionInteractionTest.click(FusionInteractionTest.kt:26)
+at com.jarvis.interfaceapp.fusion.FusionInteractionTest.cancellationDoesNotCommitAndRotationKeepsDraft(FusionInteractionTest.kt:52)
+</failure>
+  </testcase>
+  <testcase name="portraitLandscapeRemainsScrollableAndAccessible" classname="com.jarvis.interfaceapp.fusion.FusionInteractionTest" time="13.511">
+    <failure>java.lang.AssertionError: Semantic Node has no parent layout with a Scroll SemanticsAction
+at androidx.compose.ui.test.ActionsKt.scrollToNode(Actions.kt:98)
+at androidx.compose.ui.test.ActionsKt.performScrollTo(Actions.kt:83)
+at com.jarvis.interfaceapp.fusion.FusionInteractionTest.click(FusionInteractionTest.kt:26)
+at com.jarvis.interfaceapp.fusion.FusionInteractionTest.portraitLandscapeRemainsScrollableAndAccessible(FusionInteractionTest.kt:64)
+</failure>
+  </testcase>
+  <testcase name="exactConfirmationAndUnknownAreClearlyLabOnly" classname="com.jarvis.interfaceapp.fusion.FusionInteractionTest" time="9.772" />
+</testsuite>
