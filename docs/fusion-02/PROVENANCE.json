@@ -3,7 +3,7 @@
   "mission": "FUSION-02",
   "branch": "feat/fusion-02-interface",
   "base": "1d0a89f3d92cba64122db08cc7b326239f85c08d",
-  "headResolution": "git rev-parse HEAD (code SHA recorded after validation)",
+  "headResolution": "git rev-parse HEAD; later commits document validation only",
   "primary": {
     "repository": "bubth720/JARVIS-INTERFACE",
     "branch": "fix/athena-premium-default",
@@ -58,5 +58,6 @@
     "newDependencies": []
   },
   "remoteAudit": "evidence/remote-refs.json",
-  "ciAudit": "evidence/upstream-ci.json"
+  "ciAudit": "evidence/upstream-ci.json",
+  "validatedCodeCommit": "5534f2593108fa062a1b4b9b1beff23ebc91a1fd"
 }

@@ -61,3 +61,11 @@ pas être utilisé comme autorité ou journal anti-rejeu à lui seul.
 
 Binder, AIDL, service exporté, accès réseau, permissions, partage de mémoire ou
 identité ne sont ni ajoutés ni activés. Le pilote multimodule Android n'est pas GO.
+
+Précisions de revue : les offsets du laboratoire sont des indices UTF-16 de la
+chaîne Kotlin, le hash porte sur ses octets UTF-8. Une future citation wire doit
+porter explicitement son unité, jamais convertir silencieusement offsets/pages.
+La fraîcheur de capacité est évaluée dans le domaine monotone local de l'adaptateur
+vérifié : `observedAtMs` doit être estampillé à la réception de preuve authentifiée,
+jamais comparé aveuglément à une horloge étrangère. Ces exigences ne qualifient pas
+un transport absent.

@@ -120,8 +120,14 @@ figurent dans [VALIDATION.json](VALIDATION.json).
 - Première campagne Android : 41 tests exécutés, 40 réussis, un crash Compose
   `SlotWriter.moveSlotGapTo` lors de la destruction de l'ancien écran de comparaison
   V2 ; campagne interrompue, 32 scénarios non exécutés. Trace XML conservée.
-  Cet écran et le moteur n'avaient pas été modifiés. Investigation ciblée puis
-  reprise complète requises ; le crash n'est pas effacé du bilan.
+  Cet écran et le moteur n'avaient pas été modifiés. Les trois tests V2 ont réussi
+  lors de l'investigation ciblée ; reprise complète effectuée séparément. Le crash
+  n'est pas effacé du bilan et aucune correction interne Compose n'est revendiquée.
+- Investigation ciblée : huit tests, cinq réussis et trois erreurs de test Fusion
+  (snapshot d'un fichier DataStore légitimement absent au premier lancement ;
+  performScrollTo appliqué à des boutons de dialogue sans parent défilable).
+  Corrections : vérifier l'absence inchangée du fichier et cliquer directement les
+  boutons modaux ; aucune assertion métier supprimée.
 - Les captures publiques de cette mission montrent seulement les écrans synthétiques
   Fusion ; aucun portrait n'est affiché sur ces écrans ni capturé dans ce dossier.
 - Compilation d'un APK instrumenté n'est pas comptée comme exécution Android.
@@ -148,3 +154,78 @@ Prochaine action : revue de la PR brouillon et des captures locales ; faire livr
 les gates producteurs et approuver séparément le transport avant tout vrai chat.
 Aucune fusion main, activation sensible, installation personnelle, migration ou
 publication d'art privé. Aucun ANDROID_MULTI_MODULE_GO.
+
+## Publication / PR
+
+Les commits sont destinés uniquement à la branche dédiée. La création distante
+via GitHub CLI/API est bloquée : `gh api repos/bubth720/JARVIS-INTERFACE` renvoie
+Forbidden et le proxy refuse CONNECT vers api.github.com avec HTTP403. La lecture
+et le push Git HTTPS restent disponibles. Aucun token extrait ni route contournée.
+Le [texte de PR brouillon](PR-DRAFT.md) est prêt ; la PR n'est pas déclarée créée.
+Après publication, ouvrir la comparaison
+[base premium → branche FUSION](https://github.com/bubth720/JARVIS-INTERFACE/compare/fix/athena-premium-default...feat/fusion-02-interface?expand=1)
+et choisir **Create draft pull request**. Aucune PR non brouillon ou fusion autorisée.
+
+## Résultats locaux définitifs
+
+Code validé : `5534f2593108fa062a1b4b9b1beff23ebc91a1fd` ; les commits ultérieurs
+portent uniquement sur la documentation et les preuves de réception.
+
+`./scripts/check.sh connectedDebugAndroidTest -PathenaPrivateAssets=PRIVATE_ASSETS --no-daemon`
+termine en **8 min 2 s** : **215 tests JVM, 73 tests Android, zéro échec/erreur/ignoré**.
+Lint : `No issues found.` Les 73 comprennent les 68 scénarios historiques et les cinq
+nouveaux scénarios Fusion. Les trois tests historiques V2 ont donc réussi dans la
+reprise complète ; le crash initial reste une limite observée, pas un défaut corrigé
+par modification de moteur. **9 tests Python du packager réussis.**
+
+Les quatre tâches de build demandées sont PASS, APK debug et APK instrumenté présents.
+Émulateur API26 logiciel, mode avion vérifié ; aucun téléphone. Contrôles de portée :
+105 fichiers existants protégés, DataStore V1 inchangé, fixture CORE absente du DEX.
+APK minSdk26 / target35 vérifié au binaire, pas de permission INTERNET. Les bibliothèques
+Kotlin/Compose/Material/DataStore et le wrapper restent exactement ceux du parent.
+
+| Lot | Verdict de cette livraison |
+| --- | --- |
+| I0 | PASS : ancestry, branche, provenance et gel |
+| I1 | PASS façade locale ; aucune preuve distante de production |
+| I2 | PASS laboratoire explicite ; SAF/outils réels BLOCKED |
+| I3 | PASS client passif/tests/arrêt borné ; transport signé BLOCKED |
+| I4 | PASS préservation privée ; rig/lip-sync BLOCKED |
+| I5 | PASS suites émulateur et JVM ; validation physique/TalkBack réel NOT_RUN |
+
+Les éventuelles réexécutions de capture ne sont pas additionnées au nombre de tests
+uniques de la suite. `VALIDATION.json` distingue campagne finale et incidents initiaux.
+
+### Captures et accessibilité de laboratoire
+
+[Galerie synthétique](evidence/captures/index.html),
+[non connecté](evidence/captures/disconnected.png),
+[ACK perdu](evidence/captures/unknown.png),
+[portrait après rotation](evidence/captures/portrait.png).
+Ces captures viennent de l'application réelle, aucun art privé n'y est visible.
+Campagne de capture : 5/5 réussis, 79,692 s, sans addition aux 73 tests uniques.
+Préparation initiale refusée car l'APK instrumenté avait été retiré par le nettoyage
+Gradle ; réinstallation sur notre émulateur puis reprise, aucun test compté sur
+cette erreur de préparation. Trace conservée.
+
+Texte système à **130 %**, rotation portrait/paysage, confirmation/annulation et
+sémantique de contrôle : un scénario supplémentaire exécuté, **1/1 réussi** en
+37,33 s. Échelle restaurée ensuite. Cela ne constitue pas un essai du lecteur
+TalkBack : cette validation et les appareils physiques restent NOT_RUN.
+Le build public sans pack privé réussit en **56 s**, absence du ZIP privé vérifiée
+après le build privé. Les APK publics et privés ne sont pas interchangeables comme
+preuves de présence des portraits.
+
+### Véritable arrêt de processus
+
+[evidence/process-restart.json](evidence/process-restart.json) : PID4110 puis4331,
+arrêt forcé vérifié, laboratoire fermé après retour dans Studio/Fusion, aucune
+commande rejouée, portrait premium prêt et octets DataStore identiques. Le fichier
+dashboard JSON V1 a la même empreinte ; workspace-v1.json était absent et reste
+absent (aucune préférence non initiale enregistrée dans cette fixture).
+Deux tentatives de sonde ont corrigé leurs préconditions : faire défiler le statut
+LAB hors fenêtre, et traiter correctement l'erreur `cat` d'un fichier optionnel
+absent renvoyée sur stdout par adb. Traces conservées ; aucune erreur de stockage
+applicative ni migration introduite. La preuve finale reprend le laboratoire déjà
+ouvert avant un nouvel arrêt forcé réel ; elle ne confond pas recréation et mort du
+processus. Les logs/scénarios intermédiaires ne sont pas comptés comme tests réussis.

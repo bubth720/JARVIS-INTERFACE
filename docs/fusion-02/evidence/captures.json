@@ -1,0 +1,12 @@
+{
+  "tests": 5,
+  "failures": 0,
+  "source": "actual Android app root captures",
+  "privateArtVisible": false,
+  "captureGuard": "assert avatar-renderer absent; Fusion screen only",
+  "sha256": {
+    "unknown.png": "40ac1cd85d889a3f18f6684ed015783d6a5b9323bc7692a2d52ca11b7ef1d3c5",
+    "disconnected.png": "35cea3192bb6ac5f25bfd456ae8d7fa88d0c5b4c1496b6ffdc07a2f1260ea21d",
+    "portrait.png": "f185e0e1499274e6f24edc3c3318035435e0b0d52c8dcd70ebc831ed1f5c221d"
+  }
+}

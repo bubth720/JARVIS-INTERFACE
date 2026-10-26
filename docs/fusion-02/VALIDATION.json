@@ -1,0 +1,121 @@
+{
+  "module": "INTERFACE",
+  "mission": "FUSION-02",
+  "branch": "feat/fusion-02-interface",
+  "base": "1d0a89f3d92cba64122db08cc7b326239f85c08d",
+  "validatedCodeCommit": "5534f2593108fa062a1b4b9b1beff23ebc91a1fd",
+  "observedAt": "2026-10-26T07:42:19.926250+00:00",
+  "verdict": "PARTIAL",
+  "jvm": {
+    "tests": 215,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidEmulator": {
+    "tests": 73,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "python": {
+    "tests": 9,
+    "failures": 0
+  },
+  "lint": "No issues found.",
+  "buildTasks": {
+    "assembleDebug": "PASS",
+    "testDebugUnitTest": "PASS",
+    "lintDebug": "PASS",
+    "assembleDebugAndroidTest": "PASS",
+    "connectedDebugAndroidTest": "PASS"
+  },
+  "privateBuildDuration": "8m2s",
+  "privateApkSha256": "ed322b808f11f0286dae0e60f12d33d14e2dc04f4cf6363cb90da080a8566c86",
+  "environment": {
+    "api": 26,
+    "serial": "emulator-5554",
+    "renderer": "software",
+    "airplaneMode": true,
+    "physicalDevices": []
+  },
+  "notRun": [
+    "API24",
+    "API25",
+    "API35 instrumentation",
+    "physical POCO X8 Pro",
+    "physical Redmi Pad SE",
+    "TalkBack reader",
+    "real signed transport",
+    "CORE/NEXUS/SERVICES end-to-end",
+    "physical performance"
+  ],
+  "gates": {
+    "realChat": "BLOCKED",
+    "realSafExport": "BLOCKED",
+    "articulatedRigLipSync": "BLOCKED",
+    "androidMultiModuleGo": false
+  },
+  "incidents": {
+    "jvmInitial": {
+      "tests": 2,
+      "failures": 2,
+      "corrected": "stop deadline"
+    },
+    "androidInitial": {
+      "tests": 41,
+      "passed": 40,
+      "failed": 1,
+      "notExecuted": 32,
+      "cause": "Compose SlotWriter destruction crash; not reproduced in targeted and final suite"
+    },
+    "androidHarness": {
+      "tests": 8,
+      "passed": 5,
+      "failed": 3,
+      "corrected": "handle absent default store and modal buttons without scroll parent"
+    }
+  },
+  "publicBuild": {
+    "status": "PASS",
+    "duration": "56s",
+    "privateArtBundled": false,
+    "apkSha256": "52b2815f02aee9ab890ca26fd91cb1b631be9f4a11304da8aa317b789dd2c567",
+    "command": "./scripts/check.sh --no-daemon; check_athena_distribution.py"
+  },
+  "captureCampaign": {
+    "tests": 5,
+    "failures": 0,
+    "durationSeconds": 79.692,
+    "privateArtVisible": false,
+    "initialPreparation": "instrumentation package absent after Gradle cleanup; reinstalled on owned emulator, no tests counted for failed preparation"
+  },
+  "largeFontCampaign": {
+    "fontScale": 1.3,
+    "tests": 1,
+    "failures": 0,
+    "durationSeconds": 37.33,
+    "scenario": "portraitLandscapeRemainsScrollableAndAccessible",
+    "TalkBackReader": "NOT_RUN"
+  },
+  "prDraft": {
+    "state": "PREPARED_NOT_CREATED",
+    "reason": "api.github.com HTTPS CONNECT blocked HTTP403",
+    "body": "PR-DRAFT.md"
+  },
+  "processRestart": {
+    "emulator": "API26 software emulator",
+    "oldPid": "4110",
+    "newPid": "4331",
+    "realForceStop": true,
+    "labClosedAfterRestart": true,
+    "noCommandsReplayed": true,
+    "premiumReadyAfterRestart": true,
+    "dataStoreUnchanged": true,
+    "sha256": {
+      "dashboard.json": "ca93c802fcfa71da7d3b3a831a74314755f7cb71da3dd2f4f1ea9a4f42bab099",
+      "workspace-v1.json": null
+    },
+    "physicalDevice": false
+  }
+}

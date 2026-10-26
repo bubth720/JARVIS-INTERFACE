@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" tests="21" skipped="0" failures="0" errors="0" timestamp="2026-10-25T22:24:23.002Z" hostname="d5616293dcbd" time="0.208">
+  <properties/>
+  <testcase name="cancellationBeforeAckStopsTheAckedRequest" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.02"/>
+  <testcase name="validAckChunksAndTerminalAreCorrelated" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.006"/>
+  <testcase name="resourceUnknownAndConnectionLossNeverLookFinished" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.009"/>
+  <testcase name="reorderedChunksAreBufferedWithinBoundAndAppliedOnce" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.004"/>
+  <testcase name="reusedAckKeyAndWrongSubmissionAckAreRejected" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.008"/>
+  <testcase name="malformedEnvelopesAreRefusedAtBoundary" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.001"/>
+  <testcase name="boundedReorderQueueAndUtf8BudgetsAreEnforced" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.018"/>
+  <testcase name="fusionReviewLimitsRejectUtf8QuestionAndOversizedChunk" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.01"/>
+  <testcase name="silentStopAfterEarlyCancellationAlsoTimesOut" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.026"/>
+  <testcase name="duplicateAndPostTerminalMessagesAreIgnored" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.003"/>
+  <testcase name="readyAnnouncementWithoutSupportedOriginIsNotAuthorization" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.005"/>
+  <testcase name="toolsAreOnlyPresentedAndNeverExecute" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.006"/>
+  <testcase name="absentOwnerIsUnavailableAndCannotSubmit" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.006"/>
+  <testcase name="cancellationDropsContentAndWaitsForLogicalConfirmation" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.008"/>
+  <testcase name="earlyContentIsNotLostOrAcceptedWithoutMatchingAck" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.004"/>
+  <testcase name="silentStopTimesOutToUnknownInsteadOfWaitingForever" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.008"/>
+  <testcase name="metadataCompletionAloneDoesNotInventAnAssistantResponse" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.002"/>
+  <testcase name="ackTimeoutBlocksRestartEvenAfterConnectionRestores" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.006"/>
+  <testcase name="aggregateTextIsBoundedBeforeAppendedToState" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.046"/>
+  <testcase name="wrongSessionRequestOrGenerationCannotInjectText" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.003"/>
+  <testcase name="closeRevokesPendingAckAndClearsEphemeralContent" classname="com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

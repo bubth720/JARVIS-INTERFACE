@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-10-25T22:24:22.248Z" hostname="d5616293dcbd" time="0.111">
+  <properties/>
+  <testcase name="closeErasesFixtureGrantAndDraft" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.077"/>
+  <testcase name="unavailableByDefaultCannotAct" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.014"/>
+  <testcase name="revocationAfterCommitDoesNotInventRollback" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.001"/>
+  <testcase name="changedDestinationOrDigestIsRejected" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.009"/>
+  <testcase name="confirmationIsExactAndConsumedOnce" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.001"/>
+  <testcase name="cancelledReviewCannotBeReplayed" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.0"/>
+  <testcase name="lostAckStaysUnknownAndCannotRetry" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.0"/>
+  <testcase name="noConfirmationNoCommit" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.001"/>
+  <testcase name="revocationBeforeCommitPreventsEffect" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.0"/>
+  <testcase name="expiredConfirmationCannotCommit" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.001"/>
+  <testcase name="decimalPreviewIsExactWithoutExecutingServices" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.0"/>
+  <testcase name="syntheticCitationHasVerifiableVersionOffsetsAndHash" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.001"/>
+  <testcase name="processReplacementHasNoCommandsToReplay" classname="com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
