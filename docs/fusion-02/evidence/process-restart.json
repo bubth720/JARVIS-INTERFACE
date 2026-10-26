@@ -1,0 +1,15 @@
+{
+  "emulator": "API26 software emulator",
+  "oldPid": "4110",
+  "newPid": "4331",
+  "realForceStop": true,
+  "labClosedAfterRestart": true,
+  "noCommandsReplayed": true,
+  "premiumReadyAfterRestart": true,
+  "dataStoreUnchanged": true,
+  "sha256": {
+    "dashboard.json": "ca93c802fcfa71da7d3b3a831a74314755f7cb71da3dd2f4f1ea9a4f42bab099",
+    "workspace-v1.json": null
+  },
+  "physicalDevice": false
+}

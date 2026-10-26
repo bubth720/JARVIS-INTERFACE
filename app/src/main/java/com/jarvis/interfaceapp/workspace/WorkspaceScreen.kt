@@ -38,7 +38,7 @@ fun WorkspaceScreen(controller:WorkspaceController,layouts:Layouts,restore:(Layo
         Text("Autonome · aucun module externe requis",style=MaterialTheme.typography.bodySmall)
         TextButton(onClick=onBack,modifier=Modifier.testTag("studio-back")) { Text("Retour au dashboard") }
         FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            listOf("Accueil","Avatar","Dispositions","Personnalité","Modules","Apparence","Historique").forEach { name ->
+            listOf("Accueil","Avatar","Dispositions","Personnalité","Modules","Fusion","Apparence","Historique").forEach { name ->
                 FilterChip(selected=tab==name,onClick={tab=name;notice=null},label={Text(name)},modifier=Modifier.testTag("studio-tab-$name"))
             }
         }
@@ -70,6 +70,7 @@ fun WorkspaceScreen(controller:WorkspaceController,layouts:Layouts,restore:(Layo
                 "Dispositions" -> LayoutLibrary(w,controller,layouts,restore) {notice=it}
                 "Personnalité" -> LocalPersonaEditor(w.persona,{next->controller.change { require(it.persona==w.persona) {"Préférences changées depuis l’aperçu"};it.copy(persona=next) }})
                 "Modules" -> ModuleManager(w.packages,controller)
+                "Fusion" -> com.jarvis.interfaceapp.fusion.FusionScreen()
                 "Apparence" -> AppearanceEditor(w.visual) { next->controller.change { it.copy(visual=mergeVisual(it.visual,w.visual,next)) } }
                 "Historique" -> HistoryPanel(w,controller)
             }

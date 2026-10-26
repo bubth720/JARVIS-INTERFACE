@@ -34,6 +34,8 @@ jobs:
           python3 -m unittest discover -s tools/avatar -p 'test_*.py' -v
       - name: Build APK, run JVM tests and Lint, compile instrumented APK
         run: ./scripts/check.sh --no-daemon
+      - name: Verify FUSION-02 preservation and fresh JVM results
+        run: python3 scripts/check_fusion02.py --results
       - name: Verify private Athena is absent from public APK
         run: python3 scripts/check_athena_distribution.py app/build/outputs/apk/debug/app-debug.apk
       - name: Verify CORE reference is not packaged
@@ -119,3 +121,11 @@ jobs:
           name: jarvis-athena-code-review
           if-no-files-found: error
           path: docs/athena-visible/
+
+      - name: Upload FUSION-02 public synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: jarvis-interface-fusion02-review
+          if-no-files-found: error
+          path: docs/fusion-02/

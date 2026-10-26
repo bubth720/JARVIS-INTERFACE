@@ -1,0 +1,561 @@
+[
+  {
+    "repository": "JARVIS-UNIFIED",
+    "run": "40214722427",
+    "url": "https://github.com/bubth720/JARVIS-UNIFIED/actions/runs/40214722427",
+    "steps": [],
+    "status": "UNKNOWN"
+  },
+  {
+    "repository": "JARVIS-NEXUS",
+    "run": "40115049468",
+    "url": "https://github.com/bubth720/JARVIS-NEXUS/actions/runs/40115049468",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-java@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Prepare pinned SERVICES parser sources (build time only)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run ./gradlew -PservicesSource=\"$RUNNER_TEMP/services-source\" test :nexus-cli:installDist :nexus-services-adapter:installDist --no-daemon",
+        "conclusion": "success"
+      },
+      {
+        "name": "Synthetic demo in two independent processes",
+        "conclusion": "success"
+      },
+      {
+        "name": "Encrypted synthetic backup and injected recovery failure",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-java@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-java@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run android-actions/setup-android@v3",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Run sdkmanager \"platforms;android-35\" \"build-tools;35.0.0\"",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "API24 library, host SQLite tests, instrumentation compile and Lint",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Run python3 tools/check-android-boundary.py",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Run actions/upload-artifact@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-java@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "status": "FAILURE"
+  },
+  {
+    "repository": "JARVIS-SERVICES",
+    "run": "40115305244",
+    "url": "https://github.com/bubth720/JARVIS-SERVICES/actions/runs/40115305244",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd",
+        "conclusion": "success"
+      },
+      {
+        "name": "SDK prerequisites",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build diagnostic APK",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build instrumentation APK",
+        "conclusion": "success"
+      },
+      {
+        "name": "Android Lint (no suppression or severity reduction)",
+        "conclusion": "success"
+      },
+      {
+        "name": "SERV-04A Android24 adapter regressions and library",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Compile shared and Android sources against API24 boot classes",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Artifact provenance",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Run actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961",
+        "conclusion": "success"
+      },
+      {
+        "name": "JVM regressions",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd",
+        "conclusion": "success"
+      },
+      {
+        "name": "SDK prerequisites",
+        "conclusion": "success"
+      },
+      {
+        "name": "Execute real Android instrumentation on an isolated CI emulator",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "status": "FAILURE"
+  },
+  {
+    "repository": "JAVIS-Local-v2",
+    "run": "40215415459",
+    "url": "https://github.com/bubth720/JAVIS-Local-v2/actions/runs/40215415459",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-java@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run gradle/actions/setup-gradle@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run android-actions/setup-android@v3",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Verify local lock and isolated dependency snapshots",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Real JVM producers, synthetic files and consent, no models",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Historical 501 cases plus 36 fixture cases, builds and Lint",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Compare executed cases with immutable baseline inventory",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Run actions/upload-artifact@v4",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Post Run gradle/actions/setup-gradle@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-java@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "status": "FAILURE"
+  },
+  {
+    "repository": "JAVIS-Local-v2",
+    "run": "40215604539",
+    "url": "https://github.com/bubth720/JAVIS-Local-v2/actions/runs/40215604539",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-java@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run gradle/actions/setup-gradle@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify local lock and isolated dependency snapshots",
+        "conclusion": "success"
+      },
+      {
+        "name": "Real JVM producers, synthetic files and consent, no models",
+        "conclusion": "success"
+      },
+      {
+        "name": "Pinned repository SDK tooling, after independent JVM checks",
+        "conclusion": "success"
+      },
+      {
+        "name": "Historical 501 cases plus 36 fixture cases, builds and Lint",
+        "conclusion": "success"
+      },
+      {
+        "name": "Compare executed cases with immutable baseline inventory",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/upload-artifact@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run gradle/actions/setup-gradle@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-java@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "status": "SUCCESS"
+  },
+  {
+    "repository": "JARVIS-LLM",
+    "run": "40214822563",
+    "url": "https://github.com/bubth720/JARVIS-LLM/actions/runs/40214822563",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Freeze existing runtime, models, catalogue, policy, JNI and wire contracts",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run bash tools/setup-cloud.sh",
+        "conclusion": "success"
+      },
+      {
+        "name": "Historical native tests without model or device",
+        "conclusion": "success"
+      },
+      {
+        "name": "JVM, simulated Android, ARM64 and Lint",
+        "conclusion": "success"
+      },
+      {
+        "name": "Actual APK signatures, permissions and alignment",
+        "conclusion": "success"
+      },
+      {
+        "name": "Collect real test results (no native readiness claim)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "status": "SUCCESS"
+  },
+  {
+    "repository": "JARVIS-INTERFACE",
+    "run": "40214158554",
+    "url": "https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40214158554",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961",
+        "conclusion": "success"
+      },
+      {
+        "name": "Install supported Android SDK packages",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify preserved UI-01 and V1 scope and pinned CORE test source",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify synthetic layered avatar assets",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify AVA-03 technical fixture and honest art status",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify AVA-04 privacy, scope and packager",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build APK, run JVM tests and Lint, compile instrumented APK",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify private Athena is absent from public APK",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify CORE reference is not packaged",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify APKs and executed JVM tests",
+        "conclusion": "success"
+      },
+      {
+        "name": "Prepare physical-device validation kit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload physical-device validation kit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Prepare avatar prototype kit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload avatar prototype kit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Prepare AVA-03 partial delivery kit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload AVA-03 partial delivery kit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload APKs",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload validation reports",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload INTERFACE-FINAL-01 review documentation",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload Athena code validation without private artwork",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "status": "SUCCESS"
+  }
+]

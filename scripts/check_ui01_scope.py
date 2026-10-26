@@ -2,10 +2,10 @@
 """Protect storage/avatar/permissions and pin CORE metadata test provenance. No network or source writes."""
 from pathlib import Path
 import subprocess,json,hashlib,sys,zipfile
-BASE='db459ba388a3fea992d80320c3989be0edda8500'
+BASE='1d0a89f3d92cba64122db08cc7b326239f85c08d'
 paths=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'--','app','gradle','settings.gradle.kts','build.gradle.kts'],text=True).splitlines()
-# Premium primary integration: explicit host/UI/build wiring only; engines, V1 codec, contracts and permissions stay pinned.
-allowed={'app/src/main/java/com/jarvis/interfaceapp/avatar/v2/AvatarV2Preview.kt','app/src/androidTest/java/com/jarvis/interfaceapp/avatar/v2/AvatarV2DashboardTest.kt','app/src/androidTest/java/com/jarvis/interfaceapp/StorageTestSupport.kt', 'app/src/main/java/com/jarvis/interfaceapp/workspace/WorkspaceScreen.kt', 'app/src/main/java/com/jarvis/interfaceapp/JarvisApplication.kt', 'app/src/main/java/com/jarvis/interfaceapp/ui/DashboardGrid.kt', 'app/src/main/java/com/jarvis/interfaceapp/avatar/AvatarDemo.kt', 'app/build.gradle.kts'}
+# FUSION-02: Studio entry and bounded stop client only; engines, V1 codec, contracts and permissions stay pinned.
+allowed={'app/src/main/java/com/jarvis/interfaceapp/workspace/WorkspaceScreen.kt','app/src/main/java/com/jarvis/interfaceapp/ui/chat/core/CoreConversationClientAdapter.kt','app/src/test/java/com/jarvis/interfaceapp/ui/chat/core/CoreConversationClientTest.kt'}
 for name in paths:
     if name not in allowed:assert Path(name).read_bytes()==subprocess.check_output(['git','show',BASE+':'+name]),name
 r=json.loads(Path('docs/intensive-2026-10-22/CORE02-REFERENCE.json').read_text())

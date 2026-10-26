@@ -18,13 +18,13 @@ class CoreConversationClientTest {
         val stream=MutableSharedFlow<CoreMessageEnvelope>(extraBufferCapacity=64)
         override val updates=stream.asSharedFlow()
         var key=ContentKey(UUID.randomUUID().toString(),UUID.randomUUID().toString(),0)
-        var ackDelay=0L;var refused=false;var badAck=false;var early=false;var stops=0;var stopAccepted=true
+        var stopDelay=0L;var ackDelay=0L;var refused=false;var badAck=false;var early=false;var stops=0;var stopAccepted=true
         override suspend fun submit(value:SubmitUserText):ContentAck? {
             if(early) { emit(1,ContentBody.AssistantTextChunk("précoce"));yield() }
             delay(ackDelay)
             return if(refused) null else ContentAck(if(badAck)UUID.randomUUID().toString() else value.submissionId,key)
         }
-        override suspend fun stop(key:ContentKey):Boolean { stops++;return stopAccepted }
+        override suspend fun stop(key:ContentKey):Boolean { stops++;delay(stopDelay);return stopAccepted }
         suspend fun emit(sequence:Long,body:ContentBody,key:ContentKey=this.key,eventId:String=UUID.randomUUID().toString()) {
             stream.emit(CoreMessageEnvelope(eventId,key,sequence,body));yield()
         }
@@ -111,6 +111,22 @@ class CoreConversationClientTest {
     @Test fun closeRevokesPendingAckAndClearsEphemeralContent()=runTest {
         val p=Port().also { it.ackDelay=100 };val c=CoreConversationClientAdapter(p,this);runCurrent();c.submit("public");runCurrent();c.close();advanceUntilIdle()
         assertEquals(CoreTextLink.DISABLED,c.state.value.link);assertNull(c.state.value.key);assertEquals("",c.state.value.text);assertFalse(c.submit("nouveau"))
+    }
+    @Test fun silentStopTimesOutToUnknownInsteadOfWaitingForever()=runTest {
+        val p=Port().also {it.stopDelay=20_000};val c=CoreConversationClientAdapter(p,this);runCurrent()
+        c.submit("public");runCurrent();c.cancel();runCurrent();advanceTimeBy(5001);runCurrent()
+        assertEquals(CoreTextLink.UNKNOWN,c.state.value.link);assertFalse(c.submit("retry"));c.close()
+    }
+    @Test fun silentStopAfterEarlyCancellationAlsoTimesOut()=runTest {
+        val p=Port().also {it.ackDelay=100;it.stopDelay=20_000};val c=CoreConversationClientAdapter(p,this);runCurrent()
+        c.submit("public");runCurrent();c.cancel();advanceTimeBy(5200);runCurrent()
+        assertEquals(CoreTextLink.UNKNOWN,c.state.value.link);c.close()
+    }
+    @Test fun fusionReviewLimitsRejectUtf8QuestionAndOversizedChunk()=runTest {
+        val p=Port();val c=CoreConversationClientAdapter(p,this,ContentClientBudget.Fusion02Review);runCurrent()
+        assertFalse(c.submit("é".repeat(513)));assertTrue(c.submit("public"));runCurrent()
+        p.emit(1,ContentBody.AssistantTextChunk("a".repeat(4097)));runCurrent()
+        assertEquals(CoreTextLink.UNKNOWN,c.state.value.link);assertEquals("",c.state.value.text);c.close()
     }
     @Test fun malformedEnvelopesAreRefusedAtBoundary() {
         assertThrows(Exception::class.java) { ContentKey("bad",id(),0) }

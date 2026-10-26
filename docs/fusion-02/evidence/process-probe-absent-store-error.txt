@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/tmp/fusion02-process-proof.py", line 28, in <module>
+    before=files();c.stop();c.start();c.wait_node('athena-ready');new=c.text('shell','pidof',m.PACKAGE);assert old!=new;studio()
+           ^^^^^^^
+  File "/tmp/fusion02-process-proof.py", line 25, in files
+    if p.returncode==0:json.loads(p.stdout);r[name]=hashlib.sha256(p.stdout).hexdigest()
+                       ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)

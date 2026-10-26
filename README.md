@@ -339,3 +339,10 @@ plus de rendu normal par défaut. Le livrable visuel est l'APK privé avec ses r
 le build public/CI n'incorpore aucun média privé et demande un import s'il n'en dispose pas.
 [Cause exacte, intégration, séparation privée/publique et compilation](docs/athena-visible/DELIVERY.md).
 Les portraits sont réels et de haute qualité, mais le rig articulé définitif reste séparé.
+
+## INTERFACE FUSION-02
+
+Studio → Fusion : capacités NON_CONNECTÉ/UNKNOWN et laboratoire synthétique
+volontaire (citation, CSV, confirmation unique, révocation, ACK perdu). Aucun
+CORE/SERVICES/SAF réel activé. Le portrait premium privé reste préservé.
+[Rapport, provenance, tests et blocages](docs/fusion-02/REPORT.md).
