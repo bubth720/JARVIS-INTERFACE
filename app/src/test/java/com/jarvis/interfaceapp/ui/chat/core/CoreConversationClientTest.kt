@@ -128,6 +128,20 @@ class CoreConversationClientTest {
         p.emit(1,ContentBody.AssistantTextChunk("a".repeat(4097)));runCurrent()
         assertEquals(CoreTextLink.UNKNOWN,c.state.value.link);assertEquals("",c.state.value.text);c.close()
     }
+    @Test fun readyWithoutRecognizedOriginIsNeverProjectedReady()=runTest {
+        val p=Port().also { it.origin=CoreTextOrigin.NONE };val c=CoreConversationClientAdapter(p,this)
+        assertEquals(CoreTextLink.UNAVAILABLE,c.state.value.link);runCurrent()
+        p.health.value=CoreTextLink.UNKNOWN;runCurrent();p.health.value=CoreTextLink.READY;runCurrent()
+        assertEquals(CoreTextLink.UNAVAILABLE,c.state.value.link);assertFalse(c.submit("public"));c.close()
+    }
+    @Test fun reusedEventIdAtNewSequenceQuarantinesInsteadOfStalling()=runTest {
+        val p=Port();val c=CoreConversationClientAdapter(p,this);runCurrent();c.submit("public");runCurrent();val event=id()
+        p.emit(1,ContentBody.AssistantTextChunk("A"),eventId=event)
+        p.emit(2,ContentBody.AssistantTextChunk("B"),eventId=event);runCurrent()
+        assertEquals(CoreTextLink.UNKNOWN,c.state.value.link);assertEquals("A",c.state.value.text)
+        assertFalse(c.submit("retry"));p.emit(3,ContentBody.Completed);runCurrent()
+        assertEquals(CoreTextLink.UNKNOWN,c.state.value.link);c.close()
+    }
     @Test fun malformedEnvelopesAreRefusedAtBoundary() {
         assertThrows(Exception::class.java) { ContentKey("bad",id(),0) }
         assertThrows(Exception::class.java) { ContentKey(id(),id(),-1) }
