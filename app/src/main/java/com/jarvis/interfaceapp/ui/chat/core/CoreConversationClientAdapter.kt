@@ -21,7 +21,7 @@ data class ContentClientBudget(val questionBytes:Int=16*1024,val chunkBytes:Int=
 /** UI-dispatcher confined prototype. No real-CORE implementation is supplied or activated.
  * CORE metadata alone can never create assistant content or attest native release. */
 class CoreConversationClientAdapter(private val transport:CoreConversationTransport,private val scope:CoroutineScope,private val budget:ContentClientBudget=ContentClientBudget()) {
-    private val mutable=MutableStateFlow(ContentClientState(transport.connection.value,transport.origin))
+    private val mutable=MutableStateFlow(ContentClientState(if(transport.origin==CoreTextOrigin.LABORATORY) transport.connection.value else CoreTextLink.UNAVAILABLE,transport.origin))
     val state=mutable.asStateFlow()
     private var closed=false
     private var streamClosed=false
@@ -39,7 +39,7 @@ class CoreConversationClientAdapter(private val transport:CoreConversationTransp
     private val acknowledgedKeys=linkedSetOf<ContentKey>()
     private val jobs=listOf(localScope.launch {
         transport.connection.collect { link ->
-            if(mutable.value.link!=CoreTextLink.UNKNOWN) mutable.update { it.copy(link=link) }
+            if(mutable.value.link!=CoreTextLink.UNKNOWN) mutable.update { it.copy(link=if(transport.origin==CoreTextOrigin.LABORATORY) link else CoreTextLink.UNAVAILABLE) }
             if(mutable.value.busy && link!=CoreTextLink.READY) unknown("Connexion perdue ; état natif non attesté")
         }
     },localScope.launch {
@@ -80,7 +80,8 @@ class CoreConversationClientAdapter(private val transport:CoreConversationTransp
     }
     private fun accept(event:CoreMessageEnvelope) {
         val current=mutable.value
-        if(closed || terminal || current.link==CoreTextLink.UNKNOWN || event.key!=current.key || event.eventId in seen || event.sequence<=lastSequence) return
+        if(closed || terminal || current.link==CoreTextLink.UNKNOWN || event.key!=current.key || event.sequence<=lastSequence) return
+        if(event.eventId in seen) { unknown("Identifiant rejoué dans une nouvelle séquence");return }
         if(event.sequence!=lastSequence+1) {
             if(ordered.size>=8 || (ordered[event.sequence]!=null && ordered[event.sequence]!=event)) unknown("Ordre de flux ambigu ou budget dépassé")
             else ordered[event.sequence]=event
