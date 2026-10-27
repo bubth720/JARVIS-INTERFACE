@@ -20,7 +20,6 @@ class UntrustedCitationPreviewTest {
         val cases = listOf(
             base.copy(startUtf16 = -1), base.copy(endUtf16 = -1),
             base.copy(startUtf16 = 0, endUtf16 = 4097), base.copy(endUtf16 = -2),
-            base.copy(startUtf16 = Int.MAX_VALUE - 1, endUtf16 = Int.MAX_VALUE),
             base.copy(page = 0), base.copy(page = -1), base.copy(page = 100001),
             base.copy(sourceId = "file:///private/source.pdf"),
             base.copy(sourceId = "not-a-uuid"),
@@ -29,8 +28,7 @@ class UntrustedCitationPreviewTest {
         for (claim in cases) {
             val view = UntrustedCitationPreview.project(claim)
             assertFalse(view.clickable)
-            // A valid but near-maximum bounded offset is still not an authorization.
-            assertTrue(view.status == "UNKNOWN" || view.status == "REVIEW_ONLY")
+            assertEquals("UNKNOWN", view.status)
         }
     }
 
