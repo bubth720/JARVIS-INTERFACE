@@ -33,8 +33,10 @@ class PublicStageTest(unittest.TestCase):
         self.assertEqual(summary.read_stage(Path('/no/public/stage.json'))['stage'],'NOT_STARTED_OR_NO_REPORT')
     def test_known_stage_and_exit_preserved(self):
         with tempfile.TemporaryDirectory() as folder:
-            p=Path(folder)/'stage.json';p.write_text('{"stage":"check_xml","exit_code":1}')
-            self.assertEqual(summary.read_stage(p),{'stage':'check_xml','exit_code':1})
+            p=Path(folder)/'stage.json'
+            for stage in ['check_xml','prepare_restart']:
+                p.write_text('{"stage":"'+stage+'","exit_code":1}')
+                self.assertEqual(summary.read_stage(p),{'stage':stage,'exit_code':1})
     def test_invalid_stage_or_payload_not_published(self):
         with tempfile.TemporaryDirectory() as folder:
             p=Path(folder)/'stage.json'

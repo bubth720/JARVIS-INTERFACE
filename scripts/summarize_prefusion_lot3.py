@@ -37,7 +37,7 @@ def read_stage(path):
     try:
         data=json.loads(path.read_text())
         if (set(data)!={'stage','exit_code'} or data['stage'] not in
-            {'validate_emulator','instrument','check_xml','restart','capture','complete'} or
+            {'validate_emulator','instrument','check_xml','prepare_restart','restart','capture','complete'} or
             type(data['exit_code']) is not int or not 0<=data['exit_code']<=255):
             raise ValueError('Invalid stage')
         return data

@@ -130,3 +130,41 @@ un entier de sortie ; fichier absent ou invalide signifie
 privé n'est publié. Les **neuf tests Python** du lecteur passent ; un essai shell
 avec adb de fixture non-émulateur confirme refus avant instrumentation, sortie 2
 et journal `validate_emulator/2`. Ce test de runner n'est pas un essai Android.
+
+## Correction du laboratoire après les preuves de redémarrage
+
+La campagne [40667162403](https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40667162403)
+au commit `cc5d860f91c0c84c3513419cf3c80ffa0354bfd4` publie, **sur API26 et API35**,
+`reports=1, tests=22, failures=0, errors=0, skipped=0`, puis
+`stage=restart, exit_code=1`. Les 22 cas Android réussissent donc sur chaque API;
+la campagne entière échoue ensuite et n'est pas déclarée réussie.
+
+Le runner présumait que les APK installées par `connectedDebugAndroidTest`
+restaient installées pour l'expérience séparée de redémarrage. Cette hypothèse
+n'est pas garantie par AGP : inspection statique du JAR **AGP8.9.2**, SHA256
+`6c313d24d07ac393cfc7db5d63c5029e7d20b278781c42b2d22adf9bcc7dba30`, avec
+`javap -c -p` : `SimpleTestRunnable` appelle `uninstall` pour test et application;
+`UtpConfigFactory$createApkInstallerPlugin$2` configure `setUninstallAfterTest`.
+Ce constat statique ne reconstitue pas les logs protégés de l'ancien run.
+
+Correction limitée au script de laboratoire : après la vérification des XML,
+réinstaller explicitement les deux APK publiques déjà compilées, vérifier les
+paquets et l'enregistrement de l'instrumentation, puis force-stop/redémarrer et
+relancer les deux tests OFF existants. Aucun test ou assertion Android modifié.
+Chaque commande ADB après sélection utilise `-s` avec le numéro d'émulateur validé;
+`ANDROID_SERIAL` est également fixé à ce numéro pour Gradle. Le script refuse un
+numéro physique ou une API différente avant installation. Aucun appareil réel,
+aucune désinstallation ou donnée personnelle impliqué.
+
+Validation locale du correctif : **13 tests Python réussis, zéro échec/erreur/saut**
+(9 diagnostics +4 régressions du runner). Le banc hôte simule volontairement le
+nettoyage des APK par Gradle, vérifie leur réinstallation sur l'émulateur choisi,
+le refus d'un appareil physique/d'une mauvaise API et la conservation d'une erreur
+d'installation (sortie17, aucune ouverture d'application). Ces tests de shell
+ne sont **pas** des essais Android ni des captures. La garde des114 fichiers
+historiques, la syntaxe Bash et `git diff --check` réussissent. La nouvelle phase
+`prepare_restart` est bornée dans le lecteur des diagnostics.
+
+Les217 JVM et les builds/Lint du code applicatif inchangé sont déjà vérifiés aux
+commits précédents; une nouvelle CI au SHA du correctif doit confirmer le parcours
+complet22+2 et la capture. Aucun succès de cette nouvelle campagne n'est anticipé.

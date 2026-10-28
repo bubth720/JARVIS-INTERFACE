@@ -19,8 +19,11 @@ PY_STAGE
 }
 trap 'lot3_finish "$?"' EXIT
 lot3_device="$(adb get-serialno)"
-case "$lot3_device" in emulator-*) ;; *) echo 'Refusing non-emulator device' >&2; exit 2;; esac
-test "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" = "$lot3_api"
+[[ "$lot3_device" =~ ^emulator-[0-9]+$ ]] || { echo 'Refusing non-emulator device' >&2; exit 2; }
+# Pin every subsequent ADB call and the Gradle device selector to this checked
+# emulator. No implicit/default-device install is permitted by this runner.
+export ANDROID_SERIAL="$lot3_device"
+test "$(adb -s "$lot3_device" shell getprop ro.build.version.sdk | tr -d '\r')" = "$lot3_api"
 lot3_classes='com.jarvis.interfaceapp.prefusion.PrefusionConsumerBoundaryTest,com.jarvis.interfaceapp.prefusion.PrefusionOffUiTest,com.jarvis.interfaceapp.ui.chat.core.CoreConnectionDiagnosticsTest,com.jarvis.interfaceapp.ui.chat.ChatInteractionTest,com.jarvis.interfaceapp.fusion.FusionInteractionTest'
 lot3_stage=instrument
 ./gradlew connectedDebugAndroidTest --no-daemon --max-workers=2 \
@@ -30,10 +33,23 @@ lot3_stage=check_xml
 cp -a app/build/outputs/androidTest-results/connected "$lot3_report/instrumentation"
 python3 scripts/check_prefusion_lot3.py --instrumented "$lot3_report/instrumentation" --api "$lot3_api" --output "$lot3_report/result.json"
 # Exercise an actual process restart, then re-run only the two OFF UI checks.
+# connectedAndroidTest owns its installation lifecycle and may uninstall both
+# APKs during cleanup. Restore the compiled public test APKs before this separate
+# restart experiment; never assume the Gradle-installed packages remain present.
+lot3_stage=prepare_restart
+lot3_app_apk=app/build/outputs/apk/debug/app-debug.apk
+lot3_test_apk=app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+test -s "$lot3_app_apk" && test -s "$lot3_test_apk"
+adb -s "$lot3_device" install -r -t "$lot3_app_apk"
+adb -s "$lot3_device" install -r -t "$lot3_test_apk"
+adb -s "$lot3_device" shell pm path com.jarvis.interfaceapp | grep -q '^package:'
+adb -s "$lot3_device" shell pm path com.jarvis.interfaceapp.test | grep -q '^package:'
+adb -s "$lot3_device" shell pm list instrumentation | grep -Fq \
+  'instrumentation:com.jarvis.interfaceapp.test/androidx.test.runner.AndroidJUnitRunner (target=com.jarvis.interfaceapp)'
 lot3_stage=restart
-adb shell am force-stop com.jarvis.interfaceapp
-adb shell am start -n com.jarvis.interfaceapp/.MainActivity
-adb shell am instrument -w \
+adb -s "$lot3_device" shell am force-stop com.jarvis.interfaceapp
+adb -s "$lot3_device" shell am start -W -n com.jarvis.interfaceapp/.MainActivity
+adb -s "$lot3_device" shell am instrument -w \
   -e class com.jarvis.interfaceapp.prefusion.PrefusionOffUiTest \
   -e prefusionCapture true \
   com.jarvis.interfaceapp.test/androidx.test.runner.AndroidJUnitRunner | tee "$lot3_report/process-restart.log"
@@ -46,6 +62,6 @@ assert 'FAILURES!!!' not in text and 'INSTRUMENTATION_FAILED' not in text, 'Rest
 PY
 # This named file comes only from the public OFF screen, never a private avatar.
 lot3_stage=capture
-adb shell run-as com.jarvis.interfaceapp cat files/prefusion-lot3-off.png > "$lot3_report/public-off.png"
+adb -s "$lot3_device" shell run-as com.jarvis.interfaceapp cat files/prefusion-lot3-off.png > "$lot3_report/public-off.png"
 test -s "$lot3_report/public-off.png"
 lot3_stage=complete
