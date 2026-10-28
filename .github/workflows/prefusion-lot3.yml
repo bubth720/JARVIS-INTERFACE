@@ -1,0 +1,79 @@
+name: PREFUSION LOT3 public Android consumer
+on:
+  push:
+    branches: ['codex/prefusion-lot3-*']
+  pull_request:
+    branches: ['mission/prefusion-lot3-20261027']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-instrumentation:
+    name: Public OFF consumer API${{ matrix.api }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [26, 35]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          cmdline-tools-version: '11076708'
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: false
+      - name: Preserve all existing runtime, contracts, assets and tests
+        run: |
+          python3 scripts/check_prefusion_lot3.py
+          python3 -m unittest discover -s scripts/tests -v
+      - name: Existing JVM regression, builds and Lint
+        run: ./scripts/check.sh --no-daemon --max-workers=2
+      - name: Verify 217 historical JVM tests and public distribution
+        run: |
+          python3 scripts/check_fusion02.py --results
+          python3 scripts/check_athena_distribution.py app/build/outputs/apk/debug/app-debug.apk
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          reports=list(Path('app/build/test-results/testDebugUnitTest').glob('TEST-*.xml'))
+          assert reports
+          counts={k:sum(int(ET.parse(p).getroot().get(k,0)) for p in reports) for k in ['tests','failures','errors','skipped']}
+          assert counts['tests']>=217 and all(counts[k]==0 for k in ['failures','errors','skipped']),counts
+          print(counts)
+          PY
+      - name: Enable KVM on the clean hosted runner
+        run: |
+          test -e /dev/kvm
+          sudo chmod a+rw /dev/kvm
+      - name: Execute public instrumentation and process-restart checks
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808 # v2
+        with:
+          api-level: ${{ matrix.api }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim -camera-back none
+          script: bash scripts/run_prefusion_lot3_emulator.sh ${{ matrix.api }}
+      - name: Publish bounded public Android XML diagnostics
+        if: always()
+        run: python3 scripts/summarize_prefusion_lot3.py --api ${{ matrix.api }}
+      - name: Preserve public evidence even after a failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: prefusion-lot3-public-api-${{ matrix.api }}
+          if-no-files-found: warn
+          path: |
+            app/build/reports/prefusion-lot3/
+            app/build/outputs/androidTest-results/
+            app/build/test-results/testDebugUnitTest/
+            app/build/reports/lint-results-debug.*
