@@ -1,0 +1,48 @@
+{
+  "mission": "UI-PF-02",
+  "base_commit": "c14eebdbce8b2fda024043d6abd1e84bc719f113",
+  "historical_lot2_commit": "4bc1993d4b6525b248f2b12e95a18a279a3d9fdc",
+  "branch": "codex/prefusion-lot3-interface",
+  "observed_utc": "2026-10-28",
+  "jvm": {
+    "tests": 217,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "builds": {
+    "assembleDebug": "PASS",
+    "assembleDebugAndroidTest": "PASS",
+    "lintDebug": "PASS: zero issues"
+  },
+  "instrumentation": {
+    "api26": "NOT_RUN: no /dev/kvm in managed executor",
+    "api35": "NOT_RUN: no /dev/kvm in managed executor",
+    "new_cases_compiled": 13,
+    "public_selection_cases_per_api": 22,
+    "restart_checks_per_api": 2,
+    "private_asset_cases": "NOT_RUN: public CI excludes private pack-dependent classes; preserved unchanged"
+  },
+  "physical_device": "NOT_RUN: not authorized",
+  "capture": "NOT_RUN: generated only by real public OFF emulator scene",
+  "runtime_transport": "OFF",
+  "android_uid_certificate_proof": false,
+  "production_files_changed": [],
+  "reports": {
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.avatar.AvatarAnimationControllerTest.xml": "58edbd53e5e9ad1f639438fd63cca00db3bd7179389c05cdbf95df828b7209ea",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.avatar.assets.AvatarAssetTest.xml": "aba128e830303d36d57d56513fc5017a4923ffa5b0299d22f3dd526bdd09b9d1",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.avatar.review.ArtApprovalReceiptTest.xml": "742815f9ba85a15b986f70ac110fcab5954bc3a4d36d5e2e6ebccd68023a8401",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.avatar.v2.PremiumAvatarTest.xml": "280800df76e57a42d23072b322a78d457f93c318a460c009f96652d0283af246",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.domain.DashboardTest.xml": "40323d8b80ad7230ebc69ab0add12c5f44e3a6b3025fcffb3b79df098a473bec",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.domain.HomeStateTest.xml": "cb44645e5112a039360a7ca92f8ff19f9c13bcbe7cbb680ddb1fddfae8ca2a20",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.fusion.CapabilityPresentationTest.xml": "f39e6903fc3636b4c4a7ac64051c9ece25949d6d233ebd4aef23365e329a9bfb",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.fusion.DocumentToolLaboratoryTest.xml": "1f67fe2da91bf20d6a256aa5c9a732a639126f17279cdae59df88743411a25e5",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.storage.DataStoreLayoutRepositoryTest.xml": "30c4a7ee414f5a739069d657352085ae8b05974f32f1a17f175c16b4b9a49503",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.storage.LayoutCodecTest.xml": "97c618b19752d0eaa45255e47c5c56c3bf65643a00c3b3e05cba6795188f47d2",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.ui.DashboardControllerTest.xml": "24733c6b257ad04c0b0c30cb04239de084287bd649a560449e8a59785e52e81e",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.ui.chat.ChatControllerTest.xml": "f3eaaa276674c28da0b634bd8591249c5067c0375fdf0d341e279cabf2d100cc",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.ui.chat.core.CoreConversationClientTest.xml": "5540f00ac143111363014571620179d02f8a67677f2cb26e5c8bc6188a9023bf",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.ui.identity.IdentitySettingsTest.xml": "5e7152883e4ccc71fa67e9eb342c62d0cb056e02618b8777dce42c03f47ab90f",
+    "app/build/test-results/testDebugUnitTest/TEST-com.jarvis.interfaceapp.workspace.WorkspaceTest.xml": "c32a449ffe2b5a9d9c60fd3d8775c6fa676243deea710b026650984e6347d25e"
+  }
+}
