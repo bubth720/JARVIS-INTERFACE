@@ -17,6 +17,8 @@ class RunnerLifecycleTest(unittest.TestCase):
         scripts.mkdir()
         shutil.copyfile(Path(__file__).parents[1] / 'run_prefusion_lot3_emulator.sh',
                         scripts / 'run_prefusion_lot3_emulator.sh')
+        shutil.copyfile(Path(__file__).parents[1] / 'collect_prefusion_capture.py',
+                        scripts / 'collect_prefusion_capture.py')
         # This substitutes only the fixture transcript validator. It does not
         # fabricate XML or present this shell harness as Android execution.
         (scripts / 'check_prefusion_lot3.py').write_text('')
@@ -44,7 +46,7 @@ r=Path(os.environ['FIXTURE_ROOT'])
         gradle.chmod(0o755)
         adb = bindir / 'adb'
         adb.write_text(r'''#!/usr/bin/env python3
-import json,os,sys
+import base64,json,os,sys
 from pathlib import Path
 r=Path(os.environ['FIXTURE_ROOT']);a=sys.argv[1:]
 with (r/'adb-calls.jsonl').open('a') as f:f.write(json.dumps(a)+'\n')
@@ -67,7 +69,11 @@ elif a[:3]==['shell','am','start']:
  assert len(installed)==2,'Target/test APK missing after connectedAndroidTest cleanup'
 elif a[:3]==['shell','am','instrument']:
  assert len(installed)==2;print('OK (2 tests)')
-elif a[:2]==['shell','run-as']:sys.stdout.buffer.write(b'fixture bytes; not a PNG capture')
+elif a[:2]==['exec-out','run-as']:
+ if os.environ.get('FIXTURE_CAPTURE_FAIL'):
+  print('run-as: Package not debuggable',file=sys.stderr);sys.exit(255)
+ # Static 1x1 fixture image for host-only validation, never an Android capture.
+ sys.stdout.buffer.write(base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII='))
 else:raise AssertionError(a)
 ''')
         adb.chmod(0o755)
@@ -104,3 +110,10 @@ else:raise AssertionError(a)
         self.assertEqual(result.returncode, 17)
         self.assertEqual(stage, {'stage': 'prepare_restart', 'exit_code': 17})
         self.assertFalse(any('start' in call for call in calls))
+
+    def test_failed_capture_preserves_original_exit_and_never_claims_complete(self):
+        result, stage, calls = self.run_fixture(FIXTURE_CAPTURE_FAIL='1')
+        self.assertEqual(result.returncode, 255)
+        self.assertEqual(stage, {'stage': 'capture', 'exit_code': 255})
+        metadata = json.loads((self.root / 'app/build/reports/prefusion-lot3/api-26/public-off.json').read_text())
+        self.assertEqual(metadata['reason'], 'RUN_AS_DENIED')

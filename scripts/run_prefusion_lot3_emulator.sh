@@ -62,6 +62,5 @@ assert 'FAILURES!!!' not in text and 'INSTRUMENTATION_FAILED' not in text, 'Rest
 PY
 # This named file comes only from the public OFF screen, never a private avatar.
 lot3_stage=capture
-adb -s "$lot3_device" shell run-as com.jarvis.interfaceapp cat files/prefusion-lot3-off.png > "$lot3_report/public-off.png"
-test -s "$lot3_report/public-off.png"
+python3 scripts/collect_prefusion_capture.py --serial "$lot3_device" --output "$lot3_report/public-off.png"
 lot3_stage=complete

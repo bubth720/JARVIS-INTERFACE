@@ -168,3 +168,34 @@ historiques, la syntaxe Bash et `git diff --check` réussissent. La nouvelle pha
 Les217 JVM et les builds/Lint du code applicatif inchangé sont déjà vérifiés aux
 commits précédents; une nouvelle CI au SHA du correctif doit confirmer le parcours
 complet22+2 et la capture. Aucun succès de cette nouvelle campagne n'est anticipé.
+
+### Réception du correctif de redémarrage et extraction PNG
+
+Le correctif `4914dcc4b11d16f94dcf7eaf3d02bce8a594bb1a` a sa CI historique
+Android [40747853464](https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40747853464)
+**SUCCESS**. Sa campagne instrumentée
+[40747853353](https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40747853353)
+confirme22 tests sans échec/erreur/saut pour chaque API. Les annotations publiques
+précisent : API26 `stage=complete, exit_code=0`; API35
+`stage=capture, exit_code=255`. Le redémarrage et les deux tests OFF supplémentaires
+ont donc franchi leurs assertions sur les deux API; seule l'extraction finale du
+PNG échoue sur API35. La campagne globale reste FAILURE. Aucun log protégé n'est
+inventé pour expliquer le code255.
+
+L'extraction du fichier unique de fixture publique utilise maintenant le canal
+binaire `adb -s <émulateur validé> exec-out run-as ... cat files/prefusion-lot3-off.png`.
+Aucun écran alternatif, chemin personnel, permission ou contournement `run-as`
+n'est essayé. Le code de sortie ADB reste propagé en cas d'échec, avec une raison
+classifiée et bornée; stderr brut n'est jamais publié. Après extraction, signature,
+dimensions bornées, chunks/CRC, présence de données image et terminaison PNG sont
+vérifiés avant de marquer la phase complète. Le SHA256 de l'image est consigné.
+Un fichier non vide seul ne suffit plus à valider cette étape.
+
+**18 tests Python hôte passent**, zéro échec/erreur/saut : lecteur de diagnostics,
+cycle d'installation, refus physiques/API, erreur d'installation et de capture
+conservées, PNG de fixture valide, texte non PNG, troncature et corruption refusés.
+Les images1×1 et les ADB simulés de ces tests hôte ne sont pas des captures Android.
+La garde114 fichiers, la syntaxe Bash et `git diff --check` réussissent.
+Le code applicatif et les assertions instrumentées restent inchangés.
+La prochaine CI doit qualifier ce canal binaire sur API35; aucune résolution du
+code255 n'est annoncée avant son résultat réel.
