@@ -47,6 +47,8 @@ def main():
     text='\n'.join(lines)+'\n';print(text)
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as stream:stream.write(text)
+    print("::warning title=Public Android XML counts API"+str(args.api)+"::"+
+          ", ".join(key+"="+str(r[key]) for key in ["reports","tests","failures","errors","skipped"]))
     for detail in r['details']:
         escaped=detail.replace('%','%25').replace('\r','%0D').replace('\n','%0A')
         print('::warning title=Public Android fixture diagnostic::'+escaped)

@@ -110,3 +110,14 @@ La commande de création de PR brouillon a échoué :
 `Post "https://api.github.com/graphql": Forbidden`. Aucun contournement ni nouvelle
 tentative API ; branche et corps de PR préservés. Ouvrir la comparaison vers
 `mission/prefusion-lot3-20261027`, puis **Create draft pull request**, sans fusion.
+
+Dernière observation à 09:46 UTC : la campagne au commit
+`0cbde77dc36f5537af0442c077b4f7d4acfd9eaa`, run
+[40665765400](https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40665765400),
+est **FAILURE** sur API26 et API35, 7 min 25 s au total, même annotation shell.
+Le workflow historique Android au même SHA est **SUCCESS** (4 min 30 s,
+[40665765393](https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40665765393)).
+Le résumé Markdown de job n'est pas rendu sur la page anonyme accessible.
+Les comptes XML sont donc aussi exposés comme annotation de diagnostic bornée,
+y compris lorsque les XML sont absents. Aucun résultat de test n'est corrigé
+par hypothèse ; les deux échecs restent des preuves historiques conservées.
