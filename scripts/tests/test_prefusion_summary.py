@@ -28,4 +28,19 @@ class PublicSummaryTest(unittest.TestCase):
     def test_negative_counts_rejected(self):
         self.assertEqual(self.read('<testsuite tests="-1"/>')['reports'],0)
 
+class PublicStageTest(unittest.TestCase):
+    def test_absent_stage_never_means_success(self):
+        self.assertEqual(summary.read_stage(Path('/no/public/stage.json'))['stage'],'NOT_STARTED_OR_NO_REPORT')
+    def test_known_stage_and_exit_preserved(self):
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/'stage.json';p.write_text('{"stage":"check_xml","exit_code":1}')
+            self.assertEqual(summary.read_stage(p),{'stage':'check_xml','exit_code':1})
+    def test_invalid_stage_or_payload_not_published(self):
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/'stage.json'
+            for text in ['{"stage":"arbitrary secret","exit_code":1}',
+                         '{"stage":"complete","exit_code":true}',
+                         '{"stage":"complete","exit_code":0,"extra":"not public"}', '{broken']:
+                p.write_text(text);self.assertEqual(summary.read_stage(p)['stage'],'NOT_STARTED_OR_NO_REPORT')
+
 if __name__=='__main__':unittest.main()

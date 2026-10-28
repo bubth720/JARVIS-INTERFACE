@@ -121,3 +121,12 @@ Le résumé Markdown de job n'est pas rendu sur la page anonyme accessible.
 Les comptes XML sont donc aussi exposés comme annotation de diagnostic bornée,
 y compris lorsque les XML sont absents. Aucun résultat de test n'est corrigé
 par hypothèse ; les deux échecs restent des preuves historiques conservées.
+
+Le diagnostic de runner conserve désormais un jalon borné et le code de sortie
+initial dans `stage.json` via un trap EXIT : validate_emulator / instrument /
+check_xml / restart / capture / complete. Le résumé n'accepte que ces valeurs et
+un entier de sortie ; fichier absent ou invalide signifie
+`NOT_STARTED_OR_NO_REPORT`, jamais succès. Aucun environnement, logcat ou contenu
+privé n'est publié. Les **neuf tests Python** du lecteur passent ; un essai shell
+avec adb de fixture non-émulateur confirme refus avant instrumentation, sortie 2
+et journal `validate_emulator/2`. Ce test de runner n'est pas un essai Android.
