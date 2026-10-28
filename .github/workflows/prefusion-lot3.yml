@@ -31,7 +31,9 @@ jobs:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
           log-accepted-android-sdk-licenses: false
       - name: Preserve all existing runtime, contracts, assets and tests
-        run: python3 scripts/check_prefusion_lot3.py
+        run: |
+          python3 scripts/check_prefusion_lot3.py
+          python3 -m unittest discover -s scripts/tests -v
       - name: Existing JVM regression, builds and Lint
         run: ./scripts/check.sh --no-daemon --max-workers=2
       - name: Verify 217 historical JVM tests and public distribution
@@ -61,6 +63,9 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim -camera-back none
           script: bash scripts/run_prefusion_lot3_emulator.sh ${{ matrix.api }}
+      - name: Publish bounded public Android XML diagnostics
+        if: always()
+        run: python3 scripts/summarize_prefusion_lot3.py --api ${{ matrix.api }}
       - name: Preserve public evidence even after a failure
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

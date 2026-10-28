@@ -86,3 +86,27 @@ Prochaine étape : publier la branche sans force, consulter la nouvelle CI au SH
 exact, corriger tout échec réel, puis soumettre une PR **brouillon** vers
 `mission/prefusion-lot3-20261027`. Le transport réel et toute activation sensible
 restent soumis à une décision distincte. Aucune fusion dans main.
+
+## Publication et premier résultat distant
+
+Le commit `a1d9db6cf31c41256f96508147606029286ca343` a été publié sans force et
+son SHA distant vérifié. Workflow Android historique
+[40664650732](https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40664650732)
+**SUCCESS**, 4 min 45 s. La nouvelle campagne
+[40664650866](https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/40664650866)
+a signalé **FAILURE API26** à l'étape d'exécution émulateur/tests (5 min 57 s),
+annotation `/usr/bin/sh failed with exit code 1`. Aucun total de tests Android
+n'est déduit de cette annotation. Les logs détaillés et XML d'artefact ne sont
+pas accessibles anonymement dans cet environnement ; la page demande une connexion.
+
+Une amélioration de diagnostic est ajoutée : résumé public borné des XML de tests
+synthétiques dans le résumé du job et annotations. Six tests Python de ce lecteur
+passent, y compris XML absent/corrompu et échec conservé. Aucun test Android n'est
+désactivé, aucun échec n'est converti en succès. La cause de l'échec reste non
+établie tant qu'une sortie reproductible n'est pas accessible. Le workflow API35
+était encore en cours lors de cette observation.
+
+La commande de création de PR brouillon a échoué :
+`Post "https://api.github.com/graphql": Forbidden`. Aucun contournement ni nouvelle
+tentative API ; branche et corps de PR préservés. Ouvrir la comparaison vers
+`mission/prefusion-lot3-20261027`, puis **Create draft pull request**, sans fusion.
