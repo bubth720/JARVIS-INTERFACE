@@ -43,7 +43,8 @@ class LabInstrumentedTest {
     }
 
     @Test fun actualUiSubmitsToSingleCoreAndRotationKeepsItsInstance() {
-        ActivityScenario.launch(LabActivity::class.java).use { activity ->
+        ActivityScenario.launch<LabActivity>(android.content.Intent(InstrumentationRegistry.getInstrumentation().targetContext, LabActivity::class.java)
+            .putExtra("LAB_SCENARIO", "SLOW_STOP")).use { activity ->
             lateinit var owner: LabApplication
             activity.onActivity {
                 owner = it.application as LabApplication
