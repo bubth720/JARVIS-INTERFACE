@@ -19,7 +19,12 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     sourceSets.getByName("main").java.srcDir(providers.gradleProperty("labSources").get())
-    testOptions { unitTests.isReturnDefaultValues = true }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        // Fresh app process per instrumentation test: an intentionally closed
+        // or UNKNOWN lab owner must never be reset inside the same process.
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    }
     lint { abortOnError = true }
 }
 dependencies {
@@ -29,4 +34,5 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test:core-ktx:1.6.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestUtil("androidx.test:orchestrator:1.5.1")
 }

@@ -18,7 +18,7 @@ class LabCoreTransport(
     private val chunkDelayMs: Long = 120,
     private val ackTimeoutMs: Long = 1_500
 ) : CoreConversationTransport {
-    enum class Scenario { NORMAL, OWNER_ERROR, RESOURCE_UNKNOWN }
+    enum class Scenario { NORMAL, OWNER_ERROR, RESOURCE_UNKNOWN, SLOW_STOP }
     private class Turn(val submissionId: String) {
         val key = CompletableDeferred<ContentKey>()
         var outcome: ContentBody? = null

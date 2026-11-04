@@ -3,7 +3,7 @@ on:
   push:
     branches: ['codex/m50-s1b-android-20261104']
   pull_request:
-    branches: ['mission/m50-integrated-beta-20261029']
+    branches: ['mission/m50-integrated-beta-20261029', 'codex/m50-s1b-android-20261104']
 permissions:
   contents: read
 concurrency:

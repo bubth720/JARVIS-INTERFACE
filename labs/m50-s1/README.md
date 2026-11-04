@@ -68,3 +68,33 @@ Mémoire/latence de cette variante restent NOT_RUN tant que non mesurées.
 M50 reste NON ATTEINT ; les huit gates nécessitent leur réception distincte.
 Rollback : abandonner la branche/PR et supprimer le seul laboratoire sur
 l'émulateur. Aucun main, stockage historique ou appareil personnel modifié.
+
+## M50-PERF-01 — temps de réponse du laboratoire (ne prouve pas la vitesse du LLM)
+
+Le scénario NORMAL emploie désormais **60 ms par chunk synthétique**, au lieu
+des **500 ms par chunk** de la première APK (deux chunks fixes). Cela retire
+880 ms de délai de démonstration **nominal**, sans supprimer ACK, Stop, drainage,
+UNKNOWN ni tests négatifs. Ce gain est un calcul de configuration, **pas**
+une mesure de temps de réponse réelle, et il n'accélère aucun modèle IA.
+
+Le scénario opt-in `SLOW_STOP` conserve 500 ms par chunk et est utilisé
+exclusivement pour les tests déterministes d'arrêt depuis le véritable écran.
+Les tests Android sont isolés par AndroidX Test Orchestrator, avec un processus
+neuf par test, afin qu'une session fermée/UNKNOWN ne puisse jamais être
+réinitialisée depuis une Activity. Aucun paramètre ou droit de production ne
+change.
+
+Le test `LabLatencyInstrumentedTest` soumet 12 tours de laboratoire NORMAL
+successifs à l'interface tactile. Il mesure en horloge monotone le délai
+entre le clic « Envoyer » et le premier texte réellement affiché puis la fin
+de la réponse synthétique. Il vérifie les ACK croissants pour éviter d'utiliser
+une réponse précédente et impose `p95 < 3_000 ms` sur chacune des deux valeurs,
+pour chaque émulateur API29 et API35. La valeur p95 est conservatrice : maximum
+des 12 mesures. Elle est affichée sans aucune donnée utilisateur dans les
+sorties du test. L'exécution et ses chiffres demeurent **NOT_RUN** tant que
+la nouvelle CI n'a pas terminé.
+
+L'objectif produit reste distinct : **LLM réel, TTFT p95 <3 s** uniquement
+après qualification d'une vraie génération locale sur appareil autorisé,
+et réponse complète dépendante de sa longueur. Les tests synthétiques ne
+qualifient jamais G3, G8, la chauffe, la batterie ou l'unload JNI.
