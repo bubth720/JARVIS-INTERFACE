@@ -13,7 +13,10 @@ class LabApplication : Application() {
         private set
     fun enable(scenario: LabCoreTransport.Scenario = LabCoreTransport.Scenario.NORMAL): LabSession {
         session?.let { return it }
-        return LabSession(LabCoreTransport(ownerScope, scenario = scenario, chunkDelayMs = 500), ownerScope).also { session = it }
+        // The normal lab used to wait 500 ms before each of two synthetic chunks.
+        // Keep deliberately slow delivery ONLY for deterministic Stop/drainage tests.
+        val syntheticDelayMs = if (scenario == LabCoreTransport.Scenario.SLOW_STOP) 500L else 60L
+        return LabSession(LabCoreTransport(ownerScope, scenario = scenario, chunkDelayMs = syntheticDelayMs), ownerScope).also { session = it }
     }
 }
 
