@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: m50-s1b-${{ github.event.pull_request.number || github.ref }}
+  group: m50-s1b-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 jobs:
   qualify:
