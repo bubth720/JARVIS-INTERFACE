@@ -53,8 +53,8 @@ def run(api, lab, sources, reports):
     expected = hashlib.sha256(apk.read_bytes()).hexdigest()
     adb('shell', 'svc', 'wifi', 'disable')
     adb('shell', 'svc', 'data', 'disable')
-    adb('shell', 'settings', 'put', 'global', 'airplane_mode_on', '1')
-    adb('shell', 'am', 'broadcast', '-a', 'android.intent.action.AIRPLANE_MODE', '--ez', 'state', 'true')
+    # Use the ConnectivityService shell API; sending its protected broadcast is forbidden.
+    adb('shell', 'cmd', 'connectivity', 'airplane-mode', 'enable')
     assert adb('shell', 'settings', 'get', 'global', 'airplane_mode_on') == '1'
     assert adb('shell', 'settings', 'get', 'global', 'wifi_on') == '0'
     results = lab / 'app/build/outputs/androidTest-results/connected'
@@ -65,6 +65,15 @@ def run(api, lab, sources, reports):
         p = subprocess.run(cmd, stdout=stream, stderr=subprocess.STDOUT, timeout=1200)
     if results.exists():
         shutil.copytree(results, reports / 'xml')
+    if p.returncode:
+        for file in (reports / 'xml').rglob('TEST-*.xml'):
+            for case in ET.parse(file).getroot().iter('testcase'):
+                for tag in ('failure', 'error'):
+                    failure = case.find(tag)
+                    if failure is not None:
+                        diagnostic = f"{case.get('classname')}.{case.get('name')}: {failure.get('message', 'failed')}"[:1500]
+                        diagnostic = diagnostic.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+                        print('::error title=M50-S1B instrumented test failure::' + diagnostic)
     assert p.returncode == 0, 'Instrumentation failed; preserve actual log/XML'
     cases = []
     for file in (reports / 'xml').rglob('TEST-*.xml'):
@@ -82,7 +91,10 @@ def run(api, lab, sources, reports):
     tap(find('lab-activate', enabled=True))
     tap(find('lab-question'))
     adb('shell', 'input', 'text', 'synthetic-fixture')
-    adb('shell', 'input', 'keyevent', 'KEYCODE_BACK')
+    # With a hardware keyboard, BACK would close the Activity instead of hiding an IME.
+    ime = adb('shell', 'dumpsys', 'input_method')
+    if re.search(r'(mInputShown|isInputViewShown)=true', ime):
+        adb('shell', 'input', 'keyevent', 'KEYCODE_BACK')
     tap(find('lab-submit', enabled=True))
     find('lab-status', text='UNKNOWN')
     find('lab-submit', enabled=False)
