@@ -45,6 +45,18 @@ def epoch():
     return values[0]
 
 
+def require_offline(read_state, *, now=time.monotonic, sleep=time.sleep, timeout_seconds=20):
+    """Wait for Android's asynchronous radio settings without weakening offline assertions."""
+    deadline = now() + timeout_seconds
+    while True:
+        airplane, wifi = read_state()
+        if airplane == '1' and wifi == '0':
+            return
+        if now() >= deadline:
+            raise AssertionError('Offline radios not confirmed within the bounded deadline')
+        sleep(0.25)
+
+
 def run(api, lab, sources, reports):
     assert adb('shell', 'getprop', 'ro.kernel.qemu') == '1', 'Physical device forbidden'
     assert adb('shell', 'getprop', 'ro.build.version.sdk') == str(api)
@@ -55,8 +67,10 @@ def run(api, lab, sources, reports):
     adb('shell', 'svc', 'data', 'disable')
     # Use the ConnectivityService shell API; sending its protected broadcast is forbidden.
     adb('shell', 'cmd', 'connectivity', 'airplane-mode', 'enable')
-    assert adb('shell', 'settings', 'get', 'global', 'airplane_mode_on') == '1'
-    assert adb('shell', 'settings', 'get', 'global', 'wifi_on') == '0'
+    require_offline(lambda: (
+        adb('shell', 'settings', 'get', 'global', 'airplane_mode_on'),
+        adb('shell', 'settings', 'get', 'global', 'wifi_on'),
+    ))
     results = lab / 'app/build/outputs/androidTest-results/connected'
     if results.exists():
         shutil.rmtree(results)
