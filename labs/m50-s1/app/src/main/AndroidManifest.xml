@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:name="com.stark.jarvislocal.LabApplication"
+        android:label="JARVIS LAB" android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:allowBackup="false" android:fullBackupContent="false"
+        android:usesCleartextTraffic="false" android:testOnly="true"
+        android:supportsRtl="true">
+        <activity android:name="com.stark.jarvislocal.LabActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

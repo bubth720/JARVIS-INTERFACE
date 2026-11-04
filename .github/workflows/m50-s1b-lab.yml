@@ -1,0 +1,100 @@
+name: M50-S1B CORE INTERFACE isolated Android laboratory
+on:
+  push:
+    branches: ['codex/m50-s1b-android-20261104']
+  pull_request:
+    branches: ['mission/m50-integrated-beta-20261029']
+permissions:
+  contents: read
+concurrency:
+  group: m50-s1b-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: interface
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: bubth720/JAVIS-Local-v2
+          ref: 5da98383ed12cb5a54e896fbe57560bacc432fb5
+          path: core
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.13'}
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          cmdline-tools-version: '11076708'
+          log-accepted-android-sdk-licenses: false
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - name: Verify exact temporary sources and untouched historical application
+        run: |
+          mkdir -p "$RUNNER_TEMP/m50-evidence"
+          python3 interface/labs/m50-s1/tools/check_scope.py --interface interface
+          python3 interface/labs/m50-s1/tools/prepare_sources.py --core core --interface interface --output "$RUNNER_TEMP/m50-sources"
+          python3 -m unittest discover -s interface/labs/m50-s1/tests -v > "$RUNNER_TEMP/m50-evidence/python-tests.log" 2>&1
+      - name: Record exact subject and development platform
+        run: |
+          mkdir -p "$RUNNER_TEMP/m50-evidence"
+          git -C interface rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/m50-evidence/subject.txt"
+          java -version 2>> "$RUNNER_TEMP/m50-evidence/subject.txt"
+          gradle --version >> "$RUNNER_TEMP/m50-evidence/subject.txt"
+      - name: Real Kotlin composition, regression, APK and Lint
+        run: gradle -p interface/labs/m50-s1 -PlabSources="$RUNNER_TEMP/m50-sources/kotlin" :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug --no-daemon --max-workers=2 --console=plain
+      - name: Inspect actual APK and signature, no installation on a personal device
+        run: |
+          mkdir -p "$RUNNER_TEMP/m50-evidence"
+          python3 interface/labs/m50-s1/tools/verify_apk.py --apk interface/labs/m50-s1/app/build/outputs/apk/debug/app-debug.apk --aapt "$ANDROID_HOME/build-tools/35.0.0/aapt" --output "$RUNNER_TEMP/m50-evidence/APK.json"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs interface/labs/m50-s1/app/build/outputs/apk/debug/app-debug.apk > "$RUNNER_TEMP/m50-evidence/signature.txt"
+      - name: Enable authorized emulator acceleration
+        run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
+      - name: API29 instrumentation, airplane mode and actual process restart
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: python3 interface/labs/m50-s1/tools/run_emulator.py --api 29 --lab interface/labs/m50-s1 --sources "$RUNNER_TEMP/m50-sources/kotlin" --reports "$RUNNER_TEMP/m50-evidence/api29"
+      - name: API35 instrumentation of the same APK and actual process restart
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: python3 interface/labs/m50-s1/tools/run_emulator.py --api 35 --lab interface/labs/m50-s1 --sources "$RUNNER_TEMP/m50-sources/kotlin" --reports "$RUNNER_TEMP/m50-evidence/api35"
+      - name: Bind all actual reports to the exact source and tested APK
+        id: qualification
+        run: python3 interface/labs/m50-s1/tools/qualify.py --interface interface --reports "$RUNNER_TEMP/m50-evidence"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: m50-s1b-reports-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/m50-evidence/
+            interface/labs/m50-s1/app/build/test-results/
+            interface/labs/m50-s1/app/build/reports/
+            ${{ runner.temp }}/m50-sources/provenance.json
+      - name: Publish laboratory APK only after all qualification steps succeed
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: JARVIS-M50-S1B-QUALIFIED-LAB-${{ steps.qualification.outputs.apk_sha256 }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            interface/labs/m50-s1/app/build/outputs/apk/debug/app-debug.apk
+            ${{ runner.temp }}/m50-evidence/
