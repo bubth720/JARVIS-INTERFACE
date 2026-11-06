@@ -47,6 +47,7 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
     var now by remember { mutableStateOf(LocalDateTime.now()) }
     var active by remember { mutableStateOf(false) }
     var systemEconomy by remember { mutableStateOf(false) }
+    val observation = remember(now) { LocalWeatherStore(context).lastKnown() }
     val owner = LocalLifecycleOwner.current
     LaunchedEffect(owner) {
         owner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -90,11 +91,11 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                                 val wide = maxWidth >= 800.dp
                                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                     if (wide) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                        OfficeScene(now, animate, intensity, glow, Modifier.weight(2f))
-                                        Supervision(now, Modifier.weight(1f))
+                                        OfficeScene(now, animate, intensity, glow, Modifier.weight(2f), observation)
+                                        Supervision(now, Modifier.weight(1f), observation)
                                     } else {
-                                        OfficeScene(now, animate, intensity, glow, Modifier.fillMaxWidth())
-                                        Supervision(now, Modifier.fillMaxWidth())
+                                        OfficeScene(now, animate, intensity, glow, Modifier.fillMaxWidth(), observation)
+                                        Supervision(now, Modifier.fillMaxWidth(), observation)
                                     }
                                     ModuleGrid(if (wide) 8 else 4) { screen = it }
                                 }
@@ -117,7 +118,7 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                                 Text("Animations suspendues en arrière-plan et en économie d’énergie Android.")
                             }
                         }
-                        "Supervision" -> Supervision(now)
+                        "Supervision" -> Supervision(now, observation = observation)
                         "Avatar" -> Pane("Avatar JARVIS", Modifier.testTag("avatar-placeholder")) { avatar() }
                         else -> Pane(screen, Modifier.testTag("module-screen")) {
                             Text("Non connecté", color = Cyan)
@@ -144,15 +145,15 @@ private fun Pane(title: String, modifier: Modifier = Modifier, content: @Composa
 }
 
 @Composable
-private fun Supervision(now: LocalDateTime, modifier: Modifier = Modifier) {
+private fun Supervision(now: LocalDateTime, modifier: Modifier = Modifier, observation: WeatherObservation? = null) {
     Pane("SUPERVISION", modifier.testTag("dashboard")) {
         Text("Interface · locale")
         Text("${now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))}\nSource : horloge de l’appareil", fontSize = 12.sp)
         HorizontalDivider(color = Cyan.copy(alpha = .2f))
-        listOf("CORE", "LLM", "VOICE", "Sécurité", "Météo").forEach {
+        listOf("CORE", "LLM", "VOICE", "Sécurité").forEach {
             Text("$it : Non connecté", fontSize = 12.sp)
         }
-        Text("Aucune observation météo enregistrée.", fontSize = 11.sp, color = Color.LightGray)
+        Text(observation?.let { "Météo : ${it.weather.name} · dernière observation\nSource : ${it.source}\n${java.time.Instant.ofEpochMilli(it.observedAtEpochMillis).atZone(java.time.ZoneId.systemDefault())}" } ?: "Météo : Non connecté · aucune observation enregistrée.", fontSize = 11.sp, color = Color.LightGray)
     }
 }
 
@@ -173,7 +174,7 @@ private fun ModuleGrid(columns: Int, open: (String) -> Unit) {
 }
 
 @Composable
-private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, glow: Boolean, modifier: Modifier) {
+private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, glow: Boolean, modifier: Modifier, observation: WeatherObservation? = null) {
     val phase = dayPhase(now.toLocalTime())
     val skyTarget = when (phase) {
         DayPhase.SUNRISE -> Color(0xFFB07775)
@@ -193,6 +194,21 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
             val w = size.width; val h = size.height
             fun box(x: Float, y: Float, width: Float, height: Float, color: Color) = drawRect(color, Offset(x*w,y*h), Size(width*w,height*h))
             box(.08f,.06f,.84f,.53f,sky)
+            when (observation?.weather) {
+                Weather.CLOUDS, Weather.RAIN, Weather.STORM -> {
+                    for (i in 0..3) drawOval(Color(0xFF536275).copy(alpha=.55f), Offset((.1f+i*.19f)*w,.12f*h),Size(w*.25f,h*.09f))
+                    if (observation.weather != Weather.CLOUDS) for (i in 0..22) {
+                        val x = .1f+(i%12)*.068f
+                        val y = .25f+(i/12)*.15f
+                        drawLine(Cyan.copy(alpha=.3f),Offset(x*w,y*h),Offset((x-.01f)*w,(y+.05f)*h),1.5f)
+                    }
+                    if (observation.weather == Weather.STORM) drawLine(Color(0xFFFFE8AA),Offset(.76f*w,.2f*h),Offset(.72f*w,.3f*h),2f)
+                }
+                Weather.FOG -> box(.08f,.2f,.84f,.35f,Color.LightGray.copy(alpha=.22f))
+                Weather.SNOW -> for (i in 0..30) drawCircle(Color.White.copy(alpha=.6f),w*.003f,Offset((.1f+(i%11)*.07f)*w,(.16f+(i/11)*.14f)*h))
+                Weather.CLEAR -> drawCircle(Color(0xFFF9DAB0).copy(alpha=.65f),w*.035f,Offset(.76f*w,.2f*h))
+                null -> Unit
+            }
             for (i in 0..5) box(.1f+i*.15f,.08f,.007f,.5f,Color(0xFF1B2C3A))
             box(.08f,.57f,.84f,.025f,Cyan.copy(alpha = if (glow) .35f+pulse*intensity*.15f else .06f))
             box(0f,.65f,1f,.35f,Color(0xFF141B26))
@@ -223,6 +239,6 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
             }
             if (glow) drawRect(Brush.radialGradient(listOf(Cyan.copy(alpha=.06f),Color.Transparent),center=Offset(w*.5f,h*.4f),radius=w*.5f))
         }
-        Text("Ambiance horaire locale · météo inconnue", color = Color.LightGray, fontSize = 11.sp)
+        Text(if (observation == null) "Ambiance horaire locale · météo inconnue" else "Météo connue : ${observation.weather.name} · observation passée", color = Color.LightGray, fontSize = 11.sp)
     }
 }
