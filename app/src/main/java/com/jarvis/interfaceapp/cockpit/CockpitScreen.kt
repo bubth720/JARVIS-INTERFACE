@@ -21,6 +21,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -136,7 +137,7 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
 
 @Composable
 private fun Pane(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    Surface(modifier.fillMaxWidth(), color = Color(0xE6121C2C), shape = RoundedCornerShape(14.dp), border = BorderStroke(1.dp, Cyan.copy(alpha = .3f))) {
+    Surface(modifier.fillMaxWidth(), color = Color(0xE6121C2C), contentColor = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(14.dp), border = BorderStroke(1.dp, Cyan.copy(alpha = .3f))) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(title, color = Cyan, style = MaterialTheme.typography.titleMedium)
             content()
@@ -176,6 +177,16 @@ private fun ModuleGrid(columns: Int, open: (String) -> Unit) {
 @Composable
 private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, glow: Boolean, modifier: Modifier, observation: WeatherObservation? = null) {
     val phase = dayPhase(now.toLocalTime())
+    val configuration = LocalConfiguration.current
+    val landscape = configuration.screenWidthDp > configuration.screenHeightDp
+    val heightLimit = if (landscape) (configuration.screenHeightDp.dp - 280.dp).coerceAtLeast(100.dp) else 340.dp
+    val phaseLabel = when (phase) {
+        DayPhase.SUNRISE -> "LEVER DU JOUR"
+        DayPhase.MORNING -> "MATIN"
+        DayPhase.AFTERNOON -> "APRÈS-MIDI"
+        DayPhase.SUNSET -> "COUCHER DU SOLEIL"
+        DayPhase.NIGHT -> "NUIT"
+    }
     val skyTarget = when (phase) {
         DayPhase.SUNRISE -> Color(0xFFB07775)
         DayPhase.MORNING -> Color(0xFF487589)
@@ -189,8 +200,10 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
         val value by transition.animateFloat(0f, 1f, infiniteRepeatable(tween(5000), RepeatMode.Reverse), label = "led")
         value
     } else 0f
-    Pane("BUREAU · ${phase.name}", modifier) {
-        Canvas(Modifier.fillMaxWidth().aspectRatio(1.45f).background(Ink, RoundedCornerShape(10.dp))) {
+    Pane("BUREAU · $phaseLabel", modifier) {
+        BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        val sceneHeight = minOf(maxWidth / 1.45f, heightLimit)
+        Canvas(Modifier.height(sceneHeight).aspectRatio(1.45f).background(Ink, RoundedCornerShape(10.dp))) {
             val w = size.width; val h = size.height
             fun box(x: Float, y: Float, width: Float, height: Float, color: Color) = drawRect(color, Offset(x*w,y*h), Size(width*w,height*h))
             box(.08f,.06f,.84f,.53f,sky)
@@ -238,6 +251,7 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
                 drawCircle(Color.White.copy(alpha=.13f),w*.009f,Offset((.706f+i*.006f)*w,(.55f-rise)*h))
             }
             if (glow) drawRect(Brush.radialGradient(listOf(Cyan.copy(alpha=.06f),Color.Transparent),center=Offset(w*.5f,h*.4f),radius=w*.5f))
+        }
         }
         Text(if (observation == null) "Ambiance horaire locale · météo inconnue" else "Météo connue : ${observation.weather.name} · observation passée", color = Color.LightGray, fontSize = 11.sp)
     }
