@@ -68,6 +68,8 @@ jobs:
             adb shell settings put system user_rotation 1
             sleep 3
             adb exec-out screencap -p > evidence/landscape.png
+            adb shell dumpsys gfxinfo com.jarvis.interfaceapp reset
+            sleep 10
             adb shell dumpsys meminfo com.jarvis.interfaceapp > evidence/memory.txt
             adb shell dumpsys gfxinfo com.jarvis.interfaceapp > evidence/frames.txt
             adb shell dumpsys cpuinfo > evidence/cpu-snapshot.txt

@@ -29,6 +29,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -113,10 +114,10 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                                 val wide = landscape && maxWidth >= 500.dp
                                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                     if (wide) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                        OfficeScene(sceneTime, animate, intensity, glow, Modifier.weight(2f), observation, accent)
+                                        OfficeScene(sceneTime, animate, intensity, glow, Modifier.weight(2f), observation, accent, quality = performance == 2)
                                         Supervision(now, Modifier.weight(1f), observation)
                                     } else {
-                                        OfficeScene(sceneTime, animate, intensity, glow, Modifier.fillMaxWidth(), observation, accent)
+                                        OfficeScene(sceneTime, animate, intensity, glow, Modifier.fillMaxWidth(), observation, accent, quality = performance == 2)
                                         Supervision(now, Modifier.fillMaxWidth(), observation)
                                     }
                                     ModuleGrid(if (wide) 8 else 4, selected) { selected = it; screen = it }
@@ -163,7 +164,7 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                         "Supervision" -> Supervision(now, observation = observation)
                         "Avatar" -> Pane("Avatar JARVIS", Modifier.testTag("avatar-placeholder")) { avatar() }
                         else -> {
-                            OfficeScene(sceneTime, animate, intensity, glow, Modifier.fillMaxWidth(), observation, accent, true)
+                            OfficeScene(sceneTime, animate, intensity, glow, Modifier.fillMaxWidth(), observation, accent, true, performance == 2)
                             WorkspaceScreen(screen, workspace, secure) { secure = it; prefs.edit().putBoolean("secure", it).apply() }
                             ModuleGrid(if (landscape) 8 else 4, selected) { selected = it; screen = it }
                         }
@@ -219,7 +220,7 @@ private fun ModuleGrid(columns: Int, selected: String = "", open: (String) -> Un
 }
 
 @Composable
-private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, glow: Boolean, modifier: Modifier, observation: WeatherObservation? = null, accent: Color = Cyan, compact: Boolean = false) {
+private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, glow: Boolean, modifier: Modifier, observation: WeatherObservation? = null, accent: Color = Cyan, compact: Boolean = false, quality: Boolean = false) {
     val phase = dayPhase(now.toLocalTime())
     val configuration = LocalConfiguration.current
     val landscape = configuration.screenWidthDp > configuration.screenHeightDp
@@ -239,11 +240,14 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
         DayPhase.NIGHT -> Color(0xFF102340)
     }
     val sky by androidx.compose.animation.animateColorAsState(skyTarget, tween(if (animate) 2000 else 0), label = "ambiance")
-    val pulse = if (animate) {
-        val transition = rememberInfiniteTransition(label = "office")
-        val value by transition.animateFloat(0f, 1f, infiniteRepeatable(tween(5000), RepeatMode.Reverse), label = "led")
-        value
-    } else 0f
+    var pulse by remember { mutableFloatStateOf(0f) }
+    LaunchedEffect(animate, quality) {
+        if (animate) while (isActive) {
+            val position = (android.os.SystemClock.uptimeMillis() % 10000L) / 5000f
+            pulse = if (position <= 1f) position else 2f - position
+            delay(if (quality) 33L else 66L)
+        } else pulse = 0f
+    }
     Pane("BUREAU · $phaseLabel", modifier) {
         BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         val sceneHeight = minOf(maxWidth / 1.45f, heightLimit)
