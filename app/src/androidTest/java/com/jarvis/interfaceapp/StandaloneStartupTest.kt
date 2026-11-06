@@ -11,6 +11,7 @@ class StandaloneStartupTest {
     @Before fun home() {
         compose.activity.getSharedPreferences("ui-01", android.content.Context.MODE_PRIVATE).edit().putString("route", "Accueil").putBoolean("demo", false).putBoolean("secure", false).commit()
         compose.activityRule.scenario.recreate()
+        compose.onNodeWithTag("nav-Accueil").performClick()
     }
 
     @Test fun launchesDashboardAndAvatarWithoutPartners() {

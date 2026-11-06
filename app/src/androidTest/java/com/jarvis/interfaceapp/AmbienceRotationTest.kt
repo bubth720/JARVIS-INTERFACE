@@ -16,6 +16,7 @@ class AmbienceRotationTest {
         val prefs = compose.activity.getSharedPreferences("ui-01", 0)
         prefs.edit().putString("route", "Accueil").putBoolean("demo", false).commit()
         compose.activityRule.scenario.recreate()
+        compose.onNodeWithTag("nav-Accueil").performClick()
         val before = LocalWeatherStore(compose.activity).lastKnown()
         compose.onNodeWithTag("open-settings").performClick()
         compose.onNodeWithTag("demo-switch").performScrollTo().performClick()

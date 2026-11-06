@@ -14,6 +14,7 @@ class WorkspaceInteractionTest {
         val context = compose.activity
         context.getSharedPreferences("ui-01", 0).edit().putString("route", "Accueil").putBoolean("demo", false).putBoolean("secure", false).commit()
         compose.activityRule.scenario.recreate()
+        compose.onNodeWithTag("nav-Accueil").performClick()
         listOf(1 to "Administratif", 2 to "Finance", 3 to "Projets", 4 to "Écriture", 5 to "Création").forEach { (index, name) ->
             val title = "TEST FIXTURE $index ${System.nanoTime()}"
             compose.onNodeWithTag("module-$index").performScrollTo().performClick()
