@@ -16,6 +16,10 @@ test('modules, local records, simulation and responsive layouts',async({page})=>
  await page.locator('#weather').selectOption('SNOW');
  await expect(page.locator('#ambience')).toContainText('NUIT');
  await expect(page.locator('#weather-art circle')).toHaveCount(33);
+ await page.setViewportSize({width:412,height:915});
+ await page.locator('#orientation').click();await expect(page.locator('body')).toHaveClass(/force-landscape/);
+ await page.locator('#orientation').click();await expect(page.locator('body')).toHaveClass(/portrait/);
+ await page.evaluate(()=>document.body.classList.remove('portrait','force-landscape'));
  for(const [name,width,height] of [['portrait',412,915],['landscape',1280,800]]){
   await page.setViewportSize({width,height});await page.locator('#home').click();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
