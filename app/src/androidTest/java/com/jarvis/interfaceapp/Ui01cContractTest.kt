@@ -49,6 +49,12 @@ class Ui01cContractTest {
             ui.waitForIdle()
             listOf("Accueil", "Modules", "Documents", "Calendrier", "Statistiques", "Paramètres", "Supervision", "Avatar").forEach { name ->
                 home(); if (name == "Accueil") click("open-settings"); click("nav-$name"); route(name)
+                if (name == "Calendrier") {
+                    val bounds = ui.onNodeWithTag("day-1").performScrollTo().fetchSemanticsNode().boundsInRoot
+                    val minimum = 48f * context.resources.displayMetrics.density
+                    assertTrue("Calendar target width", bounds.width + 1f >= minimum)
+                    assertTrue("Calendar target height", bounds.height + 1f >= minimum)
+                }
                 if (name != "Accueil") { click("close-settings"); route("Accueil") }
             }
             (0..7).forEach { index -> open(index); route(cockpitModules[index].name); click("close-settings"); route("Accueil") }

@@ -10,7 +10,7 @@ for(const [label,width,height] of [['phone-portrait',412,915],['phone-landscape'
  test('navigation, settings, ambience, power and layout '+label,async({page})=>{
   test.setTimeout(120000);await page.setViewportSize({width,height});await goto(page);
   for(const [id,name] of [['nav-modules','Modules'],['nav-documents','Documents'],['nav-calendar','Calendrier'],['nav-statistics','Statistiques'],['nav-settings','Paramètres'],['supervision','Supervision'],['avatar','Avatar']]){
-   await page.locator('#logo-home').click();await page.locator('#'+id).click();await expect(page.locator('#module-title')).toHaveText(name);await page.locator('#back').click();await expect(page.locator('#workspace')).toBeHidden();
+   await page.locator('#logo-home').click();await page.locator('#'+id).click();await expect(page.locator('#module-title')).toHaveText(name);if(name==='Calendrier')expect(await page.locator('.calendar-grid button').evaluateAll(nodes=>nodes.every(n=>n.getBoundingClientRect().width>=47.9&&n.getBoundingClientRect().height>=47.9))).toBeTruthy();await page.locator('#back').click();await expect(page.locator('#workspace')).toBeHidden();
   }
   await page.locator('#nav-modules').click();
   for(const m of modules){await page.locator(selector('list-module-'+m.name)).click();await expect(page.locator('#module-title')).toHaveText(m.name);await page.locator('#back').click();await expect(page.locator('#module-title')).toHaveText('Modules');}
