@@ -14,7 +14,7 @@ for(const [label,width,height] of [['phone-portrait',412,915],['phone-landscape'
   }
   await page.locator('#nav-modules').click();
   for(const m of modules){await page.locator(selector('list-module-'+m.name)).click();await expect(page.locator('#module-title')).toHaveText(m.name);await page.locator('#back').click();await expect(page.locator('#module-title')).toHaveText('Modules');}
-  await page.locator('#home').click();
+  await page.locator('#home').click();await page.locator('#nav-settings').click();await page.locator('#logo-home').click();await expect(page.locator('#workspace')).toBeHidden();
   for(const m of modules){await modulePage(page,m.name);expect(await page.evaluate(()=>document.documentElement.style.getPropertyValue('--accent'))).toBe(m.color);}
   await page.locator('#nav-settings').click();
   for(const p of ['economy','balanced','quality']){await page.locator('#performance').selectOption(p);await expect(page.locator('#performance')).toHaveValue(p);}
@@ -31,7 +31,7 @@ for(const [label,width,height] of [['phone-portrait',412,915],['phone-landscape'
   await modulePage(page,'Technique');await page.locator('#diagnostic-refresh').click();await expect(page.locator('#diagnostic')).toContainText('navigateur uniquement');const downloadPromise=page.waitForEvent('download');await page.locator('#diagnostic-export').click();const download=await downloadPromise;const report=fs.readFileSync(await download.path(),'utf8');expect(report).toContain('navigateur uniquement');expect(report).not.toContain('TEST PRIVATE');
   await page.locator('#nav-power').click();await expect(page.locator('#power-dialog')).toContainText('n’est pas disponible');await page.locator('#power-cancel').click();await expect(page.locator('#power-dialog')).not.toBeVisible();
   await page.locator('#nav-power').click();await page.locator('#power-sleep').click();await expect(page.locator('body')).toHaveClass(/sleeping/);await page.locator('#power-resume').click();await expect(page.locator('body')).not.toHaveClass(/sleeping/);await expect(page.locator('#module-title')).toHaveText('Technique');
-  await page.locator('#home').click();await page.locator('#nav-modules').click();await modulePage(page,'Finance');await page.goBack();await expect(page.locator('#module-title')).toHaveText('Modules');
+  await page.locator('#home').click();await page.locator('#nav-modules').click();await modulePage(page,'Finance');await page.goBack();await expect(page.locator('#module-title')).toHaveText('Modules');await modulePage(page,'Finance');await page.keyboard.press('Alt+ArrowLeft');await expect(page.locator('#module-title')).toHaveText('Modules');
   await page.locator('#home').click();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await page.screenshot({path:'test-results/ui01c-'+label+'.png',fullPage:true});
  });
 }

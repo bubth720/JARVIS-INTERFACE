@@ -21,12 +21,14 @@ class WorkspaceInteractionTest {
             compose.onNodeWithTag("$name-title").performScrollTo().performTextReplacement(title)
             if (name == "Finance") compose.onNodeWithTag("Finance-amount").performScrollTo().performTextReplacement("12,34")
             else compose.onNodeWithTag("$name-body").performScrollTo().performTextReplacement("TEST FIXTURE — contenu de validation")
+            if (name in listOf("Administratif", "Projets")) compose.onNodeWithTag("$name-date").performScrollTo().performTextReplacement(java.time.LocalDate.now().toString())
             compose.onNodeWithTag("save-entry").performScrollTo().performClick()
             compose.waitUntil(15000) { LocalWorkspace(context).use { db -> db.entries(name).any { it.title == title } } }
             compose.activityRule.scenario.recreate()
             compose.onNodeWithTag("module-screen").assertExists()
             LocalWorkspace(context).use { db ->
                 val saved = db.entries(name).single { it.title == title }
+                if (name in listOf("Administratif", "Projets")) assertEquals(java.time.LocalDate.now().toString(), saved.due)
                 if (name == "Finance") assertEquals(-1234L, saved.amountCents)
                 else assertEquals("TEST FIXTURE — contenu de validation", saved.body)
             }

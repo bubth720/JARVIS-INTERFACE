@@ -48,7 +48,7 @@ class Ui01cContractTest {
             ui.runOnIdle { context.requestedOrientation = orientation }
             ui.waitForIdle()
             listOf("Accueil", "Modules", "Documents", "Calendrier", "Statistiques", "Paramètres", "Supervision", "Avatar").forEach { name ->
-                home(); click("nav-$name"); route(name)
+                home(); if (name == "Accueil") click("open-settings"); click("nav-$name"); route(name)
                 if (name != "Accueil") { click("close-settings"); route("Accueil") }
             }
             (0..7).forEach { index -> open(index); route(cockpitModules[index].name); click("close-settings"); route("Accueil") }
@@ -117,7 +117,11 @@ class Ui01cContractTest {
         val key = "budget-${YearMonth.now()}"; replace(key, "incorrect"); click("save-budget"); ui.onNodeWithTag("workspace-message").assertExists()
         replace(key, "100,25"); click("save-budget")
         assertEquals(10025L, context.getSharedPreferences("ui01b-finance", 0).getLong(YearMonth.now().toString(), 0))
-        click("movement-income"); click("movement-expense")
+        replace("Finance-title", "TEST INCOME UI01C"); replace("Finance-amount", "20,00"); click("movement-income"); click("save-entry")
+        ui.waitUntil(15000) { rows("Finance").any { it.title == "TEST INCOME UI01C" && it.amountCents == 2000L } }
+        replace("Finance-title", "TEST EXPENSE UI01C"); replace("Finance-amount", "3,45"); click("movement-expense"); click("save-entry")
+        ui.waitUntil(15000) { rows("Finance").any { it.title == "TEST EXPENSE UI01C" && it.amountCents == -345L } }
+        LocalWorkspace(context).use { db -> db.entries("Finance").filter { it.title in listOf("TEST INCOME UI01C", "TEST EXPENSE UI01C") }.forEach { db.delete(it.id) } }
         LocalWorkspace(context).use { it.delete(entry.id); it.delete(project.id) }
     }
 
@@ -159,7 +163,9 @@ class Ui01cContractTest {
         resolver.openOutputStream(uri)!!.use { it.write(byteArrayOf()) }
         try {
             open(6); ui.waitUntil(15000) { ui.onAllNodes(hasTestTag("diagnostic-export") and isEnabled()).fetchSemanticsNodes().isNotEmpty() }
+            val beforeRefresh = ui.onNodeWithTag("diagnostics").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].joinToString { it.text }
             click("diagnostic-refresh")
+            ui.waitUntil(15000) { ui.onNodeWithTag("diagnostics").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].joinToString { it.text } != beforeRefresh }
             val export = BoundaryMonitor(Intent.ACTION_CREATE_DOCUMENT, Instrumentation.ActivityResult(Activity.RESULT_OK, Intent().setData(uri)))
             instrumentation.addMonitor(export)
             try { click("diagnostic-export"); ui.waitUntil(15000) { export.last != null }; ui.waitUntil(15000) { runCatching { resolver.openInputStream(uri)!!.bufferedReader().use { it.readText() }.contains("Version application") }.getOrDefault(false) } }
@@ -175,7 +181,7 @@ class Ui01cContractTest {
             val view = BoundaryMonitor(Intent.ACTION_VIEW, Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)); instrumentation.addMonitor(view)
             try {
                 home(); click("nav-Documents"); waitTag("document-open-${doc.id}"); click("document-open-${doc.id}"); ui.waitUntil(15000) { view.last != null }; assertEquals(uri, view.last!!.data)
-                open(1); click("file-open-${doc.id}")
+                open(1); view.last = null; click("file-open-${doc.id}"); ui.waitUntil(15000) { view.last != null }; assertEquals(uri, view.last!!.data)
             } finally { instrumentation.removeMonitor(view); LocalWorkspace(context).use { it.delete(doc.id) } }
             open(7); ui.onNodeWithTag("permissions-list").assertExists()
             click("privacy-switch"); ui.runOnIdle { assertTrue(context.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE != 0) }
@@ -189,7 +195,8 @@ class Ui01cContractTest {
     @Test fun powerContractCancelSleepResumeAndCloseOnlyThisActivity() {
         open(3); click("nav-Alimentation"); click("power-cancel"); ui.onNodeWithTag("module-screen").assertExists()
         click("nav-Alimentation"); click("power-sleep"); ui.onNodeWithTag("sleep-screen").assertExists()
-        ui.onNodeWithTag("power-resume").performClick(); route("Projets")
+        ui.runOnIdle { context.onBackPressedDispatcher.onBackPressed() }; route("Projets")
+        click("nav-Alimentation"); click("power-sleep"); ui.onNodeWithTag("power-resume").performClick(); route("Projets")
         click("nav-Alimentation"); ui.onNodeWithTag("power-close").performSemanticsAction(SemanticsActions.OnClick) { it() }
         ui.waitUntil(15000) { ui.activityRule.scenario.state == Lifecycle.State.DESTROYED }
     }
