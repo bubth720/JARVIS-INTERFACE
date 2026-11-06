@@ -1,5 +1,36 @@
 # JARVIS INTERFACE
 
+Application Android native autonome — **UI-01C, version 0.3.0-ui01c**.
+Kotlin / Jetpack Compose, minimum Android 8 (API 26). Aucun autre module JARVIS
+n’est raccordé ; aucune permission INTERNET ni dépendance cloud obligatoire.
+
+La navigation donne accès aux huit modules, documents, calendrier, statistiques,
+paramètres, veille et fermeture de cette application. Les tâches, opérations
+financières, projets, notes et travaux créatifs sont modifiables et conservés
+localement (SQLite). Projets et Création disposent d’étapes et d’un historique.
+Le diagnostic et les permissions utilisent les sources Android disponibles.
+
+- [Inventaire des interactions et qualification](docs/ui-01c-interactions.md)
+- [Architecture, stockage et différences Android / navigateur](docs/ui-01c.md)
+- [Résultats, APK signé debug, captures et limites](docs/ui-01c-results.md)
+- [Prévisualisation HTML autonome](preview/jarvis-ui01c.html) : télécharger le
+  fichier puis l’ouvrir dans un navigateur ; données de démonstration séparées.
+
+Les dispositions suivent l’orientation et conservent la navigation. Le décor
+réagit au module, à l’heure locale et aux réglages de démonstration. Sans source
+météo identifiée, l’ambiance reste neutre ; aucune météo réelle n’est inventée.
+Les références graphiques officielles restent attendues : l’illustration actuelle
+est provisoire. Les résultats sur émulateurs ne valent pas validation physique,
+thermique, énergétique ou de fluidité sur POCO X8 Pro / Redmi Pad SE.
+
+Sources actuelles : `cockpit/CockpitScreen.kt`, `WorkspaceScreens.kt`,
+`InteractionScreens.kt`, `ProjectInteractions.kt`, `LocalWorkspace.kt` ;
+sources web séparées dans `preview/`. Les développements antérieurs sont conservés.
+La section suivante décrit la fondation historique mission 002 ; son organisation
+et ses limitations ne décrivent pas la version UI-01C.
+
+## Archive — fondation mission 002
+
 Application Android native autonome — mission 002, version 0.1.0.
 
 ## Fonctionnement

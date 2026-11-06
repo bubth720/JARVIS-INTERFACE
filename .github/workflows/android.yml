@@ -1,5 +1,8 @@
 name: Android
 on: [push, pull_request]
+concurrency:
+  group: ui-01-build-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -12,9 +15,43 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - run: ./gradlew assembleDebug testDebugUnitTest lintDebug assembleDebugAndroidTest --no-daemon
+      - name: Verify debug APK
+        run: |
+          mkdir -p app/build/reports/ui-01
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose app/build/outputs/apk/debug/app-debug.apk > app/build/reports/ui-01/signature.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging app/build/outputs/apk/debug/app-debug.apk > app/build/reports/ui-01/package.txt
+          sha256sum app/build/outputs/apk/debug/app-debug.apk > app/build/reports/ui-01/apk-sha256.txt
       - uses: actions/upload-artifact@v4
         with:
           name: jarvis-interface-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/reports/
+            app/build/test-results/
+
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python3 scripts/generate_ui01b.py --check
+      - run: python3 scripts/build_ui01c_preview.py --check
+      - run: node --check preview/app.js
+      - run: npm install --no-save @playwright/test@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --config=preview/playwright.config.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jarvis-ui01c-html-preview
+          path: |
+            preview/
+            test-results/
+            playwright-report/

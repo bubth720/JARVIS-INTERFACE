@@ -1,0 +1,88 @@
+{
+  "source_revision": "9a43dad6a112f0a40323a93c0034d55aa02c6397",
+  "build_run": 42313231521,
+  "device_run": 42313231538,
+  "browser": {
+    "tests": 6,
+    "failures": 0,
+    "skipped": 0,
+    "engine": "Chromium Playwright 1.56.1",
+    "offline_file_reopened": true
+  },
+  "devices": {
+    "phone": {
+      "instrumentation": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "apk_sha256": "f8dcd0216eab6d4fbedb6347c53be4a4d1e7fa2cd9cdacb95d3185c68014f638",
+      "restart_write_passed": true,
+      "restart_verify_passed": true,
+      "pss_kb": 61234,
+      "rss_kb": 168976,
+      "swap_kb": 0,
+      "frames": 151,
+      "janky_frames": 143,
+      "janky_percent": "94.70%",
+      "legacy_janky_frames": 1,
+      "legacy_janky_percent": "0.66%",
+      "crash_log_empty": true,
+      "display_size": "Physical size: 320x640\nOverride size: 1080x1920",
+      "density": "Physical density: 160\nOverride density: 420",
+      "captures": {
+        "portrait": [
+          1080,
+          1920
+        ],
+        "landscape": [
+          1920,
+          1080
+        ]
+      }
+    },
+    "tablet": {
+      "instrumentation": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "apk_sha256": "6a1b8025bff4e494c632a61251d62ac9c50164a399e81c3b4178494e81a2bda4",
+      "restart_write_passed": true,
+      "restart_verify_passed": true,
+      "pss_kb": 61894,
+      "rss_kb": 170096,
+      "swap_kb": 0,
+      "frames": 151,
+      "janky_frames": 148,
+      "janky_percent": "98.01%",
+      "legacy_janky_frames": 78,
+      "legacy_janky_percent": "51.66%",
+      "crash_log_empty": true,
+      "display_size": "Physical size: 320x640\nOverride size: 1200x1920",
+      "density": "Physical density: 160\nOverride density: 240",
+      "captures": {
+        "portrait": [
+          1200,
+          1920
+        ],
+        "landscape": [
+          1920,
+          1200
+        ]
+      }
+    }
+  },
+  "jvm": {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 53
+  }
+}

@@ -1,31 +1,43 @@
 package com.jarvis.interfaceapp
 
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Before
 
-/** Run on a device without other JARVIS apps, with airplane mode enabled. */
 class StandaloneStartupTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @Before fun home() {
+        compose.activity.getSharedPreferences("ui-01", android.content.Context.MODE_PRIVATE).edit().putString("route", "Accueil").putBoolean("demo", false).putBoolean("secure", false).commit()
+        compose.activityRule.scenario.recreate()
+        compose.onNodeWithTag("nav-Accueil").performClick()
+    }
 
     @Test fun launchesDashboardAndAvatarWithoutPartners() {
-        compose.onNodeWithText("JARVIS INTERFACE").assertIsDisplayed()
+        compose.onNodeWithText("J A R V I S").assertIsDisplayed()
         compose.onNodeWithTag("dashboard").assertExists()
+        compose.onNodeWithTag("nav-Avatar").performClick()
         compose.onNodeWithTag("avatar-placeholder").assertExists()
-        compose.onNodeWithTag("local-status").assertExists()
     }
     @Test fun settingsReturnsToDashboard() {
         compose.onNodeWithTag("open-settings").performClick()
-        compose.onNodeWithTag("close-settings").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("close-settings").performScrollTo().performClick()
         compose.onNodeWithTag("dashboard").assertExists()
     }
     @Test fun recreationRestoresUsableInterface() {
+        compose.onNodeWithTag("open-settings").performClick()
         compose.activityRule.scenario.recreate()
-        compose.onNodeWithText("JARVIS INTERFACE").assertIsDisplayed()
-        compose.onNodeWithTag("open-settings").assertIsDisplayed()
+        compose.onNodeWithText("Paramètres graphiques").assertExists()
+        compose.onNodeWithTag("close-settings").performScrollTo().performClick()
+        compose.onNodeWithTag("dashboard").assertExists()
+    }
+    @Test fun allEightModulesOpenAndReturn() {
+        repeat(8) { index ->
+            compose.onNodeWithTag("module-$index").performScrollTo().performClick()
+            compose.onNodeWithTag("module-screen").assertExists()
+            compose.onNodeWithText("Services JARVIS : Non connecté").assertExists()
+            compose.onNodeWithTag("close-settings").performScrollTo().performClick()
+        }
     }
 }
