@@ -5,14 +5,13 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import org.junit.Rule
 import org.junit.Test
 
-/** Run on an isolated Android test device. No external JARVIS partner is required. */
 class StandaloneStartupTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
     @Test fun launchesDashboardAndAvatarWithoutPartners() {
         compose.onNodeWithText("J A R V I S").assertIsDisplayed()
         compose.onNodeWithTag("dashboard").assertExists()
-        compose.onNodeWithText("Avatar", useUnmergedTree = true).performClick()
+        compose.onNodeWithTag("nav-Avatar").performClick()
         compose.onNodeWithTag("avatar-placeholder").assertExists()
     }
     @Test fun settingsReturnsToDashboard() {
