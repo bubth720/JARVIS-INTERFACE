@@ -7,6 +7,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -243,17 +244,20 @@ private fun Supervision(now: LocalDateTime, modifier: Modifier = Modifier, obser
 
 @Composable
 private fun ModuleGrid(columns: Int, selected: String = "", open: (String) -> Unit) {
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+    val scroll = maxWidth < (48 * columns + 4 * (columns - 1)).dp
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         modules.indices.chunked(columns).forEach { indices ->
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(if (scroll) Modifier.horizontalScroll(rememberScrollState()) else Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 indices.forEach { i ->
-                    OutlinedButton(onClick = { open(modules[i]) }, modifier = Modifier.weight(1f).heightIn(min = 64.dp).testTag("module-$i"),
+                    OutlinedButton(onClick = { open(modules[i]) }, modifier = (if (scroll) Modifier.width(64.dp) else Modifier.weight(1f)).heightIn(min = 64.dp).testTag("module-$i"),
                         contentPadding = PaddingValues(2.dp), shape = RoundedCornerShape(10.dp), border = BorderStroke(if (selected == modules[i]) 3.dp else 1.dp, accents[i].copy(alpha = if (selected == modules[i]) 1f else .55f))) {
                         Text(modules[i], fontSize = 10.sp, color = accents[i], softWrap = true)
                     }
                 }
             }
         }
+    }
     }
 }
 

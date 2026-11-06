@@ -64,7 +64,14 @@ class Ui01cContractTest {
                 }
                 if (name != "Accueil") { click("close-settings"); route("Accueil") }
             }
-            (0..7).forEach { index -> open(index); route(cockpitModules[index].name); click("close-settings"); route("Accueil") }
+            (0..7).forEach { index ->
+                home()
+                val bounds = ui.onNodeWithTag("module-$index").performScrollTo().fetchSemanticsNode().boundsInRoot
+                val minimum = 48f * context.resources.displayMetrics.density
+                assertTrue("Module target width", bounds.width + 1f >= minimum)
+                assertTrue("Module target height", bounds.height + 1f >= minimum)
+                open(index); route(cockpitModules[index].name); click("close-settings"); route("Accueil")
+            }
             click("open-settings"); home(); route("Accueil")
             ui.runOnIdle { context.onBackPressedDispatcher.onBackPressed() }; route("Paramètres")
             ui.runOnIdle { context.onBackPressedDispatcher.onBackPressed() }; route("Accueil")
