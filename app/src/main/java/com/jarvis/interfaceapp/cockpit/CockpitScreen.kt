@@ -108,7 +108,7 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                                     intensity = it
                                 }, onValueChangeFinished = { prefs.edit().putFloat("intensity", intensity).apply() })
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Switch(economy, { economy = it; prefs.edit().putBoolean("economy", it).apply() })
+                                    Switch(economy, { economy = it; prefs.edit().putBoolean("economy", it).apply() }, modifier = Modifier.testTag("economy-switch"))
                                     Text("Économie d’énergie", Modifier.padding(start = 8.dp))
                                 }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
