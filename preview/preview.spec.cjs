@@ -12,7 +12,7 @@ test('modules, local records, simulation and responsive layouts',async({page})=>
  await page.reload();await page.locator('[data-module="Administratif"]').click();
  await expect(page.locator('#records')).toContainText('DÉMONSTRATION — tâche test');
  await expect(page.locator('#records img')).toHaveCount(0);
- await page.locator('#hour').fill('22');await page.locator('#hour').dispatchEvent('input');
+ await page.locator('#hour').evaluate(el=>{el.value='22';el.dispatchEvent(new Event('input',{bubbles:true}));});
  await page.locator('#weather').selectOption('SNOW');
  await expect(page.locator('#ambience')).toContainText('NUIT');
  await expect(page.locator('#weather-art circle')).toHaveCount(33);

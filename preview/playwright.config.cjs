@@ -1,1 +1,1 @@
-module.exports = {testDir:'.',testMatch:'preview.spec.cjs',use:{browserName:'chromium',headless:true},webServer:{command:'python3 -m http.server 4173 --directory preview',url:'http://127.0.0.1:4173',reuseExistingServer:false}};
+module.exports = {testDir:'.',testMatch:'preview.spec.cjs',use:{browserName:'chromium',headless:true},webServer:{cwd:require('path').resolve(__dirname,'..'),command:'python3 -m http.server 4173 --directory preview',url:'http://127.0.0.1:4173',reuseExistingServer:false}};
