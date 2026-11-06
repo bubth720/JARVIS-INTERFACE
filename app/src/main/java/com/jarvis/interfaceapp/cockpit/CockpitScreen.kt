@@ -76,7 +76,7 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
             Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Column(Modifier.width(56.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
                     listOf("Accueil" to "⌂", "Supervision" to "◎", "Avatar" to "◇").forEach { (route, symbol) ->
-                        TextButton(onClick = { screen = route }, contentPadding = PaddingValues(0.dp)) {
+                        TextButton(onClick = { screen = route }, modifier = Modifier.testTag("nav-$route"), contentPadding = PaddingValues(0.dp)) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(symbol, fontSize = 24.sp)
                                 Text(route, fontSize = 8.sp)
