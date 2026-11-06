@@ -13,6 +13,7 @@ for(const [label,width,height] of [['phone-portrait',412,915],['phone-landscape'
   expect(await page.locator('.desk-row').evaluate(n=>getComputedStyle(n).gridTemplateColumns.split(' ').length)).toBe(height>width?1:2);
   expect(await page.locator('#modules').evaluate(n=>getComputedStyle(n).gridTemplateColumns.split(' ').length)).toBe(height>width?4:8);
   expect(await page.locator('#modules button').evaluateAll(nodes=>nodes.every(n=>n.getBoundingClientRect().width>=47.9&&n.getBoundingClientRect().height>=47.9))).toBeTruthy();
+  await page.locator('#orientation').click();await expect(page.locator('body')).toHaveClass(height>width?/force-landscape/:/portrait/);await page.locator('#layout-mode').selectOption('auto');
   for(const [id,name] of [['nav-modules','Modules'],['nav-documents','Documents'],['nav-calendar','Calendrier'],['nav-statistics','Statistiques'],['nav-settings','Paramètres'],['supervision','Supervision'],['avatar','Avatar']]){
    await page.locator('#logo-home').click();await page.locator('#'+id).click();await expect(page.locator('#module-title')).toHaveText(name);if(name==='Calendrier')expect(await page.locator('.calendar-grid button').evaluateAll(nodes=>nodes.every(n=>n.getBoundingClientRect().width>=47.9&&n.getBoundingClientRect().height>=47.9))).toBeTruthy();await page.locator('#back').click();await expect(page.locator('#workspace')).toBeHidden();
   }
