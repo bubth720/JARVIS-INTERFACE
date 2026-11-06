@@ -55,6 +55,9 @@ jobs:
             ./gradlew connectedDebugAndroidTest --no-daemon || touch evidence/tests-failed
             adb install -r app/build/outputs/apk/debug/app-debug.apk
             adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose app/build/outputs/apk/debug/app-debug.apk > evidence/signature.txt
+            "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging app/build/outputs/apk/debug/app-debug.apk > evidence/package.txt
+            sha256sum app/build/outputs/apk/debug/app-debug.apk > evidence/apk-sha256.txt
             adb shell am instrument -w -e class com.jarvis.interfaceapp.ProcessRestartProbe -e processProbe write com.jarvis.interfaceapp.test/androidx.test.runner.AndroidJUnitRunner > evidence/restart-write.txt
             python3 scripts/check_instrumentation_output.py evidence/restart-write.txt
             adb shell am force-stop com.jarvis.interfaceapp
@@ -91,3 +94,4 @@ jobs:
             evidence/
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
+            app/build/outputs/apk/debug/app-debug.apk
