@@ -52,7 +52,7 @@ jobs:
             adb shell wm density ${{ matrix.density }}
             adb shell svc wifi disable
             adb shell svc data disable
-            ./gradlew connectedDebugAndroidTest --no-daemon
+            ./gradlew connectedDebugAndroidTest --no-daemon || touch evidence/tests-failed
             adb shell am force-stop com.jarvis.interfaceapp
             adb shell settings put system accelerometer_rotation 0
             adb shell settings put system user_rotation 0
@@ -68,6 +68,7 @@ jobs:
             adb shell dumpsys battery > evidence/battery-snapshot.txt
             adb logcat -d -b crash > evidence/crashes.txt
             adb shell getprop ro.product.model > evidence/emulator-model.txt
+            test ! -f evidence/tests-failed
       - uses: actions/upload-artifact@v4
         if: always()
         with:
