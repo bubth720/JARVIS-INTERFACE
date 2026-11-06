@@ -7,9 +7,14 @@ import com.jarvis.interfaceapp.cockpit.*
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Before
 
 class CockpitPersistenceTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @Before fun home() {
+        compose.activity.getSharedPreferences("ui-01", android.content.Context.MODE_PRIVATE).edit().putString("route", "Accueil").putBoolean("demo", false).putBoolean("secure", false).commit()
+        compose.activityRule.scenario.recreate()
+    }
 
     @Test fun economyPreferenceSurvivesRecreationAndAndroidBack() {
         compose.activity.getSharedPreferences("ui-01", Context.MODE_PRIVATE).edit().putBoolean("economy", false).commit()

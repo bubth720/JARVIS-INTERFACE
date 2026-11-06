@@ -35,20 +35,40 @@ import java.time.format.DateTimeFormatter
 private val Cyan = Color(0xFF68E3EF)
 private val Ink = Color(0xFF060B17)
 private val modules = listOf("Système", "Administratif", "Finance", "Projets", "Écriture", "Création", "Technique", "Sécurité")
-private val accents = listOf(Cyan, Color(0xFFB69BFF), Color(0xFF7BDDA5), Color(0xFFFFBD78), Cyan, Color(0xFFD6A3FF), Color(0xFF85BEFF), Color(0xFFFF8798))
+private val accents = cockpitModules.map { Color(it.argb) }
 
 @Composable
 fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement réservé", color = Cyan) }) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("ui-01", Context.MODE_PRIVATE) }
-    var screen by rememberSaveable { mutableStateOf("Accueil") }
+    var screen by rememberSaveable { mutableStateOf(prefs.getString("route", "Accueil") ?: "Accueil") }
     var intensity by remember { mutableFloatStateOf(prefs.getFloat("intensity", .35f).coerceIn(0f, 1f)) }
     var economy by remember { mutableStateOf(prefs.getBoolean("economy", false)) }
     var glow by remember { mutableStateOf(prefs.getBoolean("glow", true)) }
+    val workspace = remember { LocalWorkspace(context) }
+    DisposableEffect(workspace) { onDispose { workspace.close() } }
+    var secure by remember { mutableStateOf(prefs.getBoolean("secure", false)) }
+    var performance by remember { mutableIntStateOf(prefs.getInt("performance", if (economy) 0 else 1)) }
+    var demo by rememberSaveable { mutableStateOf(prefs.getBoolean("demo", false)) }
+    var demoHour by rememberSaveable { mutableFloatStateOf(prefs.getFloat("demoHour", 12f)) }
+    var demoWeather by rememberSaveable { mutableStateOf(prefs.getString("demoWeather", "CLEAR")?.takeIf { stored -> Weather.entries.any { it.name == stored } } ?: "CLEAR") }
+    var selected by rememberSaveable { mutableStateOf(prefs.getString("selected", "Système") ?: "Système") }
+    val accent by androidx.compose.animation.animateColorAsState(accents[modules.indexOf(selected).coerceAtLeast(0)], tween(if (economy) 0 else 600), label = "module-accent")
+    val configuration = LocalConfiguration.current
+    val landscape = configuration.screenWidthDp > configuration.screenHeightDp
+    LaunchedEffect(screen) { prefs.edit().putString("route", screen).apply() }
+    LaunchedEffect(selected) { prefs.edit().putString("selected", selected).apply() }
+    DisposableEffect(secure) {
+        val activity = context as? android.app.Activity
+        if (secure) activity?.window?.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+        else activity?.window?.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+        onDispose { }
+    }
     var now by remember { mutableStateOf(LocalDateTime.now()) }
     var active by remember { mutableStateOf(false) }
     var systemEconomy by remember { mutableStateOf(false) }
-    val observation = remember(now) { LocalWeatherStore(context).lastKnown() }
+    val sceneTime = if (demo) now.withHour(demoHour.toInt()).withMinute(0) else now
+    val observation = if (demo) WeatherObservation(Weather.valueOf(demoWeather), System.currentTimeMillis(), "DÉMONSTRATION") else remember(now) { LocalWeatherStore(context).lastKnown() }
     val owner = LocalLifecycleOwner.current
     LaunchedEffect(owner) {
         owner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -63,7 +83,8 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
         }
     }
     BackHandler(screen != "Accueil") { screen = "Accueil" }
-    val animate = active && !economy && !systemEconomy && intensity > 0f
+    val animate = active && !economy && performance != 0 && !systemEconomy && intensity > 0f
+    MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = accent)) {
     Scaffold(containerColor = Ink) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).padding(12.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -89,21 +110,41 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                     when (screen) {
                         "Accueil" -> {
                             BoxWithConstraints(Modifier.fillMaxWidth()) {
-                                val wide = maxWidth >= 800.dp
+                                val wide = landscape && maxWidth >= 500.dp
                                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                     if (wide) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                        OfficeScene(now, animate, intensity, glow, Modifier.weight(2f), observation)
+                                        OfficeScene(sceneTime, animate, intensity, glow, Modifier.weight(2f), observation, accent)
                                         Supervision(now, Modifier.weight(1f), observation)
                                     } else {
-                                        OfficeScene(now, animate, intensity, glow, Modifier.fillMaxWidth(), observation)
+                                        OfficeScene(sceneTime, animate, intensity, glow, Modifier.fillMaxWidth(), observation, accent)
                                         Supervision(now, Modifier.fillMaxWidth(), observation)
                                     }
-                                    ModuleGrid(if (wide) 8 else 4) { screen = it }
+                                    ModuleGrid(if (wide) 8 else 4, selected) { selected = it; screen = it }
                                 }
                             }
                         }
                         "Paramètres" -> {
                             Pane("Paramètres graphiques") {
+                                Text("Profil de performance")
+                                listOf("Économie", "Équilibré", "Qualité").forEachIndexed { index, label ->
+                                    FilterChip(performance == index, {
+                                        performance = index; economy = index == 0
+                                        intensity = if (index == 2) .65f else .35f
+                                        prefs.edit().putInt("performance", index).putBoolean("economy", economy).putFloat("intensity", intensity).apply()
+                                    }, label = { Text(label) }, modifier = Modifier.testTag("performance-$index"))
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Switch(demo, { demo = it; prefs.edit().putBoolean("demo", it).apply() }, Modifier.testTag("demo-switch"))
+                                    Text("Mode démonstration · heure et météo simulées", Modifier.weight(1f))
+                                }
+                                if (demo) {
+                                    Text("Heure simulée : ${demoHour.toInt()} h")
+                                    Slider(demoHour, { demoHour = it; prefs.edit().putFloat("demoHour", it).apply() }, valueRange = 0f..23f, steps = 22, modifier = Modifier.testTag("demo-hour"))
+                                    Weather.entries.forEach { weather ->
+                                        FilterChip(demoWeather == weather.name, { demoWeather = weather.name; prefs.edit().putString("demoWeather", demoWeather).apply() }, label = { Text(weather.name) }, modifier = Modifier.testTag("weather-${weather.name}"))
+                                    }
+                                    Text("DÉMONSTRATION : ne modifie jamais le cache météo réel.")
+                                }
                                 Text("Intensité des animations : ${(intensity * 100).toInt()} %")
                                 Slider(value = intensity, onValueChange = {
                                     intensity = it
@@ -121,13 +162,14 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                         }
                         "Supervision" -> Supervision(now, observation = observation)
                         "Avatar" -> Pane("Avatar JARVIS", Modifier.testTag("avatar-placeholder")) { avatar() }
-                        else -> Pane(screen, Modifier.testTag("module-screen")) {
-                            Text("Non connecté", color = Cyan)
-                            Text("Écran $screen disponible. Fonctions métier indisponibles ; aucun module externe raccordé.")
-                            if (screen == "Système") Text("Android ${android.os.Build.VERSION.RELEASE} · API ${android.os.Build.VERSION.SDK_INT}\nSource : android.os.Build")
+                        else -> {
+                            OfficeScene(sceneTime, animate, intensity, glow, Modifier.fillMaxWidth(), observation, accent, true)
+                            WorkspaceScreen(screen, workspace, secure) { secure = it; prefs.edit().putBoolean("secure", it).apply() }
+                            ModuleGrid(if (landscape) 8 else 4, selected) { selected = it; screen = it }
                         }
                     }
                     if (screen != "Accueil") Button(onClick = { screen = "Accueil" }, modifier = Modifier.testTag("close-settings")) { Text("Retour au tableau de bord") }
+                    if (demo) Text("DÉMONSTRATION · heure et météo simulées", color = accent, modifier = Modifier.testTag("demo-status"))
                     Text("Hors ligne · aucune connexion aux services JARVIS", color = Color.LightGray, fontSize = 11.sp, modifier = Modifier.testTag("local-status"))
                 }
             }
@@ -135,11 +177,13 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
     }
 }
 
+}
+
 @Composable
-private fun Pane(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    Surface(modifier.fillMaxWidth(), color = Color(0xE6121C2C), contentColor = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(14.dp), border = BorderStroke(1.dp, Cyan.copy(alpha = .3f))) {
+internal fun Pane(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Surface(modifier.fillMaxWidth(), color = Color(0xE6121C2C), contentColor = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(14.dp), border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = .3f))) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(title, color = Cyan, style = MaterialTheme.typography.titleMedium)
+            Text(title, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium)
             content()
         }
     }
@@ -159,13 +203,13 @@ private fun Supervision(now: LocalDateTime, modifier: Modifier = Modifier, obser
 }
 
 @Composable
-private fun ModuleGrid(columns: Int, open: (String) -> Unit) {
+private fun ModuleGrid(columns: Int, selected: String = "", open: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         modules.indices.chunked(columns).forEach { indices ->
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 indices.forEach { i ->
                     OutlinedButton(onClick = { open(modules[i]) }, modifier = Modifier.weight(1f).heightIn(min = 64.dp).testTag("module-$i"),
-                        contentPadding = PaddingValues(2.dp), shape = RoundedCornerShape(10.dp), border = BorderStroke(1.dp, accents[i].copy(alpha = .55f))) {
+                        contentPadding = PaddingValues(2.dp), shape = RoundedCornerShape(10.dp), border = BorderStroke(if (selected == modules[i]) 3.dp else 1.dp, accents[i].copy(alpha = if (selected == modules[i]) 1f else .55f))) {
                         Text(modules[i], fontSize = 10.sp, color = accents[i], softWrap = true)
                     }
                 }
@@ -175,11 +219,11 @@ private fun ModuleGrid(columns: Int, open: (String) -> Unit) {
 }
 
 @Composable
-private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, glow: Boolean, modifier: Modifier, observation: WeatherObservation? = null) {
+private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, glow: Boolean, modifier: Modifier, observation: WeatherObservation? = null, accent: Color = Cyan, compact: Boolean = false) {
     val phase = dayPhase(now.toLocalTime())
     val configuration = LocalConfiguration.current
     val landscape = configuration.screenWidthDp > configuration.screenHeightDp
-    val heightLimit = if (landscape) (configuration.screenHeightDp.dp - 280.dp).coerceAtLeast(100.dp) else 340.dp
+    val heightLimit = if (compact) 100.dp else if (landscape) (configuration.screenHeightDp.dp - 280.dp).coerceAtLeast(100.dp) else 340.dp
     val phaseLabel = when (phase) {
         DayPhase.SUNRISE -> "LEVER DU JOUR"
         DayPhase.MORNING -> "MATIN"
@@ -213,7 +257,7 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
                     if (observation.weather != Weather.CLOUDS) for (i in 0..22) {
                         val x = .1f+(i%12)*.068f
                         val y = .25f+(i/12)*.15f
-                        drawLine(Cyan.copy(alpha=.3f),Offset(x*w,y*h),Offset((x-.01f)*w,(y+.05f)*h),1.5f)
+                        drawLine(accent.copy(alpha=.3f),Offset(x*w,y*h),Offset((x-.01f)*w,(y+.05f)*h),1.5f)
                     }
                     if (observation.weather == Weather.STORM) drawLine(Color(0xFFFFE8AA),Offset(.76f*w,.2f*h),Offset(.72f*w,.3f*h),2f)
                 }
@@ -223,15 +267,15 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
                 null -> Unit
             }
             for (i in 0..5) box(.1f+i*.15f,.08f,.007f,.5f,Color(0xFF1B2C3A))
-            box(.08f,.57f,.84f,.025f,Cyan.copy(alpha = if (glow) .35f+pulse*intensity*.15f else .06f))
+            box(.08f,.57f,.84f,.025f,accent.copy(alpha = if (glow) .35f+pulse*intensity*.15f else .06f))
             box(0f,.65f,1f,.35f,Color(0xFF141B26))
             box(.16f,.62f,.69f,.045f,Color(0xFF876952))
             box(.19f,.66f,.025f,.26f,Color(0xFF343C49)); box(.79f,.66f,.025f,.26f,Color(0xFF343C49))
             for (i in 0..2) {
                 val x=.27f+i*.17f
-                box(x,.29f,.15f,.23f,Cyan.copy(alpha = .09f))
-                drawRect(Cyan.copy(alpha = .45f+pulse*intensity*.1f),Offset(x*w,.29f*h),Size(.15f*w,.23f*h),style=androidx.compose.ui.graphics.drawscope.Stroke(1.5f))
-                for (j in 0..4) box(x+.018f,.32f+j*.035f,.1f,.004f,Cyan.copy(alpha=.4f))
+                box(x,.29f,.15f,.23f,accent.copy(alpha = .09f))
+                drawRect(accent.copy(alpha = .45f+pulse*intensity*.1f),Offset(x*w,.29f*h),Size(.15f*w,.23f*h),style=androidx.compose.ui.graphics.drawscope.Stroke(1.5f))
+                for (j in 0..4) box(x+.018f,.32f+j*.035f,.1f,.004f,accent.copy(alpha=.4f))
                 box(x+.07f,.52f,.01f,.1f,Color(0xFF435767))
             }
             drawRoundRect(Color(0xFF283345),Offset(.42f*w,.62f*h),Size(.19f*w,.24f*h),androidx.compose.ui.geometry.CornerRadius(w*.035f))
@@ -250,7 +294,7 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
                 val rise = (pulse*.07f+i*.025f)
                 drawCircle(Color.White.copy(alpha=.13f),w*.009f,Offset((.706f+i*.006f)*w,(.55f-rise)*h))
             }
-            if (glow) drawRect(Brush.radialGradient(listOf(Cyan.copy(alpha=.06f),Color.Transparent),center=Offset(w*.5f,h*.4f),radius=w*.5f))
+            if (glow) drawRect(Brush.radialGradient(listOf(accent.copy(alpha=.06f),Color.Transparent),center=Offset(w*.5f,h*.4f),radius=w*.5f))
         }
         }
         Text(if (observation == null) "Ambiance horaire locale · météo inconnue" else "Météo connue : ${observation.weather.name} · observation passée", color = Color.LightGray, fontSize = 11.sp)
