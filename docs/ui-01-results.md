@@ -1,92 +1,135 @@
 # UI-01 — résultats vérifiés, 6 novembre 2026
 
-Livraison PARTIELLE. Ne satisfait pas encore les critères de clôture UI-01.
+Livraison PARTIELLE. Les critères de clôture UI-01 ne sont pas tous satisfaits.
 
-## Code et périmètre
+## Périmètre et source
 
 PR brouillon : https://github.com/bubth720/JARVIS-INTERFACE/pull/16
 Branche : feat/ui-01-native-cockpit.
 Base : development/mission-002, d1c0931c4507e9af8f1aa60951947c23f4394b56.
-Révision compilée : 018702dd1b7ff9f3e74a42317c65a5056be124ca.
+Révision compilée et testée : 84841841f3e4bd788f7097932e0536714f24c3d3.
 Les commits documentaires ultérieurs ne changent pas ce code testé.
+Code complet dans la branche ; architecture dans ui-01.md.
 
-L’inventaire des branches a aussi identifié feat/interface-final-01, ui-02, ui-03
-et des travaux avatar plus avancés. Ils sont intacts et ne sont pas intégrés
-à cette proposition basée sur la branche par défaut. Cette PR n’atteste pas
-la compatibilité avec ces autres lignes de développement.
+Les branches plus avancées feat/interface-final-01, ui-02, ui-03 et avatar
+restent intactes. Cette proposition part de la branche par défaut et ne certifie
+pas une intégration avec ces autres lignes de développement. Aucun fichier
+supprimé, aucune fusion, aucun autre module JARVIS modifié.
 
-## Réussites effectivement observées
+## Compilation Android et APK réel
 
-Exécution : https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42239137360
-Job build 127964969465, succès.
-Commande : ./gradlew assembleDebug testDebugUnitTest lintDebug assembleDebugAndroidTest --no-daemon
-Journal : BUILD SUCCESSFUL in 2m 24s, 15:04:48 UTC.
-Compilation Android réelle, tests JVM et Lint réussis.
-Tests instrumentés compilés : cela ne signifie pas qu’ils sont exécutés.
+Exécution réussie : https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42241433909
+Job 127973223536. Commande :
+./gradlew assembleDebug testDebugUnitTest lintDebug assembleDebugAndroidTest --no-daemon
 
-Étape Verify debug APK réussie :
-- apksigner verify --verbose : signature debug vérifiée ;
-- aapt2 dump badging : inspection du paquet ;
-- sha256sum : empreinte calculée et conservée dans le rapport.
+- Compilation APK Android : réussie.
+- Tests JVM : 4 tests, zéro échec/erreur/ignoré (XML inspectés).
+- Lint : zéro erreur, 29 avertissements ; rapport inclus, aucune revendication
+  de zéro avertissement. Versions Android/dépendances conservées pour compatibilité.
+- Tests instrumentés : compilés, puis exécutés séparément ci-dessous.
+- apksigner verify --verbose : signature debug v2 vérifiée.
+- aapt2 dump badging : paquet com.jarvis.interfaceapp, version 0.1.0/code 1,
+  minimum API 26, cible API 35. Pas de permission INTERNET.
+- Empreinte SHA-256 de l’APK téléchargé :
+  737a42f8dccf5f5476069b5d6af1e1e632657076489a63efc96843987484d6e0.
 
-APK et rapports :
-https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42239137360/artifacts/13514826148
-Dans le ZIP : outputs/apk/debug/app-debug.apk,
-reports/ui-01/signature.txt, package.txt, apk-sha256.txt,
-rapports JVM et Lint. Signature de développement, pas de publication.
+APK, signature, empreinte, manifeste et rapports JVM/Lint :
+https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42241433909/artifacts/13516221275
+Dans le ZIP : outputs/apk/debug/app-debug.apk et reports/ui-01/.
+Signature de développement, pas de publication.
 
-## Émulateurs : blocage avant installation
+## Installation et tests sur émulateurs
 
-Exécution :
-https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42239137396
+Exécution réussie : https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42241434015
+API 34 AOSP x86_64. Aucun appareil physique testé.
 
-Profil tablette générique 1200 x 1920 / 240 dpi, API 34 AOSP x86_64 :
-job 127964490485 en échec lors du téléchargement de l’image système :
-« Error on ZipFile unknown archive », puis connexion émulateur refusée.
-L’APK n’a donc pas été installé sur cette cible.
-Une première tentative Google APIs API 35 avait également échoué au téléchargement.
-Aucun contournement de la vérification TLS ni d’une politique réseau n’est effectué.
+| Profil | Dimensions réellement constatées | Densité | Tests |
+| --- | --- | --- | --- |
+| Téléphone générique | 1080 × 1920 ; paysage 1920 × 1080 | 420 dpi | 6 réussis, 0 échec/erreur/ignoré |
+| Tablette générique | 1200 × 1920 ; paysage 1920 × 1200 | 240 dpi | 6 réussis, 0 échec/erreur/ignoré |
 
-Profil téléphone générique 1080 x 2400 / 420 dpi :
-exécution encore en cours lors de ce relevé (15:05 UTC).
-Consulter le lien pour son statut ultérieur ; aucune réussite revendiquée.
-Ces émulateurs ne sont pas les appareils physiques demandés.
+Le profil téléphone demandé à 1080 × 2400 est limité par cet émulateur à
+1080 × 1920 (wm size et PNG inspectés). Ces profils ne certifient pas le
+POCO X8 Pro ou la Redmi Pad SE physiques.
 
-Conséquences : aucune capture réelle validée, aucun résultat instrumenté réussi
-attesté, aucune preuve d’absence de crash à l’exécution, aucune mesure de
-performance ou de consommation. Les scripts de collecte existent mais leur présence
-ne remplace pas une exécution. Les snapshots CPU/batterie prévus ne constituent
-pas un benchmark ni une mesure de consommation.
+Les tests couvrent démarrage/supervision/avatar sans partenaire, les huit routes
+métier et leurs retours, retour des paramètres, recréation de l’activité avec
+écran restauré, préférence économie persistante et Retour Android, stockage
+avec source/horodatage d’une observation météo de test. La fixture météo est
+explicitement synthétique, confinée aux tests et effacée avant les captures.
 
-## Développé dans le code
+Wi-Fi et données mobiles désactivés avant les tests. L’application n’a pas la
+permission INTERNET et ne requiert aucun autre module JARVIS. Le stockage après
+arrêt forcé du processus n’est pas couvert par le seul test de recréation.
 
-Cockpit natif avec bureau vectoriel animé, dispositions adaptatives,
-grille 4 x 2 ou rangée de huit modules, huit écrans métier explicitement
-indisponibles, Retour Android, navigation supervision/avatar, paramètres
-locaux d’intensité/éclairage/économie, sauvegarde locale, état de navigation
-restaurable, suspension des animations hors RESUMED et en économie.
+Après les tests, l’APK est explicitement réinstallé, lancé et son processus
+vérifié. Les changements portrait/paysage ont produit les quatre captures
+inspectées. Aucun chevauchement observé sur ces vues au texte standard ;
+le téléphone défile verticalement, y compris en paysage. Sur tablette paysage,
+les huit modules sont visibles en une rangée ; tablette portrait en grille 4 × 2.
+Les panneaux défilés et toutes les tailles de texte ne sont pas validés visuellement.
 
-Horloge locale identifiée ; cinq plages lumineuses artistiques.
-LocalWeatherStore conserve une observation avec source et horodatage et n’invente
-aucune valeur. Aucun fournisseur météo actif. Variantes Canvas pour ciel dégagé,
-nuages, pluie, orage, brouillard et neige à géométrie du bureau constante.
-Slot avatar composable et contrats futurs sans moteur ni raccordement externe.
+## Captures et relevés réellement inspectés
 
-Ces comportements sont implémentés et compilés ; validation sur appareil en attente.
+Téléphone :
+https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42241434015/artifacts/13516771190
+Tablette :
+https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42241434015/artifacts/13515996541
 
-## Reste à réaliser / vérifier
+Chaque ZIP contient evidence/portrait.png, landscape.png, memory.txt,
+frames.txt, cpu-snapshot.txt, battery-snapshot.txt, crashes.txt, display-size.txt,
+display-density.txt, ainsi que les XML/rapports Android instrumentés.
+Les barres système et le dock tablette visibles appartiennent à Android.
 
-- Obtenir 13496.png et 13498.png, absentes de l’espace local et des arbres
-  des branches inspectées, puis reconstruire et comparer fidèlement les deux rendus.
-- Finaliser décor, proportions, transitions et éclairage intérieur à partir des images.
-- Import natif et validation des futures références de scène (contrat seulement présent).
-- Éventuel adaptateur météo autorisé, avec tests des observations périmées ;
-  aucun service ou cloud ajouté actuellement.
-- Exécuter les tests instrumentés et valider toutes les actions, stockage après
-  arrêt du processus, orientation répétée, mode avion, texte agrandi et TalkBack.
-- Fournir et inspecter des captures réelles de cette révision.
-- Tester POCO X8 Pro et Redmi Pad SE en distinguant appareil réel et émulation.
-- Mesurer CPU, RAM, fluidité, batterie et température avec protocole reproductible.
-- Vérifier installation et absence de crash ; validation finale utilisateur.
+Snapshots après lancement et rotation : téléphone PSS 59 563 Ko, RSS 166 768 Ko ;
+tablette PSS 59 585 Ko, RSS 166 256 Ko. Aucun swap rapporté. Journaux crash vides
+sur les deux exécutions inspectées ; cela ne garantit pas l’absence de tout crash futur.
 
-Aucun fichier supprimé, aucune fusion, aucune modification d’un autre module JARVIS.
+Gfxinfo ne rapporte que quatre frames (100 % classées janky). Cet échantillon de
+lancement/rotation est trop court et défavorable pour conclure à la fluidité.
+Les préférences peuvent laisser le mode économie activé après son test.
+Aucun benchmark d’animation ni comparaison énergétique n’est revendiqué.
+Snapshots CPU/batterie conservés, sans conclusion sur la consommation réelle,
+l’autonomie ou la température. Mesures sur matériel encore requises.
+
+## Échecs et corrections documentés
+
+Le bac à sable local bloquait initialement le proxy ; accès réseau explicite
+ensuite utilisé pour cloner et télécharger, sans contournement du proxy/TLS.
+Le SDK/adb/KVM ne sont pas disponibles localement ; compilation/exécution en CI.
+
+Le workflow initial installait le paquet SDK obsolète tools : corrigé en
+platform-tools. Certaines tentatives ont reçu une archive d’image système
+invalide ; les exécutions réussies ci-dessus sont distinctes de ces échecs.
+
+Les premières captures montraient le lanceur : le runner désinstalle l’application
+en fin de test. Réinstallation explicite ajoutée. Ces anciennes captures et
+les relevés « No process found » sont invalides comme preuves du rendu JARVIS.
+L’inspection suivante a révélé du texte sombre et des modules hors fenêtre en
+paysage : contentColor explicite, barres système adaptées et hauteur du décor
+bornée sans changer son ratio. Les captures citées ci-dessus sont les vues corrigées.
+
+## Développé
+
+Cockpit Kotlin/Compose, bureau vectoriel, huit écrans de modules explicitement
+sans fonctions métier raccordées, supervision sans données fictives, navigation
+et Retour Android, paramètres locaux intensité/éclairage/économie, préférence
+persistante et écran restaurable, suspension d’animation hors RESUMED et en économie.
+Horloge locale, cinq plages lumineuses artistiques, cache météo identifié nullable,
+six variantes météo à géométrie constante, slot avatar composable et contrats futurs.
+Aucun fournisseur météo, moteur avatar externe, CORE/LLM/VOICE ou cloud activé.
+
+## Reste à réaliser avant validation complète
+
+- Obtenir 13496.png et 13498.png, absentes des arbres de branches inspectés et
+  de l’espace fourni. Le décor vectoriel est provisoire : fidélité NON validée.
+- Reprendre décor, proportions et éclairages d’après les deux références.
+- Import natif et validation des futures références de scène : contrat présent,
+  sélecteur et import non développés.
+- Éventuel adaptateur météo autorisé et tests d’observations périmées.
+- Tests POCO X8 Pro et Redmi Pad SE physiques, texte agrandi/TalkBack,
+  arrière-plan/reprise, arrêt du processus et orientations répétées.
+- Benchmark CPU/RAM/fluidité et protocole batterie/température reproductible.
+- Validation des transitions et de toutes les variantes météo/horaires.
+
+PR maintenue en brouillon. Aucune fusion sans autorisation du propriétaire.
