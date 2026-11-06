@@ -48,6 +48,41 @@ sont des développements conservés mais non accessibles depuis le point d’ent
 | Confidentialité | Sécurité | FLAG_SECURE Android | Android effectif / absent HTML | incomplet | Tester fenêtre ; préférence visuelle navigateur distincte | SecurityContractTest |
 | Portrait/paysage forcé | HTML | Simulation de disposition | Fonctionnel | fonctionnel | Conserver + test fichier autonome | HTML offline |
 
-Les noms ci-dessus décrivent la couverture prévue, pas des tests déjà réussis.
-Les résultats, limites des fournisseurs Android externes et écarts de parité
-seront consignés dans ui-01c-results.md. Aucun site n’est publié par cet audit.
+Les noms ci-dessus décrivent la couverture prévue au début de l’audit. La table
+suivante les associe aux scénarios réellement implémentés ; leurs résultats et
+révisions exécutées sont dans [ui-01c-results.md](ui-01c-results.md). Aucun site
+n’est publié par cet audit.
+
+## Contrats après correction
+
+Les méthodes ci-dessous appartiennent à `Ui01cContractTest`, sauf mention
+contraire. Le statut « opérationnel » concerne le contrat local décrit, pas
+une intégration JARVIS future. Chaque ligne dynamique couvre toutes les
+instances produites par le composant partagé ; les cinq types de données sont
+exercés séparément. Les tests n’exhaustent pas tous les contenus possibles.
+
+| Éléments / écrans | Action réalisée après correction | Statut livré / correction restante | Test Android | Test HTML (`preview.spec.cjs`) |
+| --- | --- | --- | --- | --- |
+| Logo, Maison, Grille ; huit modules ; Paramètres en-tête et barre ; Supervision, Avatar | Écrans distincts ; accueil par logo ; emplacement avatar sans moteur | Opérationnel localement ; avatar non connecté explicite | `navigationContractAllIconsAndModulesInBothOrientations` (dont cibles des huit modules ≥48 dp) + `StandaloneStartupTest` | 4 scénarios `navigation, settings, ambience, power and layout` : chaque route et module ; cibles des modules ≥48 px même en paysage forcé |
+| Libellés de toute la barre latérale, Alimentation comprise | Texte borné et revenant à la ligne ; barre défilable | Rognage corrigé ; pas de contrôle désactivé masqué | Contrat navigation : `GetTextLayoutResult`, aucun `hasVisualOverflow`, deux orientations | Même scénario aux 4 formats : largeur du texte dans son bouton |
+| Retour affiché, Retour Android, Retour navigateur et Alt+Gauche | Dépiler la route précédente, état conservé | Opérationnel | Contrat navigation ; `ProcessRestartProbe` | Scénarios navigation et fichier autonome |
+| Dossier, importer depuis Documents, ouvrir document ; raccourci échéance et progression | Écrans Documents/Calendrier/Statistiques et liens vers module cible | Opérationnel ; lecteur externe selon disponibilité | `collectionContractCalendarDocumentsStatisticsAndChart` ; test fichier ci-dessous | Scénario `CRUD all local modules…` + navigation |
+| Mois précédent/suivant, aujourd’hui, sélection d’un jour | Filtrer les échéances enregistrées, aucune date financière assimilée à une échéance | Opérationnel ; calendrier adaptatif, cibles mesurées ≥48 | Contrat collection + bornes des jours dans contrat navigation | CRUD collections + mesure des jours aux 4 formats |
+| Saisies titre/texte/date/montant, type dépense/revenu, ajouter, budget/enregistrer | Données validées et enregistrées ; calculs financiers sur mouvements réels | Opérationnel | `WorkspaceInteractionTest.fiveLocalFormsSaveAndSurviveActivityRecreation`, contrat collection, `WorkspaceRulesTest` JVM | CRUD : cinq modules, validation montant/budget, types de mouvement |
+| Modifier, champs d’édition, enregistrer/annuler ; supprimer/confirmer/annuler ; terminer/rouvrir ou exclure/réinclure | Mutations par ID ; annulations sans écriture ; confirmation avant suppression | Opérationnel pour les cinq types ; fichier original conservé | `crudContractEditsCancellationDeletionAndStatusAcrossFiveModules` | CRUD paramétré sur les cinq types |
+| Progression, titre étape, ajouter étape, terminer/rouvrir ; historique et fermer | Progression manuelle, étapes indépendantes, journal réel par projet/travail créatif | Opérationnel | `projectContractStepsProgressAndHistoryAreReal` | CRUD : Projets et Création, progression et contenu historique |
+| Référencer fichier Administratif/Création, ouvrir fichier | URI SAF native ; copie de démonstration et téléchargement navigateur | Opérationnel selon fournisseur/lecteur ; pas de suppression du fichier source | `DocumentPickerContractTest.actualAndroidDocumentPickerImportsLocalFileWithoutDeletingOriginal` (vrai DocumentsUI) ; contrat frontières pour annulation/lecteur | CRUD : formats refusés et TXT réel choisi/téléchargé dans les deux modules |
+| Actualiser et exporter diagnostic Système/Technique | Diagnostic local de la plateforme concernée ; export réel et expurgé | Opérationnel ; pas de RAM Android inventée dans HTML | `externalBoundaryContractsExportImportCancellationViewerAndPermissions` : contenu réellement écrit | Navigation aux 4 formats : actualiser et télécharger, contenu vérifié |
+| Permissions, protection de confidentialité Sécurité | Ouvrir paramètres Android ; appliquer FLAG_SECURE | Opérationnel Android ; capacités natives indisponibles explicitement dans HTML, masque visuel seulement | Contrat frontières : intent et drapeau réel de fenêtre, activé/désactivé | Navigation : texte d’indisponibilité et classe de masque visuel |
+| Profils économie/équilibré/qualité, économie, intensité, éclairage | Réglages effectifs et persistants | Opérationnel ; fluidité/énergie physique à qualifier | `settingsContractAllWeatherProfilesSlidersAndRealCacheIsolation`, `CockpitPersistenceTest` | Navigation : trois profils, intensité, éclairage, classes effectives |
+| Cycle automatique/démo, retour automatique, heure, six météos | Horloge locale ou simulation identifiée ; cache réel intact | Opérationnel ; aucun fournisseur météo réel activé | Contrat réglages ; `AmbienceRotationTest`, `CockpitPersistenceTest.lastKnownObservationRetainsItsSourceAndTimestamp` | Navigation : six météos et rendu neige/nuit, retour neutre |
+| Couleurs de module et transition réversible | Éclairage et reflet changent, mobilier inchangé, météo indépendante | Opérationnel ; performance physique non qualifiée | Contrat réglages : pixels réellement dessinés Finance/Création/Sécurité/Projets | Navigation : huit accents exacts, sélection préservant météo |
+| Alimentation, annuler, veille, reprendre, fermer | Veille réversible, arrêt des animations ; fermer seulement l’activité Android | Opérationnel Android ; fermeture native indisponible explicitement dans HTML | `powerContractCancelSleepResumeAndCloseOnlyThisActivity` : cycle de vie vérifié | Navigation : menu, annuler, veille/reprise, route conservée |
+| Sélecteur disposition et bouton portrait/paysage HTML ; rotation Android | Réorganisation, conservation route/module/préférences | Opérationnel sur profils testés ; autres tailles/accessibilité à qualifier | Contrat navigation et `AmbienceRotationTest.simulationAndOrientationPreserveActivityAndRealWeather` | Navigation aux 4 tailles : nombre réel de colonnes, forçage des 2 dispositions |
+| Persistance de toutes ces opérations | SQLite v2 additive + préférences ; stockage de démonstration navigateur séparé | Opérationnel dans environnements testés ; avertissement session si navigateur refuse stockage | `WorkspaceDeviceTest` (v1→v2 et réouverture), recréation, `ProcessRestartProbe` avant/après arrêt forcé réel | Reload dans CRUD et fichier HTML hors ligne après fermeture/réouverture |
+
+Les cartes et graphiques informatifs ne sont pas des boutons. Les contrôles
+générés utilisent les mêmes fonctions de mutation et des identifiants de test
+stables. Les actions non disponibles sont des messages explicites, sans bouton
+simulant une réussite. Les anciennes vues archivées ne sont pas rendues par
+l’application et ne constituent pas des écrans fonctionnels revendiqués.

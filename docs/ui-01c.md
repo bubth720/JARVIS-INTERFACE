@@ -2,7 +2,7 @@
 
 L’inventaire initial et ses corrections prévues sont dans
 [ui-01c-interactions.md](ui-01c-interactions.md). Les preuves effectives et les
-limitations sont dans ui-01c-results.md ; la présence d’un scénario ne vaut
+limitations sont dans [ui-01c-results.md](ui-01c-results.md) ; la présence d’un scénario ne vaut
 pas réussite tant que son résultat n’est pas vérifié.
 
 ## Navigation et actions
@@ -15,6 +15,12 @@ sélectionné. Le Retour Android et le bouton Retour dépilent la route précéd
 Les barres de navigation défilent lorsque la hauteur disponible ne permet pas
 des cibles tactiles d’au moins 48 dp. Aucun panneau purement informatif ou
 élément de mobilier n’a d’apparence de lien.
+Les libellés latéraux reviennent à la ligne dans la largeur disponible. Les
+captures ont permis de corriger leur rognage par la forme arrondie du bouton ;
+les tests vérifient désormais aussi l’absence de débordement du texte. Les
+modules gardent des cibles d’au moins 48 dp ; une rangée trop étroite défile
+horizontalement au lieu de comprimer ses boutons. Le HTML conserve la même
+règle en pixels CSS, y compris lorsque le paysage est forcé sur un téléphone.
 
 Le menu alimentation propose Annuler, Veille, Reprendre et Fermer l’application.
 La veille retire le décor animé de la composition, conserve données/navigation
@@ -50,6 +56,9 @@ et par jour ; les dates des opérations financières ne deviennent pas des
 échéances. Documents liste les références choisies et ouvre un lecteur Android
 compatible ou affiche une erreur. Import et export passent par les sélecteurs
 Android, sans permission globale de stockage.
+Le sélecteur des jours adapte son nombre de colonnes à la largeur disponible
+pour garder des cibles de 48 dp (48 pixels CSS dans la démo). Il ne présente
+pas d’en-têtes de jours de semaine lorsque les sept colonnes ne tiennent pas.
 
 ## Ambiance
 
@@ -90,7 +99,10 @@ disposer d’un lecteur Android.
 Quand le navigateur refuse l’historique sur une URL locale particulière, les
 boutons utilisent la pile interne. Quand il refuse le stockage local, l’interface
 annonce un fonctionnement en session seule ; aucune persistance réussie n’est
-simulée. Le mode fichier est vérifié dans Chromium sans réseau ; les restrictions
+simulée. La disposition automatique suit le rapport largeur/hauteur, y compris sur tablette
+portrait, et les dispositions forcées restent prioritaires. Les tests vérifient
+le nombre réel de colonnes des panneaux et des modules.
+Le mode fichier est vérifié dans Chromium sans réseau ; les restrictions
 propres aux gestionnaires de fichiers et navigateurs Android sont à distinguer.
 La publication hébergée n’est pas requise pour ce livrable autonome et n’est pas
 déclenchée ici.
