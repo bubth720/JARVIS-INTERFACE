@@ -1,5 +1,8 @@
 name: Android
 on: [push, pull_request]
+concurrency:
+  group: ui-01-build-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -17,6 +20,12 @@ jobs:
           log-accepted-android-sdk-licenses: false
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - run: ./gradlew assembleDebug testDebugUnitTest lintDebug assembleDebugAndroidTest --no-daemon
+      - name: Verify debug APK
+        run: |
+          mkdir -p app/build/reports/ui-01
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose app/build/outputs/apk/debug/app-debug.apk > app/build/reports/ui-01/signature.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging app/build/outputs/apk/debug/app-debug.apk > app/build/reports/ui-01/package.txt
+          sha256sum app/build/outputs/apk/debug/app-debug.apk > app/build/reports/ui-01/apk-sha256.txt
       - uses: actions/upload-artifact@v4
         with:
           name: jarvis-interface-debug
