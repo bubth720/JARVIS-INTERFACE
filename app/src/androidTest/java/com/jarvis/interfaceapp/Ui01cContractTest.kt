@@ -68,10 +68,13 @@ class Ui01cContractTest {
             click("edit-cancel"); assertEquals(entry.title, rows(module).single { it.id == entry.id }.title)
             click("edit-${entry.id}"); replace("edit-title", "TEST UI01C modifié"); replace("edit-body", "TEST MODIFIED")
             if (module in listOf("Administratif", "Projets", "Finance")) replace("edit-date", LocalDate.now().toString())
-            if (module == "Finance") { replace("edit-amount", "2,50"); click("edit-income") }
+            if (module == "Finance") { replace("edit-amount", "2,50"); click("edit-expense"); click("edit-income") }
             click("edit-save")
             ui.waitUntil(15000) { rows(module).single { it.id == entry.id }.body == "TEST MODIFIED" }
-            if (module == "Finance") assertEquals(250L, rows(module).single { it.id == entry.id }.amountCents)
+            if (module == "Finance") {
+                assertEquals(250L, rows(module).single { it.id == entry.id }.amountCents)
+                ui.waitUntil(15000) { ui.onAllNodes(hasTestTag("finance-chart") and hasContentDescription("Revenus 2.50 EUR", substring = true)).fetchSemanticsNodes().isNotEmpty() }
+            }
             click("toggle-${entry.id}"); ui.waitUntil(15000) { rows(module).single { it.id == entry.id }.done }
             click("toggle-${entry.id}"); ui.waitUntil(15000) { !rows(module).single { it.id == entry.id }.done }
             click("delete-${entry.id}"); click("delete-cancel"); assertTrue(rows(module).any { it.id == entry.id })
@@ -85,6 +88,10 @@ class Ui01cContractTest {
             replace("step-title-${entry.id}", "TEST étape"); click("step-add-${entry.id}")
             ui.waitUntil(15000) { LocalWorkspace(context).use { it.steps(entry.id).isNotEmpty() } }
             val step = LocalWorkspace(context).use { it.steps(entry.id).single() }
+            click("step-toggle-${step.id}")
+            ui.waitUntil(15000) { LocalWorkspace(context).use { it.steps(entry.id).single().done } }
+            click("step-toggle-${step.id}")
+            ui.waitUntil(15000) { LocalWorkspace(context).use { !it.steps(entry.id).single().done } }
             click("step-toggle-${step.id}")
             ui.waitUntil(15000) { LocalWorkspace(context).use { it.steps(entry.id).single().done } }
             ui.onNodeWithTag("project-progress-${entry.id}").performScrollTo().performSemanticsAction(SemanticsActions.SetProgress) { it(75f) }
@@ -120,8 +127,10 @@ class Ui01cContractTest {
         (0..2).forEach { click("performance-$it"); assertEquals(it, context.getSharedPreferences("ui-01", 0).getInt("performance", -1)) }
         click("economy-switch"); click("economy-switch"); click("glow-switch"); click("glow-switch")
         ui.onNodeWithTag("animation-intensity").performScrollTo().performSemanticsAction(SemanticsActions.SetProgress) { it(.4f) }
+        assertEquals(.4f, context.getSharedPreferences("ui-01", 0).getFloat("intensity", 0f), .001f)
         if (!context.getSharedPreferences("ui-01", 0).getBoolean("demo", false)) click("demo-switch")
         ui.onNodeWithTag("demo-hour").performScrollTo().performSemanticsAction(SemanticsActions.SetProgress) { it(22f) }
+        assertEquals(22f, context.getSharedPreferences("ui-01", 0).getFloat("demoHour", 0f), .001f)
         Weather.entries.forEach { click("weather-${it.name}"); assertEquals(it.name, context.getSharedPreferences("ui-01", 0).getString("demoWeather", "")) }
         click("close-settings"); ui.onNodeWithTag("demo-status").assertExists()
         click("open-settings"); click("ambience-auto"); assertFalse(context.getSharedPreferences("ui-01", 0).getBoolean("demo", true))
@@ -143,15 +152,17 @@ class Ui01cContractTest {
         }
     }
 
+    @androidx.test.filters.SdkSuppress(minSdkVersion = 29)
     @Test fun externalBoundaryContractsExportImportCancellationViewerAndPermissions() {
         val resolver = context.contentResolver
         val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, ContentValues().apply { put(MediaStore.MediaColumns.DISPLAY_NAME, "ui01c-test-diagnostic.txt"); put(MediaStore.MediaColumns.MIME_TYPE, "text/plain"); put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS) })!!
+        resolver.openOutputStream(uri)!!.use { it.write(byteArrayOf()) }
         try {
             open(6); ui.waitUntil(15000) { ui.onAllNodes(hasTestTag("diagnostic-export") and isEnabled()).fetchSemanticsNodes().isNotEmpty() }
             click("diagnostic-refresh")
             val export = BoundaryMonitor(Intent.ACTION_CREATE_DOCUMENT, Instrumentation.ActivityResult(Activity.RESULT_OK, Intent().setData(uri)))
             instrumentation.addMonitor(export)
-            try { click("diagnostic-export"); ui.waitUntil(15000) { export.last != null }; ui.waitUntil(15000) { resolver.openInputStream(uri)!!.bufferedReader().use { it.readText() }.contains("Version application") } }
+            try { click("diagnostic-export"); ui.waitUntil(15000) { export.last != null }; ui.waitUntil(15000) { runCatching { resolver.openInputStream(uri)!!.bufferedReader().use { it.readText() }.contains("Version application") }.getOrDefault(false) } }
             finally { instrumentation.removeMonitor(export) }
             val report = resolver.openInputStream(uri)!!.bufferedReader().use { it.readText() }
             assertFalse(report.contains("TEST PRIVATE CONTENT"))
@@ -180,6 +191,6 @@ class Ui01cContractTest {
         click("nav-Alimentation"); click("power-sleep"); ui.onNodeWithTag("sleep-screen").assertExists()
         ui.onNodeWithTag("power-resume").performClick(); route("Projets")
         click("nav-Alimentation"); ui.onNodeWithTag("power-close").performSemanticsAction(SemanticsActions.OnClick) { it() }
-        assertEquals(Lifecycle.State.DESTROYED, ui.activityRule.scenario.state)
+        ui.waitUntil(15000) { ui.activityRule.scenario.state == Lifecycle.State.DESTROYED }
     }
 }
