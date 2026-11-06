@@ -53,11 +53,30 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
     var demo by rememberSaveable { mutableStateOf(prefs.getBoolean("demo", false)) }
     var demoHour by rememberSaveable { mutableFloatStateOf(prefs.getFloat("demoHour", 12f)) }
     var demoWeather by rememberSaveable { mutableStateOf(prefs.getString("demoWeather", "CLEAR")?.takeIf { stored -> Weather.entries.any { it.name == stored } } ?: "CLEAR") }
+    var navHistory by rememberSaveable { mutableStateOf(prefs.getString("navHistory", "") ?: "") }
+    var powerMenu by rememberSaveable { mutableStateOf(false) }
+    var sleeping by rememberSaveable { mutableStateOf(false) }
+    var notice by remember { mutableStateOf("") }
     var selected by rememberSaveable { mutableStateOf(prefs.getString("selected", "Système") ?: "Système") }
+    fun go(route: String) {
+        if (route != screen) { navHistory = (navHistory.split('|').filter { it.isNotBlank() } + screen).takeLast(40).joinToString("|"); screen = route }
+        if (route in modules) selected = route
+        notice = ""
+    }
+    fun back() {
+        val stack = navHistory.split('|').filter { it.isNotBlank() }
+        screen = stack.lastOrNull() ?: "Accueil"
+        navHistory = stack.dropLast(1).joinToString("|")
+        if (screen in modules) selected = screen
+    }
+    fun openFile(uri: String) {
+        try { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW).setData(android.net.Uri.parse(uri)).addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)) }
+        catch (_: Exception) { notice = "Fichier inaccessible ou lecteur compatible indisponible." }
+    }
     val accent by androidx.compose.animation.animateColorAsState(accents[modules.indexOf(selected).coerceAtLeast(0)], tween(if (economy) 0 else 600), label = "module-accent")
     val configuration = LocalConfiguration.current
     val landscape = configuration.screenWidthDp > configuration.screenHeightDp
-    LaunchedEffect(screen) { prefs.edit().putString("route", screen).apply() }
+    LaunchedEffect(screen, navHistory) { prefs.edit().putString("route", screen).putString("navHistory", navHistory).apply() }
     LaunchedEffect(selected) { prefs.edit().putString("selected", selected).apply() }
     DisposableEffect(secure) {
         val activity = context as? android.app.Activity
@@ -83,32 +102,49 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
             } finally { active = false }
         }
     }
-    BackHandler(screen != "Accueil") { screen = "Accueil" }
-    val animate = active && !economy && performance != 0 && !systemEconomy && intensity > 0f
+    BackHandler(screen != "Accueil" || navHistory.isNotEmpty()) { back() }
+    BackHandler(sleeping) { sleeping = false }
+    val animate = !sleeping && active && !economy && performance != 0 && !systemEconomy && intensity > 0f
     MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(primary = accent)) {
+    if (powerMenu) AlertDialog(onDismissRequest = { powerMenu = false }, title = { Text("Alimentation de l’interface") }, text = { Text("Mettre JARVIS en veille ou fermer cette application. L’appareil ne sera pas éteint.") }, confirmButton = {
+        Button({ powerMenu = false; sleeping = true }, Modifier.testTag("power-sleep")) { Text("Veille") }
+    }, dismissButton = { Column {
+        TextButton({ powerMenu = false }, Modifier.testTag("power-cancel")) { Text("Annuler") }
+        TextButton({ powerMenu = false; (context as? android.app.Activity)?.finishAndRemoveTask() }, Modifier.testTag("power-close")) { Text("Fermer l’application") }
+    } })
+    if (sleeping) {
+        Pane("Interface en veille", Modifier.fillMaxSize().testTag("sleep-screen")) {
+            Text("Les animations sont arrêtées. Les données et la navigation sont conservées.")
+            Button({ sleeping = false }, Modifier.testTag("power-resume")) { Text("Reprendre") }
+        }
+        return@MaterialTheme
+    }
     Scaffold(containerColor = Ink) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).padding(12.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("J A R V I S", color = Cyan, style = MaterialTheme.typography.titleLarge)
+                    TextButton({ go("Accueil") }, Modifier.testTag("logo-home"), contentPadding = PaddingValues(0.dp)) { Text("J A R V I S", color = Cyan, style = MaterialTheme.typography.titleLarge) }
                     Text("INTERFACE LOCALE", fontSize = 10.sp, color = Color.LightGray)
                 }
                 Text(now.format(DateTimeFormatter.ofPattern("HH:mm")), color = Cyan)
-                TextButton(onClick = { screen = "Paramètres" }, modifier = Modifier.testTag("open-settings")) { Text("Paramètres") }
+                TextButton(onClick = { go("Paramètres") }, modifier = Modifier.testTag("open-settings")) { Text("Paramètres") }
             }
             Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Column(Modifier.width(56.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
-                    listOf("Accueil" to "⌂", "Supervision" to "◎", "Avatar" to "◇").forEach { (route, symbol) ->
-                        TextButton(onClick = { screen = route }, modifier = Modifier.testTag("nav-$route"), contentPadding = PaddingValues(0.dp)) {
+                Column(Modifier.width(64.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+                    listOf("Accueil" to "⌂", "Modules" to "▦", "Documents" to "▱", "Calendrier" to "▣", "Statistiques" to "▥", "Paramètres" to "⚙", "Alimentation" to "⏻", "Supervision" to "◎", "Avatar" to "◇").forEach { (route, symbol) ->
+                        TextButton(onClick = { if (route == "Alimentation") powerMenu = true else go(route) }, modifier = Modifier.testTag("nav-$route"), contentPadding = PaddingValues(0.dp)) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(symbol, fontSize = 24.sp)
-                                Text(route, fontSize = 8.sp)
+                                Text(route, fontSize = 10.sp)
                             }
                         }
                     }
                 }
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (notice.isNotBlank()) Text(notice, Modifier.testTag("navigation-message"))
                     when (screen) {
+                        "Modules" -> Pane("Modules", Modifier.testTag("modules-screen")) { ModuleGrid(4, selected) { go(it) } }
+                        "Documents", "Calendrier", "Statistiques" -> CollectionScreen(screen, workspace, { go(it) }, { openFile(it) })
                         "Accueil" -> {
                             BoxWithConstraints(Modifier.fillMaxWidth()) {
                                 val wide = landscape && maxWidth >= 500.dp
@@ -120,12 +156,14 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                                         OfficeScene(sceneTime, animate, intensity, glow, Modifier.fillMaxWidth(), observation, accent, quality = performance == 2)
                                         Supervision(now, Modifier.fillMaxWidth(), observation)
                                     }
-                                    ModuleGrid(if (wide) 8 else 4, selected) { selected = it; screen = it }
+                                    ModuleGrid(if (wide) 8 else 4, selected) { go(it) }
                                 }
                             }
                         }
                         "Paramètres" -> {
                             Pane("Paramètres graphiques") {
+                                Button({ demo = false; prefs.edit().putBoolean("demo", false).apply() }, Modifier.testTag("ambience-auto")) { Text("Revenir au cycle automatique") }
+                                Text("Cycle automatique : ${if (demo) "non · démonstration" else "oui · heure locale et météo connue ou neutre"}")
                                 Text("Profil de performance")
                                 listOf("Économie", "Équilibré", "Qualité").forEachIndexed { index, label ->
                                     FilterChip(performance == index, {
@@ -149,13 +187,13 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                                 Text("Intensité des animations : ${(intensity * 100).toInt()} %")
                                 Slider(value = intensity, onValueChange = {
                                     intensity = it
-                                }, onValueChangeFinished = { prefs.edit().putFloat("intensity", intensity).apply() })
+                                }, onValueChangeFinished = { prefs.edit().putFloat("intensity", intensity).apply() }, modifier = Modifier.testTag("animation-intensity"))
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Switch(economy, { economy = it; performance = if (it) 0 else 1; prefs.edit().putBoolean("economy", it).putInt("performance", performance).apply() }, modifier = Modifier.testTag("economy-switch"))
                                     Text("Économie d’énergie", Modifier.padding(start = 8.dp))
                                 }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Switch(glow, { glow = it; prefs.edit().putBoolean("glow", it).apply() })
+                                    Switch(glow, { glow = it; prefs.edit().putBoolean("glow", it).apply() }, Modifier.testTag("glow-switch"))
                                     Text("Éclairage décoratif", Modifier.padding(start = 8.dp))
                                 }
                                 Text("Animations suspendues en arrière-plan et en économie d’énergie Android.")
@@ -166,10 +204,10 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                         else -> {
                             OfficeScene(sceneTime, animate, intensity, glow, Modifier.fillMaxWidth(), observation, accent, true, performance == 2)
                             WorkspaceScreen(screen, workspace, secure) { secure = it; prefs.edit().putBoolean("secure", it).apply() }
-                            ModuleGrid(if (landscape) 8 else 4, selected) { selected = it; screen = it }
+                            ModuleGrid(if (landscape) 8 else 4, selected) { go(it) }
                         }
                     }
-                    if (screen != "Accueil") Button(onClick = { screen = "Accueil" }, modifier = Modifier.testTag("close-settings")) { Text("Retour au tableau de bord") }
+                    if (screen != "Accueil") Button(onClick = { back() }, modifier = Modifier.testTag("close-settings")) { Text("Retour") }
                     if (demo) Text("DÉMONSTRATION · heure et météo simulées", color = accent, modifier = Modifier.testTag("demo-status"))
                     Text("Hors ligne · aucune connexion aux services JARVIS", color = Color.LightGray, fontSize = 11.sp, modifier = Modifier.testTag("local-status"))
                 }
@@ -251,7 +289,7 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
     Pane("BUREAU · $phaseLabel", modifier) {
         BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         val sceneHeight = minOf(maxWidth / 1.45f, heightLimit)
-        Canvas(Modifier.height(sceneHeight).aspectRatio(1.45f).background(Ink, RoundedCornerShape(10.dp))) {
+        Canvas(Modifier.testTag("office-canvas").height(sceneHeight).aspectRatio(1.45f).background(Ink, RoundedCornerShape(10.dp))) {
             val w = size.width; val h = size.height
             fun box(x: Float, y: Float, width: Float, height: Float, color: Color) = drawRect(color, Offset(x*w,y*h), Size(width*w,height*h))
             box(.08f,.06f,.84f,.53f,sky)
@@ -301,6 +339,6 @@ private fun OfficeScene(now: LocalDateTime, animate: Boolean, intensity: Float, 
             if (glow) drawRect(Brush.radialGradient(listOf(accent.copy(alpha=.06f),Color.Transparent),center=Offset(w*.5f,h*.4f),radius=w*.5f))
         }
         }
-        Text(if (observation == null) "Ambiance horaire locale · météo inconnue" else "Météo connue : ${observation.weather.name} · observation passée", color = Color.LightGray, fontSize = 11.sp)
+        Text(if (observation?.source == "DÉMONSTRATION") "DÉMONSTRATION · heure et météo simulées" else if (observation == null) "Ambiance horaire locale · météo inconnue" else "Météo connue : ${observation.weather.name} · observation passée", color = Color.LightGray, fontSize = 11.sp)
     }
 }

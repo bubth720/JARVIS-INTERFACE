@@ -54,6 +54,12 @@ jobs:
             adb shell svc data disable
             ./gradlew connectedDebugAndroidTest --no-daemon || touch evidence/tests-failed
             adb install -r app/build/outputs/apk/debug/app-debug.apk
+            adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            adb shell am instrument -w -e class com.jarvis.interfaceapp.ProcessRestartProbe -e processProbe write com.jarvis.interfaceapp.test/androidx.test.runner.AndroidJUnitRunner > evidence/restart-write.txt
+            python3 scripts/check_instrumentation_output.py evidence/restart-write.txt
+            adb shell am force-stop com.jarvis.interfaceapp
+            adb shell am instrument -w -e class com.jarvis.interfaceapp.ProcessRestartProbe -e processProbe verify com.jarvis.interfaceapp.test/androidx.test.runner.AndroidJUnitRunner > evidence/restart-verify.txt
+            python3 scripts/check_instrumentation_output.py evidence/restart-verify.txt
             adb shell wm size ${{ matrix.size }}
             adb shell wm density ${{ matrix.density }}
             adb shell wm size > evidence/display-size.txt

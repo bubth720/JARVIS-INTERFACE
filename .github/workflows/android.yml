@@ -42,6 +42,7 @@ jobs:
         with:
           node-version: '22'
       - run: python3 scripts/generate_ui01b.py --check
+      - run: python3 scripts/build_ui01c_preview.py --check
       - run: node --check preview/app.js
       - run: npm install --no-save @playwright/test@1.56.1
       - run: npx playwright install --with-deps chromium
@@ -49,7 +50,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: jarvis-ui01b-html-preview
+          name: jarvis-ui01c-html-preview
           path: |
             preview/
             test-results/

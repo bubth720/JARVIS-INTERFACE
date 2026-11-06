@@ -10,9 +10,10 @@ android {
         applicationId = "com.jarvis.interfaceapp"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.2.0-ui01b"
+        versionCode = 3
+        versionName = "0.3.0-ui01c"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["notClass"] = "com.jarvis.interfaceapp.ProcessRestartProbe"
     }
     buildFeatures { compose = true }
     compileOptions {
