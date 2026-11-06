@@ -90,12 +90,18 @@ fun CollectionScreen(route: String, workspace: LocalWorkspace, go: (String) -> U
                     TextButton({ month = month.plusMonths(1); selectedDay = "" }, Modifier.testTag("month-next")) { Text("→") }
                 }
                 val deadlines = entries.filter { it.module != "Finance" && it.due.startsWith(month.toString()) }
-                (1..month.lengthOfMonth()).toList().chunked(7).forEach { days ->
+                Text("Jours du mois · disposition adaptée à la largeur")
+                BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val columns = (maxWidth / 48.dp).toInt().coerceIn(1, 7)
+                Column {
+                (1..month.lengthOfMonth()).toList().chunked(columns).forEach { days ->
                     Row {
                         days.forEach { day -> val date = month.atDay(day).toString()
                             TextButton({ selectedDay = if (selectedDay == date) "" else date }, Modifier.weight(1f).heightIn(min = 48.dp).testTag("day-$day"), contentPadding = PaddingValues(0.dp)) { Text("$day${if (deadlines.any { it.due == date }) "•" else ""}") }
                         }
                     }
+                }
+                }
                 }
                 Text(if (selectedDay.isEmpty()) "Toutes les échéances du mois" else selectedDay)
                 val shown = deadlines.filter { selectedDay.isEmpty() || it.due == selectedDay }.sortedBy { it.due }
