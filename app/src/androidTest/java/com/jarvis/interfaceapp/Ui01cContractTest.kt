@@ -47,6 +47,13 @@ class Ui01cContractTest {
         listOf(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE).forEach { orientation ->
             ui.runOnIdle { context.requestedOrientation = orientation }
             ui.waitForIdle()
+            listOf("Accueil", "Modules", "Documents", "Calendrier", "Statistiques", "Paramètres", "Alimentation", "Supervision", "Avatar").forEach { name ->
+                ui.onNodeWithTag("nav-$name").performScrollTo()
+                val layouts = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+                ui.onNodeWithTag("nav-label-$name", useUnmergedTree = true).performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+                assertTrue("Navigation label has layout: $name", layouts.isNotEmpty())
+                assertFalse("Navigation label is complete: $name", layouts.any { it.hasVisualOverflow })
+            }
             listOf("Accueil", "Modules", "Documents", "Calendrier", "Statistiques", "Paramètres", "Supervision", "Avatar").forEach { name ->
                 home(); if (name == "Accueil") click("open-settings"); click("nav-$name"); route(name)
                 if (name == "Calendrier") {

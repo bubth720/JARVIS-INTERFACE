@@ -132,10 +132,10 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
             Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Column(Modifier.width(64.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
                     listOf("Accueil" to "⌂", "Modules" to "▦", "Documents" to "▱", "Calendrier" to "▣", "Statistiques" to "▥", "Paramètres" to "⚙", "Alimentation" to "⏻", "Supervision" to "◎", "Avatar" to "◇").forEach { (route, symbol) ->
-                        TextButton(onClick = { if (route == "Alimentation") powerMenu = true else go(route) }, modifier = Modifier.testTag("nav-$route"), contentPadding = PaddingValues(0.dp)) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        TextButton(onClick = { if (route == "Alimentation") powerMenu = true else go(route) }, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp).testTag("nav-$route"), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(2.dp)) {
+                            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(symbol, fontSize = 24.sp)
-                                Text(route, fontSize = 10.sp)
+                                Text(route, Modifier.fillMaxWidth().testTag("nav-label-$route"), fontSize = 10.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center, softWrap = true)
                             }
                         }
                     }

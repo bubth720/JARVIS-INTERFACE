@@ -9,6 +9,7 @@ async function add(page,name,title){await modulePage(page,name);await page.locat
 for(const [label,width,height] of [['phone-portrait',412,915],['phone-landscape',915,412],['tablet-portrait',800,1280],['tablet-landscape',1280,800]]){
  test('navigation, settings, ambience, power and layout '+label,async({page})=>{
   test.setTimeout(120000);await page.setViewportSize({width,height});await goto(page);
+  expect(await page.locator('nav span').evaluateAll(nodes=>nodes.every(n=>n.scrollWidth<=n.clientWidth&&n.getBoundingClientRect().left>=n.closest('button').getBoundingClientRect().left&&n.getBoundingClientRect().right<=n.closest('button').getBoundingClientRect().right))).toBeTruthy();
   for(const [id,name] of [['nav-modules','Modules'],['nav-documents','Documents'],['nav-calendar','Calendrier'],['nav-statistics','Statistiques'],['nav-settings','Paramètres'],['supervision','Supervision'],['avatar','Avatar']]){
    await page.locator('#logo-home').click();await page.locator('#'+id).click();await expect(page.locator('#module-title')).toHaveText(name);if(name==='Calendrier')expect(await page.locator('.calendar-grid button').evaluateAll(nodes=>nodes.every(n=>n.getBoundingClientRect().width>=47.9&&n.getBoundingClientRect().height>=47.9))).toBeTruthy();await page.locator('#back').click();await expect(page.locator('#workspace')).toBeHidden();
   }
