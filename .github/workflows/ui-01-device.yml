@@ -4,6 +4,9 @@ on:
     branches: [development/mission-002]
   push:
     branches: [feat/ui-01-native-cockpit]
+concurrency:
+  group: ui-01-device-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -39,8 +42,8 @@ jobs:
       - name: Install and test native application
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
-          target: google_apis
+          api-level: 34
+          target: default
           arch: x86_64
           disable-animations: true
           script: |
