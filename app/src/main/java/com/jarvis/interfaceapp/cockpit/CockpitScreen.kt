@@ -130,7 +130,7 @@ fun CockpitScreen(avatar: @Composable () -> Unit = { Text("Avatar · emplacement
                 TextButton(onClick = { go("Paramètres") }, modifier = Modifier.testTag("open-settings")) { Text("Paramètres") }
             }
             Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Column(Modifier.width(64.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(Modifier.width(80.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
                     listOf("Accueil" to "⌂", "Modules" to "▦", "Documents" to "▱", "Calendrier" to "▣", "Statistiques" to "▥", "Paramètres" to "⚙", "Alimentation" to "⏻", "Supervision" to "◎", "Avatar" to "◇").forEach { (route, symbol) ->
                         TextButton(onClick = { if (route == "Alimentation") powerMenu = true else go(route) }, modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp).testTag("nav-$route"), shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(2.dp)) {
                             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
