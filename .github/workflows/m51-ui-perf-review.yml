@@ -1,0 +1,34 @@
+name: M51 UI performance parser review
+on:
+  push:
+    branches: ['codex/m51-ui-performance-review']
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+jobs:
+  parser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Historical sources unchanged and actual parser tests
+        run: |
+          set -euo pipefail
+          python3 m51-perf/check.py
+          python3 -m unittest discover -s m51-perf -p 'test_*.py' -v 2>&1 | tee build/m51-perf/tests.log
+          python3 m51-perf/gfxinfo.py docs/evidence/ui-01c/phone-frames.txt --output build/m51-perf/historical-phone-analysis.json
+          python3 m51-perf/gfxinfo.py docs/evidence/ui-01c/tablet-frames.txt --output build/m51-perf/historical-tablet-analysis.json
+          git diff --exit-code HEAD
+          cd build/m51-perf
+          sha256sum *.json *.log > SHA256SUMS
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: m51-ui-perf-parser-${{ github.sha }}
+          path: build/m51-perf/
+          if-no-files-found: error
+          retention-days: 90
