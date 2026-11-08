@@ -9,7 +9,9 @@ def main():
     serial=os.environ.get('ANDROID_SERIAL','');assert re.fullmatch(r'emulator-\d+',serial),'EMULATOR_SERIAL_REQUIRED'
     def adb(*args,binary=False,timeout=120,check=True):
         run=subprocess.run(['adb','-s',serial,*map(str,args)],capture_output=True,timeout=timeout)
-        if check and run.returncode:raise RuntimeError('ADB_COMMAND_FAILED:'+args[0]+':'+run.stderr.decode(errors='replace')[-400:])
+        if check and run.returncode:
+            (out/'last-adb-error.txt').write_bytes(run.stdout+b'\nSTDERR\n'+run.stderr)
+            raise RuntimeError('ADB_COMMAND_FAILED:'+args[0]+':'+run.stderr.decode(errors='replace')[-400:])
         return run.stdout if binary else run.stdout.decode(errors='strict')
     assert adb('shell','getprop','ro.kernel.qemu').strip()=='1','PERSONAL_OR_UNKNOWN_DEVICE_REFUSED'
     assert int(adb('shell','getprop','ro.build.version.sdk').strip())==a.api
@@ -23,9 +25,13 @@ def main():
     try:
         adb('shell','wm','size',a.size);adb('shell','wm','density',a.density)
         adb('shell','settings','put','system','accelerometer_rotation','0');adb('shell','settings','put','system','user_rotation','0')
-        adb('shell','settings','put','global','airplane_mode_on','1');adb('shell','am','broadcast','-a','android.intent.action.AIRPLANE_MODE','--ez','state','true')
+        # ConnectivityService owns the protected broadcast. Use its supported shell command;
+        # never send that broadcast ourselves or grant privileges to bypass its protection.
+        adb('shell','cmd','connectivity','airplane-mode','enable')
         adb('shell','svc','wifi','disable');adb('shell','svc','data','disable')
         report['airplane_mode']=adb('shell','settings','get','global','airplane_mode_on').strip();assert report['airplane_mode']=='1'
+        report['airplane_mode_service']=adb('shell','cmd','connectivity','airplane-mode').strip();assert report['airplane_mode_service']=='enabled'
+        report['connectivity_dump']=adb('shell','dumpsys','connectivity');(out/'connectivity.txt').write_text(report.pop('connectivity_dump'))
         report['display_size']=adb('shell','wm','size').strip();report['display_density']=adb('shell','wm','density').strip()
         report['device_fingerprint']=adb('shell','getprop','ro.build.fingerprint').strip()
         report['runner_image']=os.environ.get('ImageVersion','UNKNOWN')
@@ -40,6 +46,8 @@ def main():
             assert not adb('shell','pm','path',pkg,check=False).strip(),'FRESH_LAB_PACKAGE_REQUIRED'
             adb('install','-t',str((a.delivery/row['apk']).resolve()));adb('install','-t',str((a.delivery/row['test_apk']).resolve()))
             report['functional'][variant]=instrumentation(row,variant+'-functional',['-e','notClass','com.jarvis.interfaceapp.ProcessRestartProbe,com.jarvis.interfaceapp.m51.M51FrameProbe'])
+            if variant=='candidate':
+                (out/'modules-blocked.png').write_bytes(adb('exec-out','run-as',pkg,'cat','files/m51-evidence/modules-blocked.png',binary=True))
             report['restart'][variant]={}
             report['restart'][variant]['write']=instrumentation(row,variant+'-restart-write',['-e','class','com.jarvis.interfaceapp.ProcessRestartProbe','-e','processProbe','write'])
             adb('shell','am','force-stop',pkg)

@@ -15,6 +15,7 @@ import com.jarvis.interfaceapp.BuildConfig
 import com.jarvis.interfaceapp.MainActivity
 import com.jarvis.interfaceapp.cockpit.*
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.UUID
@@ -23,6 +24,11 @@ class M51FoundationTest {
     @get:Rule val ui=createAndroidComposeRule<MainActivity>()
     private val context get()=ui.activity
     private fun click(tag: String) { ui.onNodeWithTag(tag).performScrollTo().performClick() }
+    @Before fun isolatedHome() {
+        context.getSharedPreferences("ui-01",0).edit().putString("route","Accueil").putString("navHistory","")
+            .putBoolean("reduceMotion",false).putBoolean("secure",false).commit()
+        ui.activityRule.scenario.recreate()
+    }
     @Test fun distinctTestOnlyPackageNoSensitivePermissionsAndLlmOff() {
         assertEquals("fr.jarvis.v1.lab",context.packageName)
         assertTrue(context.applicationInfo.flags and ApplicationInfo.FLAG_TEST_ONLY != 0)
@@ -36,6 +42,10 @@ class M51FoundationTest {
         click("capability-blocked");ui.onNodeWithTag("capability-LLM").assertExists()
         click("capability-detail-LLM");ui.onNodeWithText("LLM").assertExists()
         ui.onNodeWithText("Dernier refus : LAB_AUTHORITY_NOT_APPROVED",substring=true).assertExists()
+        val dir=java.io.File(context.filesDir,"m51-evidence").apply { mkdirs() }
+        val bitmap=requireNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot())
+        try { java.io.File(dir,"modules-blocked.png").outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it) } }
+        finally { bitmap.recycle() }
         click("capability-detail-close");click("capability-all")
         ui.onNodeWithTag("capability-filter").performTextReplacement("NEXUS")
         ui.onNodeWithTag("capability-NEXUS").assertExists();ui.onNodeWithTag("capability-LLM").assertDoesNotExist()

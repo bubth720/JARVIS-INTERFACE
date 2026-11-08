@@ -3,7 +3,8 @@
     <application android:testOnly="true" android:allowBackup="false" android:fullBackupContent="false"
         android:dataExtractionRules="@xml/data_extraction_rules" android:icon="@drawable/ic_launcher"
         android:label="${labLabel}" android:supportsRtl="true" android:theme="@style/Theme.Jarvis">
-        <activity android:name="com.jarvis.interfaceapp.MainActivity" android:exported="true">
+        <activity android:name="com.jarvis.interfaceapp.MainActivity" android:exported="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

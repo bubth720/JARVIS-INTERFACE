@@ -1,6 +1,6 @@
 # Composition M51 et frontières
 
-Seul INTERFACE s'exécute : sources UI-01C PR16 épinglées, Kotlin2.1.20/Gradle8.13/AGP8.9.2, ComposeBOM2025.04.01, JDK17, min26/target35. L'hôte a son applicationId/testOnly/manifeste, sans configChanges : Android peut réellement recréer l'Activity. Les ressources et sources métier viennent du commit0dfeef8. Aucun nouveau store métier concurrent ; LocalWorkspace schéma2 existant réutilisé dans l'espace privé du nouveau paquet. Migration1→2 testée seulement sur une base synthétique dédiée.
+Seul INTERFACE s'exécute : sources UI-01C PR16 épinglées, Kotlin2.1.20/Gradle8.13/AGP8.9.2, ComposeBOM2025.04.01, JDK17, min26/target35. L'hôte a son applicationId/testOnly/manifeste. Il conserve la politique configChanges de UI-01C : rotation sans remplacement d'Activity ; des tests séparés appellent ActivityScenario.recreate() pour vérifier une véritable destruction/recréation. Les ressources et sources métier viennent du commit0dfeef8. Aucun nouveau store métier concurrent ; LocalWorkspace schéma2 existant réutilisé dans l'espace privé du nouveau paquet. Migration1→2 testée seulement sur une base synthétique dédiée.
 
 Le manifeste multi-dépôts et les inconnues de licence/outillage sont dans UNIFIED PR21. Référence de coordination préparée : `3420a4e0a099bad7e79f2ac5fb1218cb522d6994`, tree `7f4dbde3633d29776ee8c9cdfa453fc46307a1c4` ; les références métier du registre restent les SHAs de reprise auditée. Une référence de source ne signifie ni code inclus ni intégration active dans l'APK.
 
