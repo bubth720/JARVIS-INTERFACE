@@ -1,0 +1,23 @@
+{
+  "schema": "jarvis.m54.avatar-preparation/1",
+  "module_id": "AVATAR",
+  "version": "avatar-scene-review/1",
+  "source_base_sha": "0dfeef8ff09d60a68d18398ccb6b2530f3b87df4",
+  "contract_version": "AvatarSceneV1/review",
+  "availability": "PREPARED",
+  "code_present": true,
+  "connected": false,
+  "enabled": false,
+  "runtime_ready": false,
+  "user_approved": false,
+  "device_qualified": false,
+  "qualification": "JVM_COMPONENT_REVIEW_ONLY",
+  "renderer": "NOT_IMPLEMENTED",
+  "master": "NOT_PROVIDED",
+  "private_asset_store": "NOT_PROVISIONED",
+  "android": "NOT_RUN",
+  "voice_adapter": "NOT_CONNECTED",
+  "visemes": "UNSUPPORTED",
+  "artistic_score_awarded": 0,
+  "next_action": "RECEIVE_RIGHTS_VERIFIED_PRIVATE_REFERENCES_AND_REVIEW_RENDERER_ADAPTER"
+}
