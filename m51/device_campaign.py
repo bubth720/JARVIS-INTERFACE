@@ -1,6 +1,7 @@
 """Bounded cloud emulator campaign. All writes require one exact emulated serial and lab package."""
 import argparse,hashlib,json,os,re,subprocess,sys,time
 from pathlib import Path
+from display_config import require_display
 ROOT=Path(__file__).resolve().parents[1]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
@@ -44,6 +45,7 @@ def main():
         report['airplane_mode_service']=adb('shell','cmd','connectivity','airplane-mode').strip();assert report['airplane_mode_service']=='enabled'
         report['connectivity_dump']=adb('shell','dumpsys','connectivity');(out/'connectivity.txt').write_text(report.pop('connectivity_dump'))
         report['display_size']=adb('shell','wm','size').strip();report['display_density']=adb('shell','wm','density').strip()
+        report['verified_display']=require_display(report['display_size'],report['display_density'],a.size,a.density)
         report['device_fingerprint']=adb('shell','getprop','ro.build.fingerprint').strip()
         (out/'features.txt').write_text(adb('shell','pm','list','features'))
         (out/'display.txt').write_text(adb('shell','dumpsys','display'))
@@ -94,7 +96,12 @@ def main():
                     report['benchmarks'].append(identifier)
         report['status']='PASS_FUNCTIONAL_UI_BENCHMARKS_RECORDED'
     except Exception as e:
-        report['status']='FAIL';report['error']=str(e);raise
+        report['status']='FAIL';report['error']=str(e)
+        try:
+            (out/'failure-screen.png').write_bytes(adb('exec-out','screencap','-p',binary=True,timeout=20))
+            (out/'failure-window.txt').write_text(adb('shell','dumpsys','window',timeout=20))
+        except Exception:report['failure_capture']='NOT_AVAILABLE'
+        raise
     finally:
         crashes=adb('logcat','-d','-b','crash',check=False)
         (out/'crashes.txt').write_text(crashes)
