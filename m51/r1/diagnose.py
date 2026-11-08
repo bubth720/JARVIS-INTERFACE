@@ -3,6 +3,7 @@ import argparse,hashlib,json,os,re,subprocess,time
 from pathlib import Path
 from m51.r1.policy import instrumentation_result,system_incident
 from m51.display_config import require_display
+from m51.reuse_r1plus.policy import CAMPAIGN, WifiObservationError, campaign_identity, recorded_system_anr, wait_for_wifi_disabled
 ROOT=Path(__file__).resolve().parents[2]
 SCENARIOS=[('saf','com.jarvis.interfaceapp.DocumentPickerContractTest#actualAndroidDocumentPickerImportsLocalFileWithoutDeletingOriginal'),
  ('navigation','com.jarvis.interfaceapp.Ui01cContractTest#navigationContractAllIconsAndModulesInBothOrientations'),
@@ -10,12 +11,17 @@ SCENARIOS=[('saf','com.jarvis.interfaceapp.DocumentPickerContractTest#actualAndr
  ('capture-project','com.jarvis.interfaceapp.Ui01cContractTest#settingsContractAllWeatherProfilesSlidersAndRealCacheIsolation,com.jarvis.interfaceapp.Ui01cContractTest#projectContractStepsProgressAndHistoryAreReal')]
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--api',type=int,choices=[29,35],required=True);p.add_argument('--preflight-only',action='store_true');p.add_argument('--delivery',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--api',type=int,choices=[29,35],required=True);p.add_argument('--preflight-only',action='store_true');p.add_argument('--delivery',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
+    p.add_argument('--campaign',choices=['R1-D1',CAMPAIGN],default='R1-D1');p.add_argument('--run-id');a=p.parse_args()
     a.out.mkdir(parents=True,exist_ok=True);serial=os.environ.get('ANDROID_SERIAL','');assert re.fullmatch(r'emulator-\d+',serial)
+    command_costs=[]
     def adb(*args,timeout=30,check=True,binary=False):
+        started=time.monotonic()
         try:r=subprocess.run(['adb','-s',serial,*map(str,args)],capture_output=True,timeout=timeout)
         except subprocess.TimeoutExpired as e:
+            command_costs.append({'command':str(args[0]),'seconds':time.monotonic()-started,'state':'TIMEOUT'})
             (a.out/'last-timeout.txt').write_bytes((e.stdout or b'')+b'\nSTDERR\n'+(e.stderr or b''));raise
+        command_costs.append({'command':str(args[0]),'seconds':time.monotonic()-started,'exit_code':r.returncode})
         if check and r.returncode:
             (a.out/'last-adb-error.txt').write_bytes(r.stdout+b'\nSTDERR\n'+r.stderr);raise RuntimeError('ADB_COMMAND_FAILED:'+str(args[0]))
         return r.stdout if binary else r.stdout.decode(errors='replace')
@@ -28,19 +34,30 @@ def main():
         assert not adb('shell','pm','path',row['package'],check=False).strip(),'JARVIS_MUST_BE_ABSENT_DURING_PREFLIGHT'
         for key,digest in [('apk','sha256'),('test_apk','test_sha256')]:assert hashlib.sha256((a.delivery/row[key]).read_bytes()).hexdigest()==row[digest]
     report={'source_commit':head,'source_tree':meta['source_tree'],'api':a.api,'campaign':'R1-D1','status':'RUNNING','phase':'SYSTEM_PREFLIGHT','boot_attempts':1,'invocations':[],'production_code_changed':False,'personal_devices':'NOT_RUN','qualification':'NOT_RUN','causes':{'snapshot':'UNKNOWN','saf':'UNKNOWN','navigation':'UNKNOWN','api35_process':'UNKNOWN'}}
+    if a.campaign==CAMPAIGN:
+        report.update(campaign_identity(a.campaign,head,meta['source_commit'],a.run_id,os.environ))
+        report['command_costs']=command_costs
     def snapshot(stem):
         window=adb('shell','dumpsys','window');events=adb('logcat','-d','-b','events');crashes=adb('logcat','-d','-b','crash')
         for name,data in [('window',window),('events',events),('crashes',crashes)]: (a.out/f'{stem}-{name}.txt').write_text(data)
         (a.out/f'{stem}.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
         return window,events,crashes
     try:
+        if a.campaign==CAMPAIGN:
+            report['device_timezone']=adb('shell','getprop','persist.sys.timezone').strip()
+            if report['device_timezone'] not in {'Etc/UTC','UTC'}:
+                report['failure_category']='CONFIGURATION_FAILURE';raise RuntimeError('EXPLICIT_EMULATOR_TIMEZONE_NOT_OBSERVED')
         size,density=('1080x1920','420') if a.api==29 else ('1200x1920','240')
         adb('shell','wm','size',size);adb('shell','wm','density',density)
         report['display']=require_display(adb('shell','wm','size'),adb('shell','wm','density'),size,density)
         adb('shell','settings','put','system','accelerometer_rotation','0');adb('shell','settings','put','system','user_rotation','0')
         adb('shell','cmd','connectivity','airplane-mode','enable');adb('shell','svc','wifi','disable')
         report['airplane_mode']=adb('shell','cmd','connectivity','airplane-mode').strip();assert report['airplane_mode']=='enabled'
-        assert adb('shell','settings','get','global','wifi_on').strip()=='0'
+        if a.campaign==CAMPAIGN:
+            try:report['wifi_observation']=wait_for_wifi_disabled(lambda remaining:adb('shell','settings','get','global','wifi_on',timeout=remaining))
+            except WifiObservationError as error:
+                report['wifi_observation']=error.evidence;report['failure_category']='CONFIGURATION_FAILURE';raise
+        else:assert adb('shell','settings','get','global','wifi_on').strip()=='0'
         (a.out/'home-start.txt').write_text(adb('shell','am','start','-W','-a','android.intent.action.MAIN','-c','android.intent.category.HOME'))
         (a.out/'settings-start.txt').write_text(adb('shell','am','start','-W','-a','android.settings.SETTINGS'))
         adb('shell','input','keyevent','KEYCODE_HOME')
@@ -50,6 +67,7 @@ def main():
                 report.update(status="BLOCKED_ENVIRONMENT",environment_incident="PREFLIGHT_WALL_BUDGET_EXCEEDED");raise RuntimeError("PREFLIGHT_WALL_BUDGET_EXCEEDED")
             window,events,crashes=snapshot(f'preflight-{sample:02d}')
             incident=system_incident(window,events,crashes)
+            if a.campaign==CAMPAIGN:incident=incident or recorded_system_anr(window)
             pid=adb('shell','pidof','com.android.systemui').strip()
             if not pid or (first_pid is not None and pid!=first_pid):incident='SYSTEM_UI_PID_CHANGED_OR_MISSING'
             first_pid=pid

@@ -1,0 +1,16 @@
+{
+  "source_run": 42524234101,
+  "source_commit": "7282fd769d4ab787467d08fd8059b2f1e18ca139",
+  "source_artifact": 13634613120,
+  "source_artifact_sha256": "e096db9fc9852a9dcb8c60d9bf53a0ebfa401e9e773905aae6bc693e77f1ccc3",
+  "full_preflight_00_window_sha256": "3a9ae56f7309d4c63c154600b43eb270c594187fb65032f591b3de95bd7b4601",
+  "excerpt_sha256": "6cd2db001f811d317717a7b26a8b7d407966b67a9d18bbef0817e8d5901b8b38",
+  "scope": "OFFLINE_REPLAY_OF_REAL_CAPTURE",
+  "raw_preflight_status": "PASS_SYSTEM_PREFLIGHT_ONLY",
+  "review_admission": "NOT_ACCEPTED_RECORDED_ANR",
+  "saf_assertion_cause": "UNKNOWN",
+  "cause_of_recorded_ANR": "UNKNOWN",
+  "android_rerun": false,
+  "application_fix": false,
+  "original_C1_evidence_changed": false
+}

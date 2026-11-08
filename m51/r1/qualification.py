@@ -2,6 +2,7 @@
 import argparse,hashlib,json,os,re,subprocess,sys
 from pathlib import Path
 from m51.r1.policy import instrumentation_result,system_incident
+from m51.reuse_r1plus.policy import CAMPAIGN,campaign_identity
 ROOT=Path(__file__).resolve().parents[2]
 FAULTS=[('saf','com.jarvis.interfaceapp.DocumentPickerContractTest#actualAndroidDocumentPickerImportsLocalFileWithoutDeletingOriginal'),
  ('navigation','com.jarvis.interfaceapp.Ui01cContractTest#navigationContractAllIconsAndModulesInBothOrientations'),
@@ -12,7 +13,8 @@ def fixture_reset_allowed(package,created_here):
     return package
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--api',type=int,choices=[29,35],required=True);p.add_argument('--delivery',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--api',type=int,choices=[29,35],required=True);p.add_argument('--delivery',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
+    p.add_argument('--campaign',choices=['R1-Q1',CAMPAIGN],default='R1-Q1');p.add_argument('--run-id');a=p.parse_args()
     a.out.mkdir(parents=True,exist_ok=True);serial=os.environ.get('ANDROID_SERIAL','');assert re.fullmatch(r'emulator-\d+',serial)
     def adb(*args,timeout=30,check=True,binary=False):
         try:r=subprocess.run(['adb','-s',serial,*map(str,args)],capture_output=True,timeout=timeout)
@@ -27,6 +29,7 @@ def main():
     host=json.loads(Path('build/m51-r1-host/host.json').read_text());assert host['ready'] and host['accelerator_exit']==0 and not host['protections_changed']
     report={'campaign':'R1-Q1','source_commit':head,'source_tree':meta['source_tree'],'api':a.api,'status':'RUNNING','stage':'ENVIRONMENT','individual':[],
             'physical_android':'NOT_RUN','llm':'NOT_RUN','boot_attempts':1,'production_changes':False,'created_packages':[]}
+    if a.campaign==CAMPAIGN:report.update(campaign_identity(a.campaign,head,meta['source_commit'],a.run_id,os.environ))
     def evidence(stem):
         for label,args in [('window',('shell','dumpsys','window')),('events',('logcat','-d','-b','events')),('crashes',('logcat','-d','-b','crash'))]:
             text=adb(*args);(a.out/f'{stem}-{label}.txt').write_text(text)
@@ -34,7 +37,8 @@ def main():
         return (a.out/f'{stem}-crashes.txt').read_text()
     try:
         # Same guard as D1, still no JARVIS installed. No interpretation of boot-completed as stability.
-        subprocess.run([sys.executable,'-m','m51.r1.diagnose','--api',str(a.api),'--preflight-only','--delivery',str(a.delivery),'--out',str(a.out/'environment')],cwd=ROOT,check=True)
+        campaign_args=['--campaign',CAMPAIGN,'--run-id',a.run_id] if a.campaign==CAMPAIGN else []
+        subprocess.run([sys.executable,'-m','m51.r1.diagnose','--api',str(a.api),'--preflight-only','--delivery',str(a.delivery),'--out',str(a.out/'environment'),*campaign_args],cwd=ROOT,check=True)
         env=json.loads((a.out/'environment/diagnostic.json').read_text());assert env['status']=='PASS_SYSTEM_PREFLIGHT_ONLY'
         report['environment']=env['system_preflight'];report['stage']='INDIVIDUAL_REGRESSIONS'
         row=next(r for r in meta['apks'] if r['variant']=='baseline');pkg=row['package']
@@ -57,7 +61,7 @@ def main():
         for name in [pkg+'.test',pkg]:adb('uninstall',fixture_reset_allowed(name,report['created_packages']))
         report['passed_individual_fixture_cleanup']='ONLY_PACKAGES_CREATED_HERE_ALL_TESTS_PASSED'
         Path('build/m51-host').mkdir(parents=True,exist_ok=True)
-        Path('build/m51-host/capability.json').write_text(json.dumps({**host,'status':'OBSERVED_ACCELERATOR_AVAILABLE','emulation':'HVF','system_preflight':'PASS','personal_device':False})+'\n')
+        Path('build/m51-host/capability.json').write_text(json.dumps({**host,'status':'OBSERVED_ACCELERATOR_AVAILABLE','emulation':host['accelerator_kind'] if a.campaign==CAMPAIGN else 'HVF','system_preflight':'PASS','personal_device':False})+'\n')
         report['stage']='BASELINE_18_CANDIDATE_24_RESTART_AND_FRAMES'
         size,density=('1080x1920','420') if a.api==29 else ('1200x1920','240')
         full=a.out/'full';subprocess.run([sys.executable,'m51/device_campaign.py','--delivery',str(a.delivery),'--output',str(full),'--api',str(a.api),'--size',size,'--density',density,'--profile','R1-macos-intel-hvf'],cwd=ROOT,check=True)

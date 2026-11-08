@@ -1,0 +1,21 @@
+{
+  "id": "REUSE-R1PLUS-C1",
+  "base": "b9a9506785b8851f55789ed4329c9394a3937447",
+  "trigger_branch": "codex/reuse-first-r1plus-c1-android",
+  "boot_limit_per_api": 1,
+  "apis": [29, 35],
+  "timezone": "Etc/UTC",
+  "cpu_cores": 2,
+  "ram_mib": 2048,
+  "boot_timeout_seconds": 300,
+  "system_preflight_budget_seconds": 120,
+  "instrumentation_timeout_seconds": 900,
+  "wifi_stabilization_seconds": 10,
+  "automatic_retry": false,
+  "rerun_attempts_refused": true,
+  "stop_on_first_critical_incident": true,
+  "old_D1_and_Q1_evidence_immutable": true,
+  "application_changes": false,
+  "host_protection_changes": false,
+  "sensitive_modules_connected": false
+}

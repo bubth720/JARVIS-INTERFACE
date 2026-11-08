@@ -1,0 +1,6 @@
+
+WINDOW MANAGER LAST ANR (dumpsys window lastanr)
+  ANR time: Nov 8, 2026 9:24:47 PM
+  Reason: Waiting because no window has focus but there is a focused application that may eventually add a window when it finishes starting up.
+  Windows added in display #0 since null focus: [Window{4b5706b u0 Splash Screen com.android.sdksetup}]
+
