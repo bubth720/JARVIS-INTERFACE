@@ -10,7 +10,7 @@ SCENARIOS=[('saf','com.jarvis.interfaceapp.DocumentPickerContractTest#actualAndr
  ('capture-project','com.jarvis.interfaceapp.Ui01cContractTest#settingsContractAllWeatherProfilesSlidersAndRealCacheIsolation,com.jarvis.interfaceapp.Ui01cContractTest#projectContractStepsProgressAndHistoryAreReal')]
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--api',type=int,choices=[29,35],required=True);p.add_argument('--delivery',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--api',type=int,choices=[29,35],required=True);p.add_argument('--preflight-only',action='store_true');p.add_argument('--delivery',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     a.out.mkdir(parents=True,exist_ok=True);serial=os.environ.get('ANDROID_SERIAL','');assert re.fullmatch(r'emulator-\d+',serial)
     def adb(*args,timeout=30,check=True,binary=False):
         try:r=subprocess.run(['adb','-s',serial,*map(str,args)],capture_output=True,timeout=timeout)
@@ -57,7 +57,7 @@ def main():
                 report.update(status='BLOCKED_ENVIRONMENT',environment_incident=incident,jarvis_installed=False);raise RuntimeError(incident)
             if sample<12:time.sleep(5)
         report['system_preflight']={'status':'PASS','observed_seconds':time.monotonic()-start,'samples':13,'systemui_pid':first_pid,'jarvis_installed':False}
-        if a.api==35:
+        if a.api==35 or a.preflight_only:
             report.update(status='PASS_SYSTEM_PREFLIGHT_ONLY',phase='DONE');return
         report['phase']='ISOLATED_API29_REPRODUCTION'
         row=next(x for x in meta['apks'] if x['variant']=='baseline');pkg=row['package']

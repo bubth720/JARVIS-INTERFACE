@@ -1,0 +1,14 @@
+{
+  "mode": "Q1",
+  "laboratory": "macos-15-intel_standard_public_runner_HVF_must_be_reverified",
+  "boot_attempts_per_api": 1,
+  "mission_boot_limit_per_api": 2,
+  "original_D1_run": 42513995917,
+  "D1_results_must_be_preserved_separately": true,
+  "application_fixes_applied": false,
+  "requires_system_preflight_without_JARVIS": true,
+  "requires_individual_fault_cases_before_full_suites": true,
+  "stop_on_critical_failure": true,
+  "automatic_retry": false,
+  "physical_devices": "NOT_RUN"
+}

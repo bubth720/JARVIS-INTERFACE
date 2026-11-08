@@ -1,0 +1,35 @@
+{
+  "schema": "jarvis.m51-r1.receipts/1",
+  "input_commit": "9c8960a7c9d3f572dff41fe18a5b002c9f66ac8a",
+  "input_tree": "39427d75257a841208e6e75e2f1755d1cb564d85",
+  "D1": {
+    "source_commit": "1fe0b9adc8554b0e144a9efe7f1075daeba6a192",
+    "source_tree": "1ae32cb16efacea19d2f215a369d320c98bbac85",
+    "ci_run": 42513995917,
+    "build": "PASS",
+    "build_artifact_id": 13630572830,
+    "build_zip_sha256": "1e2d79d7488774d5dc2c83c0a2726f0035c413d93df3a9eab22d8e1f4119586d",
+    "unique_jvm_cases": 15,
+    "unique_python_cases": 14,
+    "api29_diagnostic": "PENDING_RAW_EVIDENCE_REVIEW",
+    "api35_system_preflight": "PENDING_RAW_EVIDENCE_REVIEW"
+  },
+  "Intel_probe": {
+    "ci_job": 128832905259,
+    "artifact_id": 13630008815,
+    "zip_sha256": "f5d0ffb3a98e1f34fa38545acfec2c6092491df944f5da1826d4b5f9d495e205",
+    "raw_result": "Hypervisor.Framework OS X Version 15.7",
+    "accelerator_exit": 0,
+    "protections_changed": false,
+    "android_booted": false,
+    "archive_verified": true,
+    "meaning": "HOST_CAPABILITY_ONLY_NOT_ANDROID_QUALIFICATION"
+  },
+  "Q1": {
+    "status": "NOT_RUN_BEFORE_THIS_SOURCE_IS_BUILT_AND_EXECUTED",
+    "hardware_budget_changed": false,
+    "application_code_changed": false,
+    "assertions_or_timeouts_relaxed": false,
+    "other_modules_changed": false
+  }
+}

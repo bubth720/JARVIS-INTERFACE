@@ -13,3 +13,11 @@ Un probe séparé vérifie l'accélération du runner standard gratuit macos-15-
 Sources amont exactes : Google Maven Compose1.8.0 (sources publiées Apache-2.0) ; captureToImage utilise PixelCopy et performSemanticsAction passe par runOnUiThread. Le crash SnapshotStateObserver reste UNKNOWN tant que la reproduction n'identifie pas le second thread et son chemin d'appel. Aucun upgrade Compose proposé sans preuve.
 
 Aucune fusion, installation personnelle, modification JNI/CORE/LLM/VOICE/NEXUS, migration privée ou activation. L'APK compilée reste NON QUALIFIÉE jusqu'à réception Android complète. Rollback : abandon de cette branche, option R1 omise ; aucune base ou donnée historique modifiée.
+
+## Laboratoire alternatif Q1
+
+Le probe D1 macOSIntel a réellement renvoyé exit0 / Hypervisor.FrameworkOSX15.7 ; archive13630008815 et SHA dans RECEIPTS.json, vérifiés après téléchargement. Cela permet de préparer une campagne indépendante Q1, sans présenter le probe comme un boot ou une stabilité Android. Les diagnosticsD1Linux se poursuivent séparément et leurs échecs ne sont pas effacés.
+
+Q1 est exécutée sur deux runnersstandardsIntel, un boot maximum parAPI, seulement après relecture du supportHVF du runner courant. Chaque émulateur passe ensuite le même préflight sans JARVIS. Les trois cas fautifs sont rejoués individuellement sans sampler, puis le banc M51 original intact vérifie18baseline/24candidat, force-stop/restart, hors-ligne et fenêtres de frames comparables. Aucun passage à l'étape suivante si un cas individuel échoue. Le budget reste2cores/2048M, les assertions et délais originaux sont conservés. Au maximum deux boots parAPI pour la mission (D1Linux etQ1Intel), aucun retry automatique.
+
+Les seuls paquetsbaseline créés par les trois tests isolés peuvent être retirés après leur succès pour retrouver le garde de paquetneuf du banc complet. Le candidat et toutes les applications historiques sont exclus de ce nettoyage. ROLLBACK.md précise les garde-fous et leurs tests. La phaseQ1 n'affirme aucune cause applicative résolue : toute cause insuffisamment établie resteUNKNOWN.
