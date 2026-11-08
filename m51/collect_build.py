@@ -44,6 +44,7 @@ def main():
     record={'source_commit':run('git','rev-parse','HEAD').strip(),'source_tree':run('git','rev-parse','HEAD^{tree}').strip(),
             'ui_base_commit':'0dfeef8ff09d60a68d18398ccb6b2530f3b87df4','apks':rows,'jvm_tests':suites,
             'runtime_connections':['INTERFACE_LOCAL_ONLY'],'physical_android':'NOT_RUN','llm_generation':'NOT_RUN'}
+    shutil.copy2(ROOT/'m51/android-lab/build/generated/m51/source-receipt.json',out/'source-receipt.json')
     (out/'build.json').write_text(json.dumps(record,indent=2)+'\n')
     (out/'SHA256SUMS').write_text(''.join(sha(p)+'  '+p.name+'\n' for p in sorted(out.iterdir()) if p.is_file() and p.name!='SHA256SUMS'))
     print(json.dumps(record,indent=2))
