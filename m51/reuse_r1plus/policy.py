@@ -5,6 +5,21 @@ import time
 CAMPAIGN = "REUSE-R1PLUS-C1"
 
 
+def recorded_system_anr(window):
+    """Fresh lab admission cannot ignore a dated WindowManager LAST ANR.
+
+    This is deliberately stricter than the historical active-window regex.
+    A recorded ANR does not establish the cause of a later JARVIS assertion.
+    """
+    if 'WINDOW MANAGER LAST ANR' not in window:
+        return None
+    if re.search(r'(?m)^\s*ANR time:\s*\S.+$', window):
+        return 'SYSTEM_LAST_ANR_RECORDED'
+    if re.search(r'(?i)(no ANR has occurred|no ANR has been recorded|no last anr)', window):
+        return None
+    return 'SYSTEM_ANR_HISTORY_UNPARSEABLE'
+
+
 class WifiObservationError(RuntimeError):
     def __init__(self, reason, observations, elapsed):
         super().__init__(reason)

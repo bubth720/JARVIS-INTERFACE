@@ -1,5 +1,28 @@
 # REUSE FIRST R1+ — banc Android C1 isolé
 
+## Réception C1 et correctif postérieur, sans nouveau boot
+
+La campagne C1 est close au commit 7282fd769d4ab787467d08fd8059b2f1e18ca139,
+run 42524234101, un boot/API sur Intel/HVF. API35 : ANR SystemUI avant JARVIS,
+BLOCKED. API29 : préflight brut PASS, puis le seul test SAF commence et échoue ;
+navigation, projet, suites 18/24, restart et benchmarks NOT_RUN. Le mode avion,
+Wi-Fi 0 et fuseau Etc/UTC ont été effectivement observés sur les deux API.
+
+Une revue du premier dumpsys API29 découvre un LAST ANR daté, ignoré par le parseur
+historique : le PASS brut n'est pas accepté comme stabilité. Les preuves restent
+inchangées. Le nouveau refus recorded_system_anr est testé sur un extrait hashé
+de cette capture, sans requalification ni relance Android. Ce correctif résout
+le défaut de classification reproduit ; il ne résout pas l'ANR ou le problème SAF.
+La capture finale du sélecteur affiche Downloads sans élément, mais elle est
+postérieure au finally du test qui supprime sa fixture : elle ne prouve pas
+l'absence du fichier pendant les 20 secondes de sélection. L'état IS_PENDING,
+les octets et la hiérarchie pendant la sélection restent à recueillir : Q1/C1
+ne rapatrient pas le picker.jsonl pourtant écrit par le test instrumenté.
+
+La branche C1 demeure figée et ne doit recevoir aucun push supplémentaire.
+Les commits postérieurs de la branche ordinaire ne construisent/testent que le
+banc. Aucun retry silencieux ou correction applicative n'est annoncé.
+
 Base M51-R1 b9a9506785b8851f55789ed4329c9394a3937447, preuves D1/Q1 intactes.
 Deux helpers R1 reçoivent une option explicite C1 ; leurs modes par défaut restent
 R1-D1/R1-Q1, sans réécrire les anciens résultats. Sources app, tests historiques,

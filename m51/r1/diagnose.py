@@ -3,7 +3,7 @@ import argparse,hashlib,json,os,re,subprocess,time
 from pathlib import Path
 from m51.r1.policy import instrumentation_result,system_incident
 from m51.display_config import require_display
-from m51.reuse_r1plus.policy import CAMPAIGN, WifiObservationError, campaign_identity, wait_for_wifi_disabled
+from m51.reuse_r1plus.policy import CAMPAIGN, WifiObservationError, campaign_identity, recorded_system_anr, wait_for_wifi_disabled
 ROOT=Path(__file__).resolve().parents[2]
 SCENARIOS=[('saf','com.jarvis.interfaceapp.DocumentPickerContractTest#actualAndroidDocumentPickerImportsLocalFileWithoutDeletingOriginal'),
  ('navigation','com.jarvis.interfaceapp.Ui01cContractTest#navigationContractAllIconsAndModulesInBothOrientations'),
@@ -67,6 +67,7 @@ def main():
                 report.update(status="BLOCKED_ENVIRONMENT",environment_incident="PREFLIGHT_WALL_BUDGET_EXCEEDED");raise RuntimeError("PREFLIGHT_WALL_BUDGET_EXCEEDED")
             window,events,crashes=snapshot(f'preflight-{sample:02d}')
             incident=system_incident(window,events,crashes)
+            if a.campaign==CAMPAIGN:incident=incident or recorded_system_anr(window)
             pid=adb('shell','pidof','com.android.systemui').strip()
             if not pid or (first_pid is not None and pid!=first_pid):incident='SYSTEM_UI_PID_CHANGED_OR_MISSING'
             first_pid=pid

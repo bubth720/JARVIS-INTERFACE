@@ -1,6 +1,6 @@
 import unittest
 from m51.reuse_r1plus.policy import (
-    CAMPAIGN, WifiObservationError, campaign_identity, classify, wait_for_wifi_disabled,
+    CAMPAIGN, WifiObservationError, campaign_identity, classify, recorded_system_anr, wait_for_wifi_disabled,
 )
 
 
@@ -101,6 +101,24 @@ class ClassificationTests(unittest.TestCase):
 
     def test_unknown_never_becomes_success(self):
         self.assertEqual('UNKNOWN',classify())
+
+
+class LastAnrTests(unittest.TestCase):
+    def test_captured_c1_last_anr_is_refused_even_when_original_parser_misses_it(self):
+        from pathlib import Path
+        from m51.r1.policy import system_incident
+        raw=(Path(__file__).parent/'evidence/C1-api29-last-anr.txt').read_text()
+        self.assertIsNone(system_incident(raw,'',''))
+        self.assertEqual('SYSTEM_LAST_ANR_RECORDED',recorded_system_anr(raw))
+
+    def test_explicit_empty_history_does_not_invent_an_incident(self):
+        self.assertIsNone(recorded_system_anr('WINDOW MANAGER LAST ANR\n<no ANR has occurred>'))
+
+    def test_unknown_history_is_not_silently_accepted(self):
+        self.assertEqual('SYSTEM_ANR_HISTORY_UNPARSEABLE',recorded_system_anr('WINDOW MANAGER LAST ANR\ntruncated'))
+
+    def test_no_history_section_is_not_an_invented_crash(self):
+        self.assertIsNone(recorded_system_anr('WINDOW MANAGER WINDOWS\ncurrent focus is launcher'))
 
 
 if __name__ == '__main__': unittest.main()
