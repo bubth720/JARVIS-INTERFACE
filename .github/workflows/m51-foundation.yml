@@ -1,0 +1,116 @@
+name: M51 isolated cockpit and Android evidence
+on:
+  push:
+    branches: ['codex/m51-v1-foundation']
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Frozen historical sources and measurement validation
+        run: |
+          python3 m51/check.py
+          python3 -m unittest discover -s m51 -p 'test_*.py' -v
+      - name: Build same-source comparison and laboratory APKs
+        run: |
+          ./gradlew --no-daemon -I m51/lab.init.gradle :app:testDebugUnitTest :m51lab:testBaselineDebugUnitTest :m51lab:testCandidateDebugUnitTest :m51lab:assembleBaselineDebug :m51lab:assembleCandidateDebug :m51lab:assembleBaselineDebugAndroidTest :m51lab:assembleCandidateDebugAndroidTest :m51lab:lintCandidateDebug
+          python3 m51/collect_build.py
+          python3 m51/check.py
+          git diff --exit-code HEAD
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: M51-build-${{ github.sha }}
+          retention-days: 90
+          path: |
+            build/m51-delivery/
+            build/m51-reports/
+            m51/android-lab/build/reports/lint-results-candidateDebug.*
+            m51/android-lab/build/test-results/
+            app/build/test-results/
+  device:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - api: 29
+            profile: generic-phone
+            size: 1080x1920
+            density: 420
+          - api: 35
+            profile: generic-tablet
+            size: 1200x1920
+            density: 240
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Read-only host capability, no repeated unsupported boot
+        id: host
+        run: python3 m51/host_capability.py
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
+        with:
+          name: M51-build-${{ github.sha }}
+          path: build/download
+      - name: Locate exact APK receipt
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          matches=list(Path('build/download').rglob('build.json'))
+          assert len(matches)==1
+          source=matches[0].parent
+          target=Path('build/m51-delivery');target.mkdir(parents=True)
+          for p in source.iterdir():
+              if p.is_file():shutil.copy2(p,target/p.name)
+          PY
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        if: steps.host.outputs.ready == 'true' || steps.host.outputs.software == 'true'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Functional UI and controlled frame windows, actual emulator only
+        if: steps.host.outputs.ready == 'true' || steps.host.outputs.software == 'true'
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: ${{ matrix.api }}
+          target: default
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          disable-linux-hw-accel: ${{ steps.host.outputs.ready == 'true' && 'false' || 'true' }}
+          disable-animations: true
+          emulator-boot-timeout: 300
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: python3 m51/device_campaign.py --delivery build/m51-delivery --output build/m51-device --api ${{ matrix.api }} --profile ${{ matrix.profile }} --size ${{ matrix.size }} --density ${{ matrix.density }}
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: M51-device-${{ matrix.api }}-${{ matrix.profile }}-${{ github.sha }}
+          path: |
+            build/m51-host/
+            build/m51-device/
+          retention-days: 90
+          if-no-files-found: error

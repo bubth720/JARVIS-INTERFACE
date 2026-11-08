@@ -1,0 +1,5 @@
+// Opt-in laboratory composition only. Does not change settings.gradle or the historical :app.
+settingsEvaluated { settings ->
+    settings.include(':m51lab')
+    settings.project(':m51lab').projectDir = new File(settings.settingsDir, 'm51/android-lab')
+}

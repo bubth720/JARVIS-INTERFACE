@@ -1,0 +1,14 @@
+# Protocole UI — pas une mesure LLM
+
+Même APK de base UI-01C et même enveloppe de laboratoire, appareil émulé, API, résolution, densité, orientation, observateur et scène. Baseline et candidat alternent sur le **même émulateur** : deux fenêtres ANIMATED de20s par variante, puis une fenêtre ECO de20s, après2s de préparation. Scène DEMO explicitement figée à12h/clair, intensité.35, glow actif, performance1 en animé et0 en ECO. OS animation scales remis à1 pour les deux variantes, après les tests fonctionnels. Les captures portrait/paysage sont distinctes de cette mesure portrait contrôlée.
+
+Le candidat remplace un timer33/66ms par un InfiniteTransition aligné sur le frame clock et un derivedState quantifié à75/150pas par5s, avec politique d'égalité structurelle ; les lectures restent dans Canvas. Ce n'est pas une preuve que le code original recomposait tout l'écran. Les animations respectent aussi le choix système et le mode local « Réduire les mouvements ». L'horloge30s, les CRUD et les gradients restent identiques : aucune optimisation de ces lots n'est présumée.
+
+FrameMetrics bruts, colonnes et erreurs/sentinels conservés ; compteur de callbacks perdus et overflow explicites. Limite8192frames par fenêtre, arrêt de l'observateur/HandlerThread vérifié. Durées TOTAL_DURATION fournies par Android ; timestamps FrameMetrics non soustraits à elapsedRealtimeNanos de la fenêtre. Le p50/p95/max n'est publié que pour ≥20durées positives valides ; sinon null/INSUFFICIENT_UI_FRAMES, notamment en ECO. Aucun zéro ne remplace un relevé absent.
+
+Conserver les sorties gfxinfo/framestats par fenêtre. Les compteurs modernes et legacy ne sont ni fusionnés ni confondus avec les FrameMetrics de l'observateur. Le bucket GPU historique4950ms n'est pas une durée GPU physique attestée. Les captures/SDK/API/build/accélération et l'image du runner sont enregistrés. Mode TCG éventuel doit être séparé de KVM et des archives historiques API34.
+
+Le maximum peut contenir des pauses hôte : aucun outlier n'est supprimé pour améliorer les chiffres. Les fenêtres de frames ne sont pas20essais indépendants de génération. Les mesures n'attestent ni p95 de premier texte, ni physiquePOCO/Redmi, ni énergie ou thermique. Aucun objectif60/90Hz promis. En cas de gain non robuste ou de régression, le rapport dit inconclusif/FAIL selon les preuves ; les tests de parseur seuls ne valent pas un benchmark Android.
+
+
+Le profil matériel AVD est explicitement pixel_2 pour disposer d'une surfacephysique suffisante. Les noms generic-phone/generic-tablet désignent uniquement les géométries logiques de laboratoire. Avantinstallation, le banc exige les dimensions/densité observées exactes ; une taille wm silencieusement bornée bloque la campagne. Les archivesauxgéométriesdifférentes ne sont pas comparables au scénario déclaré, même si une partie des tests passe.
