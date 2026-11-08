@@ -1,0 +1,30 @@
+231: 2026-11-08T19:17:46.1778966Z   arch: x86_64
+232: 2026-11-08T19:17:46.1779815Z   profile: pixel_2
+233: 2026-11-08T19:17:46.1780684Z   cores: 2
+234: 2026-11-08T19:17:46.1781720Z   ram-size: 2048M
+235: 2026-11-08T19:17:46.1782652Z   disable-linux-hw-accel: true
+236: 2026-11-08T19:17:46.1783708Z   disable-animations: true
+237: 2026-11-08T19:17:46.1784731Z   emulator-boot-timeout: 300
+238: 2026-11-08T19:17:46.1786367Z   emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+239: 2026-11-08T19:17:46.1788727Z   script: python3 -m m51.r1.diagnose --api 29 --delivery build/m51-delivery --out build/m51-r1-device
+240: 2026-11-08T19:17:46.1790471Z   avd-name: test
+241: 2026-11-08T19:17:46.1791701Z   force-avd-creation: true
+242: 2026-11-08T19:17:46.1792694Z   emulator-port: 5554
+243: 2026-11-08T19:17:46.1793698Z   disable-spellchecker: false
+539: 2026-11-08T19:21:14.0977182Z ##[endgroup]
+540: 2026-11-08T19:21:14.0998591Z [command]/usr/bin/sh -c python3 -m m51.r1.diagnose --api 29 --delivery build/m51-delivery --out build/m51-r1-device
+541: 2026-11-08T19:25:05.6343081Z Traceback (most recent call last):
+542: 2026-11-08T19:25:05.6343507Z   File "<frozen runpy>", line 198, in _run_module_as_main
+543: 2026-11-08T19:25:05.6343906Z   File "<frozen runpy>", line 88, in _run_code
+544: 2026-11-08T19:25:05.6344440Z   File "/home/runner/work/JARVIS-INTERFACE/JARVIS-INTERFACE/m51/r1/diagnose.py", line 89, in <module>
+545: 2026-11-08T19:25:05.6345217Z     if __name__=='__main__':main()
+546: 2026-11-08T19:25:05.6345744Z                             ^^^^^^
+547: 2026-11-08T19:25:05.6346555Z   File "/home/runner/work/JARVIS-INTERFACE/JARVIS-INTERFACE/m51/r1/diagnose.py", line 50, in main
+548: 2026-11-08T19:25:05.6347760Z     report.update(status="BLOCKED_ENVIRONMENT",environment_incident="PREFLIGHT_WALL_BUDGET_EXCEEDED");raise RuntimeError("PREFLIGHT_WALL_BUDGET_EXCEEDED")
+549: 2026-11-08T19:25:05.6348953Z                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+550: 2026-11-08T19:25:05.6349585Z RuntimeError: PREFLIGHT_WALL_BUDGET_EXCEEDED
+551: 2026-11-08T19:25:05.6505366Z ##[error]The process '/usr/bin/sh' failed with exit code 1
+552: 2026-11-08T19:25:05.6508005Z ##[group]Terminate Emulator
+553: 2026-11-08T19:25:05.6514641Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 emu kill
+554: 2026-11-08T19:25:05.7336118Z OK: killing emulator, bye bye
+555: 2026-11-08T19:25:05.7343977Z ##[endgroup]

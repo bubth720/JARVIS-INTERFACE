@@ -1,0 +1,19 @@
+430: 2026-11-08T19:33:47.4003510Z   arch: x86_64
+431: 2026-11-08T19:33:47.4005320Z   profile: pixel_2
+432: 2026-11-08T19:33:47.4006200Z   cores: 2
+433: 2026-11-08T19:33:47.4009940Z   ram-size: 2048M
+434: 2026-11-08T19:33:47.4010610Z   disable-animations: true
+435: 2026-11-08T19:33:47.4011310Z   emulator-boot-timeout: 300
+436: 2026-11-08T19:33:47.4012620Z   emulator-options: -no-window -accel on -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+437: 2026-11-08T19:33:47.4015760Z   script: python3 -m m51.r1.qualification --api 35 --delivery build/m51-delivery --out build/m51-r1-q
+438: 2026-11-08T19:33:47.4019580Z   avd-name: test
+439: 2026-11-08T19:33:47.4021850Z   force-avd-creation: true
+440: 2026-11-08T19:33:47.4023190Z   emulator-port: 5554
+441: 2026-11-08T19:33:47.4024140Z   disable-spellchecker: false
+967: 2026-11-08T19:40:40.6748010Z OK
+968: 2026-11-08T19:40:40.6750100Z ##[endgroup]
+969: 2026-11-08T19:40:40.6760980Z ##[error]Timeout waiting for emulator to boot.
+970: 2026-11-08T19:40:40.6768180Z INFO         | Wait for emulator (pid 5002) 20 seconds to shutdown gracefully before kill;you can set environment variable ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL(in seconds) to change the default value (20 seconds)
+972: 2026-11-08T19:40:40.6778220Z USER_INFO    | Snapshots have been disabled by the user, save request is ignored.
+973: 2026-11-08T19:40:40.6780980Z INFO         | Saving snapshot 'default_boot' took 1 ms
+974: 2026-11-08T19:40:41.0046270Z WARNING      | Emulator client has not yet been configured.. Call configure me first!

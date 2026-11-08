@@ -1,0 +1,29 @@
+430: 2026-11-08T19:33:04.6265720Z   arch: x86_64
+431: 2026-11-08T19:33:04.6266230Z   profile: pixel_2
+432: 2026-11-08T19:33:04.6266760Z   cores: 2
+433: 2026-11-08T19:33:04.6267270Z   ram-size: 2048M
+434: 2026-11-08T19:33:04.6267880Z   disable-animations: true
+435: 2026-11-08T19:33:04.6268540Z   emulator-boot-timeout: 300
+436: 2026-11-08T19:33:04.6269780Z   emulator-options: -no-window -accel on -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+437: 2026-11-08T19:33:04.6271970Z   script: python3 -m m51.r1.qualification --api 29 --delivery build/m51-delivery --out build/m51-r1-q
+438: 2026-11-08T19:33:04.6273300Z   avd-name: test
+439: 2026-11-08T19:33:04.6273870Z   force-avd-creation: true
+440: 2026-11-08T19:33:04.6274490Z   emulator-port: 5554
+441: 2026-11-08T19:33:04.6275100Z   disable-spellchecker: false
+737: 2026-11-08T19:37:11.2573790Z [command]/bin/sh -c python3 -m m51.r1.qualification --api 29 --delivery build/m51-delivery --out build/m51-r1-q
+738: 2026-11-08T19:37:12.2725050Z WARNING      | /etc/localtime does not point to zoneinfo-compatible timezone name
+739: 2026-11-08T19:38:11.7569220Z Traceback (most recent call last):
+740: 2026-11-08T19:38:11.7572650Z   File "<frozen runpy>", line 203, in _run_module_as_main
+741: 2026-11-08T19:38:11.7574630Z   File "<frozen runpy>", line 88, in _run_code
+742: 2026-11-08T19:38:11.7584840Z   File "/Users/runner/work/JARVIS-INTERFACE/JARVIS-INTERFACE/m51/r1/diagnose.py", line 89, in <module>
+743: 2026-11-08T19:38:11.7587610Z     if __name__=='__main__':main()
+744: 2026-11-08T19:38:11.7588690Z                             ~~~~^^
+746: 2026-11-08T19:38:11.7597810Z     report.update(status='BLOCKED_ENVIRONMENT',environment_incident=incident,jarvis_installed=False);raise RuntimeError(incident)
+747: 2026-11-08T19:38:11.7601510Z                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+748: 2026-11-08T19:38:11.7603700Z RuntimeError: SYSTEM_ANR_OR_CRASH_EVENT
+749: 2026-11-08T19:38:11.7952000Z Traceback (most recent call last):
+750: 2026-11-08T19:38:11.7964570Z   File "<frozen runpy>", line 203, in _run_module_as_main
+751: 2026-11-08T19:38:11.7966330Z   File "<frozen runpy>", line 88, in _run_code
+752: 2026-11-08T19:38:11.7968650Z   File "/Users/runner/work/JARVIS-INTERFACE/JARVIS-INTERFACE/m51/r1/qualification.py", line 73, in <module>
+753: 2026-11-08T19:38:11.7971030Z     if __name__=='__main__':main()
+754: 2026-11-08T19:38:11.7972520Z                             ~~~~^^

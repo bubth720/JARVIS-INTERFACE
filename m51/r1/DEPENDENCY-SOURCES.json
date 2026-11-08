@@ -1,0 +1,34 @@
+{
+  "scope": "STATIC_SOURCE_AUDIT_NOT_RUNTIME_CAUSE_PROOF",
+  "license_declared": "Apache-2.0",
+  "records": [
+    {
+      "artifact": "androidx.compose.ui:ui-test-android:1.8.0",
+      "sources_url": "https://dl.google.com/dl/android/maven2/androidx/compose/ui/ui-test-android/1.8.0/ui-test-android-1.8.0-sources.jar",
+      "sources_bytes": 166099,
+      "sources_sha256": "61cd0d46ac0ec8f18cef97ab43ce7d7c000e177c4dfe75eaf35f2c735ad75df3",
+      "resolved_aar_sha256": "7d6a24fc86617bcd3fb1c87ffcab41c572e0517c6e8ddedc034d8db73ecee841"
+    },
+    {
+      "artifact": "androidx.compose.ui:ui-graphics-android:1.8.0",
+      "sources_url": "https://dl.google.com/dl/android/maven2/androidx/compose/ui/ui-graphics-android/1.8.0/ui-graphics-android-1.8.0-sources.jar",
+      "sources_bytes": 257849,
+      "sources_sha256": "d4703af7c49eccef50d4dc8184ae87367529ca5def06de16becd7bfc4757d9c4",
+      "resolved_aar_sha256": "45fadd2d08b4527021651320149503c85ca6ed40b026470db17651661a1b30f4"
+    },
+    {
+      "artifact": "androidx.compose.ui:ui-android:1.8.0",
+      "sources_url": "https://dl.google.com/dl/android/maven2/androidx/compose/ui/ui-android/1.8.0/ui-android-1.8.0-sources.jar",
+      "sources_bytes": 883260,
+      "sources_sha256": "c3ffb875f30d0536daac2081e7f10d0fd39f87eae26b090ab4e35577c8c7b83c",
+      "resolved_aar_sha256": "afdb5045a34bbd5929000b798066e14ee8a2d17b9573e6d14dcd9e80245ec7b9"
+    },
+    {
+      "artifact": "androidx.compose.runtime:runtime-android:1.8.0",
+      "sources_url": "https://dl.google.com/dl/android/maven2/androidx/compose/runtime/runtime-android/1.8.0/runtime-android-1.8.0-sources.jar",
+      "sources_bytes": 426059,
+      "sources_sha256": "6280adff2562d6591b6753dd6c0ede3c5ebdeb7eadd3dd9138fe7564734e31d0",
+      "resolved_aar_sha256": "08026344536084655958120bcc3aa8fd812bb44e0b819b3fe2e7a023f421afd8"
+    }
+  ]
+}

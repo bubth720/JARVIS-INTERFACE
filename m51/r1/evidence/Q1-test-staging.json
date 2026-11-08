@@ -1,0 +1,40 @@
+{
+  "base": "9c8960a7c9d3f572dff41fe18a5b002c9f66ac8a",
+  "observation_only": true,
+  "assertions_changed": false,
+  "timeouts_changed": false,
+  "tests": {
+    "app/src/androidTest/java/com/jarvis/interfaceapp/AmbienceRotationTest.kt": {
+      "before_sha256": "94a603e8f0db178d50254fa76461d65b8b75fcf4fff5e8a3ab6c134093bd2a97",
+      "after_sha256": "94a603e8f0db178d50254fa76461d65b8b75fcf4fff5e8a3ab6c134093bd2a97"
+    },
+    "app/src/androidTest/java/com/jarvis/interfaceapp/CockpitPersistenceTest.kt": {
+      "before_sha256": "7d5d17831e50a15cbaaca1de13010e46ff9ba42cd6607fb186817fc2d6fae12b",
+      "after_sha256": "7d5d17831e50a15cbaaca1de13010e46ff9ba42cd6607fb186817fc2d6fae12b"
+    },
+    "app/src/androidTest/java/com/jarvis/interfaceapp/DocumentPickerContractTest.kt": {
+      "before_sha256": "a9a9aaccd32166bc7dff13ae6a2b9bdaf0d11b5b24f359e28a233bf004c4140f",
+      "after_sha256": "fda0eb69c24e94e6cf426d4a7b361f4a127b4334c48a8ea2616e5b606339e617"
+    },
+    "app/src/androidTest/java/com/jarvis/interfaceapp/ProcessRestartProbe.kt": {
+      "before_sha256": "9791003d7845fd0effdf880676d760a506ea9ad8566f6e941a68c5fc8c06c7b3",
+      "after_sha256": "9791003d7845fd0effdf880676d760a506ea9ad8566f6e941a68c5fc8c06c7b3"
+    },
+    "app/src/androidTest/java/com/jarvis/interfaceapp/StandaloneStartupTest.kt": {
+      "before_sha256": "608c335cae5ee8e96d10a43791fe4470900454e4770a817511f437ce2a728699",
+      "after_sha256": "608c335cae5ee8e96d10a43791fe4470900454e4770a817511f437ce2a728699"
+    },
+    "app/src/androidTest/java/com/jarvis/interfaceapp/Ui01cContractTest.kt": {
+      "before_sha256": "21070ec7cffc684d224672dbdc54cbd1cfdc71076c05a58bd161bab53f6da5b0",
+      "after_sha256": "21070ec7cffc684d224672dbdc54cbd1cfdc71076c05a58bd161bab53f6da5b0"
+    },
+    "app/src/androidTest/java/com/jarvis/interfaceapp/WorkspaceDeviceTest.kt": {
+      "before_sha256": "6c8ed851993971903bc9ebc694a791cda93cf31b3ecfef87f219491faaa1a66d",
+      "after_sha256": "6c8ed851993971903bc9ebc694a791cda93cf31b3ecfef87f219491faaa1a66d"
+    },
+    "app/src/androidTest/java/com/jarvis/interfaceapp/WorkspaceInteractionTest.kt": {
+      "before_sha256": "ba459bef7c2fcc87a8d355eebe4ffc27653a044534004a9a52148bd39c8c5756",
+      "after_sha256": "ba459bef7c2fcc87a8d355eebe4ffc27653a044534004a9a52148bd39c8c5756"
+    }
+  }
+}

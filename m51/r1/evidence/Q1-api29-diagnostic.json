@@ -1,0 +1,27 @@
+{
+  "source_commit": "d0e9219b205fbf89fd7dd346ab26aacd03a8f62d",
+  "source_tree": "ee08be7a69789b0578af1d9c7ec7e63621d2b4cf",
+  "api": 29,
+  "campaign": "R1-D1",
+  "status": "BLOCKED_ENVIRONMENT",
+  "phase": "SYSTEM_PREFLIGHT",
+  "boot_attempts": 1,
+  "invocations": [],
+  "production_code_changed": false,
+  "personal_devices": "NOT_RUN",
+  "qualification": "NOT_RUN",
+  "causes": {
+    "snapshot": "UNKNOWN",
+    "saf": "UNKNOWN",
+    "navigation": "UNKNOWN",
+    "api35_process": "UNKNOWN"
+  },
+  "display": {
+    "effective_size": "1080x1920",
+    "effective_density": 420
+  },
+  "airplane_mode": "enabled",
+  "environment_incident": "SYSTEM_ANR_OR_CRASH_EVENT",
+  "jarvis_installed": false,
+  "error": "SYSTEM_ANR_OR_CRASH_EVENT"
+}
