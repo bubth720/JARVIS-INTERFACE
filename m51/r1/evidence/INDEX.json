@@ -1,0 +1,124 @@
+{
+  "schema": "jarvis.m51-r1.evidence/1",
+  "full_archives": "RECEIPTS.json: GitHub artifact IDs and verified SHA256",
+  "copies_and_excerpts": [
+    {
+      "path": "D1-api29-diagnostic.json",
+      "origin": "D1-api29/m51-r1-device/diagnostic.json",
+      "sha256": "af79366c9afa020f92a5795ac8898af4d5a1a707e68c787fa772d9aa4d27aa0c",
+      "exact_copy": true
+    },
+    {
+      "path": "D1-api35-diagnostic.json",
+      "origin": "D1-api35/m51-r1-device/diagnostic.json",
+      "sha256": "f020274c0f19c70796420c3985e75529e6728a158c4fc7ee3cb50a1cbcd1544a",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-api29-diagnostic.json",
+      "origin": "Q1-api29/m51-r1-q/environment/diagnostic.json",
+      "sha256": "92aa72b7d960dace45fd519faceed165da0e76af0e60cfe21a772953b4d00524",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-api29-qualification.json",
+      "origin": "Q1-api29/m51-r1-q/qualification.json",
+      "sha256": "0711c01c177cc1c55ebb7c572c18bd501c18667b9ca41a370957fde0b880113a",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-api29-crash-buffer.txt",
+      "origin": "Q1-api29/m51-r1-q/environment/preflight-00-crashes.txt",
+      "sha256": "35081a7dc545e0915ad2869b7450357779ae9e3ce87b5ee8a97c1539c878e76a",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-api29-host.json",
+      "origin": "Q1-api29/m51-r1-host/host.json",
+      "sha256": "307f4b871d5d0894867203c25b595b51b801dcbb4cb51e6efe3721a242cb0d37",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-api35-host.json",
+      "origin": "Q1-api35/m51-r1-host/host.json",
+      "sha256": "307f4b871d5d0894867203c25b595b51b801dcbb4cb51e6efe3721a242cb0d37",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-build.json",
+      "origin": "Q1-build/build/m51-delivery/build.json",
+      "sha256": "0f710a5335453b5e16b7fd8b0d9e689681f2e071ff005a1ebf34c1abeb50f1c1",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-preservation-ui01c.json",
+      "origin": "Q1-build/build/m51-reports/preservation.json",
+      "sha256": "b28024100cc8d20d934a79d983389fb5baed34713f8c5405982937ddebaf98fd",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-preservation-m51.json",
+      "origin": "Q1-build/build/m51-r1/preservation.json",
+      "sha256": "d83a92584a3c96e6f595e21b2a5bd8aec03f59393c7c2df98e293c86a44a8fcf",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-test-staging.json",
+      "origin": "Q1-build/build/m51-r1/test-staging.json",
+      "sha256": "4bd75fa3da4362ee38c897162f53c7a6c892926f603a4ed2f3f3f21d37d73e31",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-app-source-receipt.json",
+      "origin": "Q1-build/build/m51-delivery/source-receipt.json",
+      "sha256": "4cf5816031f6655a2c1669e0a690b8ce5be363d84ee46baa1a311a4af627b114",
+      "exact_copy": true
+    },
+    {
+      "path": "Q1-candidate-signature.txt",
+      "origin": "Q1-build/build/m51-delivery/candidate-signature.txt",
+      "sha256": "13a2b3c4cb592b896a07298f1e598a32b00f65d7b5d4fc832a790b7c07af6e6f",
+      "exact_copy": true
+    },
+    {
+      "path": "D1-api29-job-EXCERPT.txt",
+      "origin": "D1-api29-job.log",
+      "original_sha256": "e90b00fdf730a71c279bcf2188af4676c401fb2e5bf708931ba08849874fe724",
+      "sha256": "1d4ed95065a381f5118bf52e60cc9d990fca4849da74681c2e350b5b2b69626e",
+      "exact_copy": false,
+      "format": "numbered original lines; selections only"
+    },
+    {
+      "path": "D1-api35-job-EXCERPT.txt",
+      "origin": "D1-api35-job.log",
+      "original_sha256": "c1c485aa53ecb149c7fb4bb5357b5329dde2ef66563f1358978f333acb75c9a2",
+      "sha256": "42de4da1ed3a450b2ffdfa2749e8bf9515e8b5df0e449a4cfe5786638e12dd5c",
+      "exact_copy": false,
+      "format": "numbered original lines; selections only"
+    },
+    {
+      "path": "Q1-api29-job-EXCERPT.txt",
+      "origin": "Q1-api29-job.log",
+      "original_sha256": "0a0bf6fbb31bddcbde84df276b2bbb890bcd3918916604fd05e4bcc3736d2879",
+      "sha256": "f38d8264ca657422fdadbfeb77f2e35883b417d7aafb49091d9a383c23199931",
+      "exact_copy": false,
+      "format": "numbered original lines; selections only"
+    },
+    {
+      "path": "Q1-api35-job-EXCERPT.txt",
+      "origin": "Q1-api35-job.log",
+      "original_sha256": "fe1a6855e6162fa0278ada2bd34cd599fabbd5a7c2629e6e2c36938a5ad9401b",
+      "sha256": "fdbae16344b504cfc647aa24e3831433f44ef64c18604a242522c972765dad79",
+      "exact_copy": false,
+      "format": "numbered original lines; selections only"
+    },
+    {
+      "path": "Q1-api29-crash-events-EXCERPT.txt",
+      "origin": "Q1-api29/m51-r1-q/environment/preflight-00-events.txt",
+      "original_sha256": "d087b75ee8381e51d075659130e57229420aee5a9459211dbea0dc6c5867995b",
+      "sha256": "95307df73dfbae166f004940763b8a18d12ff06ea6f476446d4ede6bf96503a2",
+      "exact_copy": false,
+      "format": "complete matching am_crash/am_anr records only"
+    }
+  ]
+}

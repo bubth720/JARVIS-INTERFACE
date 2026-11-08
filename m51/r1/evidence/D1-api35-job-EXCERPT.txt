@@ -1,0 +1,30 @@
+231: 2026-11-08T19:17:45.8615312Z   arch: x86_64
+232: 2026-11-08T19:17:45.8616030Z   profile: pixel_2
+233: 2026-11-08T19:17:45.8616755Z   cores: 2
+234: 2026-11-08T19:17:45.8617437Z   ram-size: 2048M
+235: 2026-11-08T19:17:45.8618372Z   disable-linux-hw-accel: true
+236: 2026-11-08T19:17:45.8619307Z   disable-animations: true
+237: 2026-11-08T19:17:45.8620154Z   emulator-boot-timeout: 300
+238: 2026-11-08T19:17:45.8621462Z   emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+239: 2026-11-08T19:17:45.8623364Z   script: python3 -m m51.r1.diagnose --api 35 --delivery build/m51-delivery --out build/m51-r1-device
+240: 2026-11-08T19:17:45.8624755Z   avd-name: test
+241: 2026-11-08T19:17:45.8625508Z   force-avd-creation: true
+242: 2026-11-08T19:17:45.8626332Z   emulator-port: 5554
+243: 2026-11-08T19:17:45.8627178Z   disable-spellchecker: false
+708: 2026-11-08T19:24:05.3497491Z ##[endgroup]
+709: 2026-11-08T19:24:05.3510759Z [command]/usr/bin/sh -c python3 -m m51.r1.diagnose --api 35 --delivery build/m51-delivery --out build/m51-r1-device
+710: 2026-11-08T19:24:40.4820444Z Traceback (most recent call last):
+711: 2026-11-08T19:24:40.4823001Z   File "<frozen runpy>", line 198, in _run_module_as_main
+712: 2026-11-08T19:24:40.4823854Z   File "<frozen runpy>", line 88, in _run_code
+713: 2026-11-08T19:24:40.4824481Z   File "/home/runner/work/JARVIS-INTERFACE/JARVIS-INTERFACE/m51/r1/diagnose.py", line 89, in <module>
+714: 2026-11-08T19:24:40.4825061Z     if __name__=='__main__':main()
+715: 2026-11-08T19:24:40.4825363Z                             ^^^^^^
+716: 2026-11-08T19:24:40.4825869Z   File "/home/runner/work/JARVIS-INTERFACE/JARVIS-INTERFACE/m51/r1/diagnose.py", line 43, in main
+717: 2026-11-08T19:24:40.4826542Z     assert adb('shell','settings','get','global','wifi_on').strip()=='0'
+718: 2026-11-08T19:24:40.4826985Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+719: 2026-11-08T19:24:40.4827336Z AssertionError
+720: 2026-11-08T19:24:40.4964371Z ##[error]The process '/usr/bin/sh' failed with exit code 1
+721: 2026-11-08T19:24:40.4965979Z ##[group]Terminate Emulator
+722: 2026-11-08T19:24:40.4971020Z [command]/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 emu kill
+723: 2026-11-08T19:24:40.5006941Z OK: killing emulator, bye bye
+724: 2026-11-08T19:24:40.5007549Z OK

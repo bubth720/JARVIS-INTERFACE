@@ -1,0 +1,35 @@
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: FATAL EXCEPTION: SysUiBg
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: Process: com.android.systemui, PID: 2104
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: java.util.ConcurrentModificationException
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at java.util.HashMap$HashIterator.nextNode(HashMap.java:1441)
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at java.util.HashMap$KeyIterator.next(HashMap.java:1465)
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at com.android.systemui.tuner.TunerServiceImpl.clearAllFromUser(TunerServiceImpl.java:250)
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at com.android.systemui.tuner.TunerServiceImpl.lambda$upgradeTuner$0$TunerServiceImpl(TunerServiceImpl.java:138)
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at com.android.systemui.tuner.-$$Lambda$TunerServiceImpl$SZ83wU1GcnmYXjZCH1hfw7pCVvY.run(Unknown Source:4)
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at android.os.Handler.handleCallback(Handler.java:883)
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+11-08 19:36:31.075  2104  2259 E AndroidRuntime: 	at android.os.HandlerThread.run(HandlerThread.java:67)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: FATAL EXCEPTION: main
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: Process: com.android.sdksetup, PID: 2924
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: java.lang.RuntimeException: Unable to start activity ComponentInfo{com.android.sdksetup/com.android.sdksetup.DefaultActivity}: java.lang.IllegalArgumentException: Timezone: Unknown/Unknown is not an Olson ID
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3270)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3409)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:83)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2016)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7356)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:492)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:930)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: Caused by: java.lang.IllegalArgumentException: Timezone: Unknown/Unknown is not an Olson ID
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.AlarmManager.setTimeZone(AlarmManager.java:1008)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at com.android.sdksetup.DefaultActivity.onCreate(DefaultActivity.java:72)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:7802)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:7791)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1299)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3245)
+11-08 19:37:23.546  2924  2924 E AndroidRuntime: 	... 11 more

@@ -1,0 +1,129 @@
+{
+  "schema": "jarvis.m51-r1.source-files/1",
+  "base": "9c8960a7c9d3f572dff41fe18a5b002c9f66ac8a",
+  "executed_commit": "d0e9219b205fbf89fd7dd346ab26aacd03a8f62d",
+  "executed_tree": "ee08be7a69789b0578af1d9c7ec7e63621d2b4cf",
+  "files": [
+    {
+      "status": "M",
+      "path": ".github/workflows/m51-foundation.yml",
+      "blob": "07a8681c4c6e44e39366063623afddaac4561b9e",
+      "sha256": "778bb405d38d17f52176e5b6d5bfe87d72e3d5ba5251bd7f94a3a5d634f2752e"
+    },
+    {
+      "status": "M",
+      "path": "m51/android-lab/build.gradle.kts",
+      "blob": "7065e21100dac390db5a222f5b3ae5cdf14525e3",
+      "sha256": "4fe07662a5cc89024f39f7abafabb9b669a8287d4d84f99a86ecafa32602ee5a"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/CAMPAIGN.json",
+      "blob": "41475dc9e5fc168b6233b902a09696c682ec5e27",
+      "sha256": "c18dc9d9a04b77d815a7fb4dc6da6e833ca4fa795ab9979a20b2b75148b4070e"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/DEPENDENCY-SOURCES.json",
+      "blob": "67763cf3c9e56a2968b3a06e3cd5c23c14ca07ca",
+      "sha256": "4f2c06fad2a8f4e46d5087ebbb57f6c402e49e8268857c07a12efa8993baf2a4"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/README.md",
+      "blob": "6e02b61e2c8185e26ce0c1cf8f4247864341f4e2",
+      "sha256": "a33d3725174ac63840868accb3145346b1b8763eecc9146e014beb86b9289159"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/RECEIPTS.json",
+      "blob": "a4aa469274784992857b89816a15303109d9b72b",
+      "sha256": "f38037c1ff98ed6c196de50805f4a6f845391d2d7446bed9e73fe67cceac7a45"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/ROLLBACK.md",
+      "blob": "ea637099629765d8087677a3db6970c7b99c1caa",
+      "sha256": "cbfe16dc33963856b3bd7c226bf7b281892ed54e7c701000a5b855396c7f6489"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/SOURCE-AUDIT.md",
+      "blob": "924c0cdf4f1f20b25101a2ce3cabe0ecb4dce968",
+      "sha256": "d512c4eb97c977f750ca00fd6a04a7d9e078352ad79df567501176967c5a5559"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/__init__.py",
+      "blob": "30d76e6eb965746571ce4f94a3aecb14c90f9257",
+      "sha256": "3e135b59ce20e14dd406a439493deb5c6037bdaf091156ede8ef880409eba2a5"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/androidTest/com/jarvis/interfaceapp/r1/DiagnosticListener.kt",
+      "blob": "17dd4caf53ddda24113f74b93c772d8fb2b42737",
+      "sha256": "d01de710c81c5f10a94b9127e0e262e46018283c69f6a6bc0f3721640e213f29"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/androidTest/com/jarvis/interfaceapp/r1/PickerWitness.kt",
+      "blob": "78e68c844f90855d9de33177274adbfa03b641da",
+      "sha256": "56988f65c9c4f84a9a3b4a8e064b43a3e727aa1d5e9596289b9b344d581437fa"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/check.py",
+      "blob": "471c6aad7f3135e54aae8852c59bfb70ed7574fb",
+      "sha256": "2a37f9c5814b6e7795e576c29f87ccf31380f575413bae8a52c691d049bf2946"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/diagnose.py",
+      "blob": "14a7a0c4c34efe8a6a3b65783f8f1f9c2d9cc7f2",
+      "sha256": "77d68d646326f8df48b0afc8c6a32caf04977eb7447ac34b91d31852d77fa175"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/host_probe.py",
+      "blob": "99b83275bbd11f8e330c059ca45351bff551d348",
+      "sha256": "cb6337a9379658a2a843b2eb47aa76ce219f20cdfbf04a8c2bce668f97925105"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/policy.py",
+      "blob": "96926c29e5c45322b3b4375cd171d470e9f781e3",
+      "sha256": "a1d476d05a31cad4d642bb79da7629858a9db38c7b55864d072315ba076e6746"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/prepare_tests.py",
+      "blob": "8ce2c98a1d38205e88856e1cf4121683fe5e9cb6",
+      "sha256": "cb1976e5f0a239304a0d30871f2db828ee9bfb47db58685d57b5bd4398fab38d"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/qualification.py",
+      "blob": "902e9c4374047e247e7d3abbe4e4aa4275fa3460",
+      "sha256": "925abac5f4a103381b24c885394ca723df1ffd17940d815edd6838534e1607a6"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/test_policy.py",
+      "blob": "0272ffba7b17dd64a185b901ea5cf4cf2f55e175",
+      "sha256": "7b1cd385474e4264102adc1b9517ecc6e7b41614b239d4ad380e85b7a312d332"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/test_qualification_guard.py",
+      "blob": "c0f96b35fdf08159f3afdeba7cacfcfe89c9c754",
+      "sha256": "84251a40a3297804bd8a3fe04d7c5fa81d550ff5424edf9b17995f0bc2a783f4"
+    },
+    {
+      "status": "A",
+      "path": "m51/r1/test_test_staging.py",
+      "blob": "6dfc8fcefb12ab5a2c2d08eae41be1bc2de1ed04",
+      "sha256": "e67d92161388e645e99b4c8e8270da754330922916983e3f480a3835631c1f4e"
+    }
+  ],
+  "later_report_only_commit": "See PR20 head; this manifest describes the executed Q1 code, not final documentation"
+}

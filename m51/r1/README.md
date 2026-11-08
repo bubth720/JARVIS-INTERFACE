@@ -1,5 +1,7 @@
 # M51-R1 — diagnostic Android borné
 
+**Réception finale : BLOCKED, non acceptée.** Voir [FINAL-REPORT.md](FINAL-REPORT.md), [RECEIPTS.json](RECEIPTS.json) et [preuves brutes](evidence/INDEX.json). D1 et Q1 ont été exécutées et arrêtées avant admission JARVIS ; les paragraphes de préparation ci-dessous décrivent leur protocole, pas des résultats PASS. Aucun test applicatif R1 n'a été exécuté. APK compilées non qualifiées. La suite est préparée dans [NEXT-LAB.md](NEXT-LAB.md), sans nouvelle tentative.
+
 Base exacte PR18 : `9c8960a7c9d3f572dff41fe18a5b002c9f66ac8a`, tree `39427d75257a841208e6e75e2f1755d1cb564d85`. Branche `codex/m51-r1-android-stability`. Sources des incidents : UNIFIED PR21, réception `a7625a31513be5c56fa36ed946fbdcd3c23c2a15`.
 
 Diagnostic d'abord ; aucun correctif applicatif présumé. Les 89 fichiers UI-01C et les assertions historiques restent inchangés. L'option explicite `-Pm51R1=true` ajoute un listener et deux observations dans une copie générée du test SAF, sans changer une assertion ni un clic. L'APK applicative conserve les sources et paramètres M51 ; les modèles et autres modules restent OFF.

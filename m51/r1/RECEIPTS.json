@@ -1,5 +1,5 @@
 {
-  "schema": "jarvis.m51-r1.receipts/1",
+  "schema": "jarvis.m51-r1.receipts/2",
   "input_commit": "9c8960a7c9d3f572dff41fe18a5b002c9f66ac8a",
   "input_tree": "39427d75257a841208e6e75e2f1755d1cb564d85",
   "D1": {
@@ -11,8 +11,21 @@
     "build_zip_sha256": "1e2d79d7488774d5dc2c83c0a2726f0035c413d93df3a9eab22d8e1f4119586d",
     "unique_jvm_cases": 15,
     "unique_python_cases": 14,
-    "api29_diagnostic": "PENDING_RAW_EVIDENCE_REVIEW",
-    "api35_system_preflight": "PENDING_RAW_EVIDENCE_REVIEW"
+    "workflow": "FAILURE",
+    "api29": {
+      "status": "BLOCKED_ENVIRONMENT",
+      "reason": "PREFLIGHT_WALL_BUDGET_EXCEEDED",
+      "samples": 8,
+      "jarvis_installed": false,
+      "app_test_status": "NOT_RUN"
+    },
+    "api35": {
+      "status": "FAIL_DIAGNOSTIC",
+      "reason": "IMMEDIATE_WIFI_ZERO_ASSERTION",
+      "actual_wifi_value": "UNKNOWN_NOT_CAPTURED",
+      "jarvis_installed": false,
+      "app_test_status": "NOT_RUN"
+    }
   },
   "Intel_probe": {
     "ci_job": 128832905259,
@@ -26,10 +39,165 @@
     "meaning": "HOST_CAPABILITY_ONLY_NOT_ANDROID_QUALIFICATION"
   },
   "Q1": {
-    "status": "NOT_RUN_BEFORE_THIS_SOURCE_IS_BUILT_AND_EXECUTED",
-    "hardware_budget_changed": false,
-    "application_code_changed": false,
-    "assertions_or_timeouts_relaxed": false,
-    "other_modules_changed": false
-  }
+    "source_commit": "d0e9219b205fbf89fd7dd346ab26aacd03a8f62d",
+    "source_tree": "ee08be7a69789b0578af1d9c7ec7e63621d2b4cf",
+    "ci_run": 42515139639,
+    "workflow": "FAILURE",
+    "build": "PASS",
+    "unique_python_cases": 17,
+    "jvm": {
+      "historical": 6,
+      "baseline": 15,
+      "candidate": 15,
+      "unique_total": 15,
+      "new_m51_unique": 9
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 41
+    },
+    "api29": {
+      "job": 128837591194,
+      "job_conclusion": "failure",
+      "status": "BLOCKED_ENVIRONMENT",
+      "reason": "SYSTEM_UI_FATAL_CONCURRENT_MODIFICATION",
+      "jarvis_installed": false,
+      "app_test_status": "NOT_RUN",
+      "cases_started": 0
+    },
+    "api35": {
+      "job": 128837590875,
+      "job_conclusion": "failure",
+      "status": "BLOCKED_ENVIRONMENT",
+      "reason": "EMULATOR_BOOT_TIMEOUT",
+      "system_preflight": "NOT_RUN",
+      "jarvis_installed": false,
+      "app_test_status": "NOT_RUN",
+      "cases_started": 0
+    }
+  },
+  "module": "INTERFACE",
+  "mission": "M51-R1",
+  "branch": "codex/m51-r1-android-stability",
+  "pr": 20,
+  "acceptance": "BLOCKED_NOT_ACCEPTED",
+  "bounds": {
+    "boots_per_api_total": 2,
+    "boots_per_api_per_campaign": 1,
+    "retry": false,
+    "guest_cores": 2,
+    "guest_memory_mib": 2048,
+    "system_protections_changed": false
+  },
+  "preservation": {
+    "ui01c_files": 89,
+    "m51_files_excluding_two_build_ci_configs": 113,
+    "original_assertions_changed": false,
+    "production_sources_changed": false,
+    "jni_changed": false,
+    "other_modules_changed": false,
+    "test_copy_observation_calls_added": 2
+  },
+  "functional_reception": {
+    "individual_regressions": "NOT_RUN",
+    "baseline_18": "NOT_RUN",
+    "candidate_24": "NOT_RUN",
+    "restart": "NOT_RUN",
+    "offline_application": "NOT_RUN"
+  },
+  "performance": {
+    "status": "NOT_RUN",
+    "baseline_vs_candidate": "NOT_RUN",
+    "frame_p50_ms": null,
+    "frame_p95_ms": null,
+    "pss_bytes": null,
+    "rss_bytes": null,
+    "physical_android": "NOT_RUN",
+    "llm_ttft": "NOT_RUN"
+  },
+  "initial_causes": {
+    "snapshot": "UNKNOWN",
+    "saf": "UNKNOWN",
+    "navigation": "UNKNOWN",
+    "api35_process": "UNKNOWN"
+  },
+  "artifacts": [
+    {
+      "campaign": "D1-build",
+      "id": 13630572830,
+      "run": 42513995917,
+      "sha256": "1e2d79d7488774d5dc2c83c0a2726f0035c413d93df3a9eab22d8e1f4119586d",
+      "actual_bytes": 20742997,
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42513995917/artifacts/13630572830",
+      "downloaded_sha256_verified": true,
+      "expires_utc": "2027-02-06"
+    },
+    {
+      "campaign": "Intel-probe",
+      "id": 13630008815,
+      "run": 42513995917,
+      "sha256": "f5d0ffb3a98e1f34fa38545acfec2c6092491df944f5da1826d4b5f9d495e205",
+      "actual_bytes": 452,
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42513995917/artifacts/13630008815",
+      "downloaded_sha256_verified": true,
+      "expires_utc": "2027-02-06"
+    },
+    {
+      "campaign": "D1-api29",
+      "id": 13630833255,
+      "run": 42513995917,
+      "sha256": "9414b65666040f3d5131b4e24aef18f19de16a246fd5f64e7281e69f84ac4b88",
+      "actual_bytes": 5048377,
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42513995917/artifacts/13630833255",
+      "downloaded_sha256_verified": true,
+      "expires_utc": "2027-02-06"
+    },
+    {
+      "campaign": "D1-api35",
+      "id": 13630273417,
+      "run": 42513995917,
+      "sha256": "062aa0e999b7ee26bd4e32469193cb251c6566b03d5657f97f8392c1231273dc",
+      "actual_bytes": 1073,
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42513995917/artifacts/13630273417",
+      "downloaded_sha256_verified": true,
+      "expires_utc": "2027-02-06"
+    },
+    {
+      "campaign": "Q1-build",
+      "id": 13630927616,
+      "run": 42515139639,
+      "sha256": "88081b79151620961757477d75a0ba9bd2296f3da6cd6eac4dbaece3a4419323",
+      "actual_bytes": 20743889,
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42515139639/artifacts/13630927616",
+      "downloaded_sha256_verified": true,
+      "expires_utc": "2027-02-06"
+    },
+    {
+      "campaign": "Q1-api29",
+      "id": 13631850303,
+      "run": 42515139639,
+      "sha256": "0c1521ac438895fd2a3cc8825626cb304d570a0a1b6cc9dd3347ce871c042c1b",
+      "actual_bytes": 620276,
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42515139639/artifacts/13631850303",
+      "downloaded_sha256_verified": true,
+      "expires_utc": "2027-02-06"
+    },
+    {
+      "campaign": "Q1-api35",
+      "id": 13630873731,
+      "run": 42515139639,
+      "sha256": "50003a7efc2d137182965f13113584290651480d088501a09455c86080cee724",
+      "actual_bytes": 500,
+      "url": "https://github.com/bubth720/JARVIS-INTERFACE/actions/runs/42515139639/artifacts/13630873731",
+      "downloaded_sha256_verified": true,
+      "expires_utc": "2027-02-06"
+    }
+  ],
+  "backup": {
+    "path": "/workspace/m51-r1-20261108/BACKUP",
+    "durable_hosting": false,
+    "critical_raw_text": "evidence/INDEX.json",
+    "download_before_expiry": true
+  },
+  "next_action": "NEXT-LAB.md; no further boot in final documentation commit"
 }

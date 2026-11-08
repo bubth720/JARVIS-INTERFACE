@@ -1,0 +1,9 @@
+{
+  "machine": "x86_64",
+  "system": "Darwin",
+  "accelerator_exit": 0,
+  "ready": true,
+  "protections_changed": false,
+  "android_booted": false,
+  "status": "ACCELERATOR_AVAILABLE"
+}

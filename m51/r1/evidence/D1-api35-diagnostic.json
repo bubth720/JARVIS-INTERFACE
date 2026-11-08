@@ -1,0 +1,25 @@
+{
+  "source_commit": "1fe0b9adc8554b0e144a9efe7f1075daeba6a192",
+  "source_tree": "1ae32cb16efacea19d2f215a369d320c98bbac85",
+  "api": 35,
+  "campaign": "R1-D1",
+  "status": "FAIL_DIAGNOSTIC",
+  "phase": "SYSTEM_PREFLIGHT",
+  "boot_attempts": 1,
+  "invocations": [],
+  "production_code_changed": false,
+  "personal_devices": "NOT_RUN",
+  "qualification": "NOT_RUN",
+  "causes": {
+    "snapshot": "UNKNOWN",
+    "saf": "UNKNOWN",
+    "navigation": "UNKNOWN",
+    "api35_process": "UNKNOWN"
+  },
+  "display": {
+    "effective_size": "1200x1920",
+    "effective_density": 240
+  },
+  "airplane_mode": "enabled",
+  "error": ""
+}

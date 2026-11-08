@@ -1,0 +1,15 @@
+{
+  "base": "0dfeef8ff09d60a68d18398ccb6b2530f3b87df4",
+  "commit": "d0e9219b205fbf89fd7dd346ab26aacd03a8f62d",
+  "tree": "ee08be7a69789b0578af1d9c7ec7e63621d2b4cf",
+  "worktree_dirty": false,
+  "frozen_files": 89,
+  "historical_files_changed": false,
+  "runtime_modules_connected": [
+    "INTERFACE_LOCAL_ONLY"
+  ],
+  "core_llm_connected": false,
+  "jni_patch_applied": false,
+  "model_downloaded": false,
+  "personal_device_installed": false
+}
