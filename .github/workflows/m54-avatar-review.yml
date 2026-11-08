@@ -1,0 +1,51 @@
+name: M54 isolated avatar preparation
+on:
+  push:
+    branches: ['codex/m54-avatar-preparation']
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+jobs:
+  logical-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Preserve UI-01C and historical AvatarSession
+        run: python3 m54-avatar/check_scope.py
+      - name: Verified compiler and JUnit only, never assets or models
+        run: python3 m54-avatar/bootstrap_jars.py --cache build/m54-avatar/cache
+      - name: Pure logical controller and anonymous private inventory fixtures
+        run: |
+          set -euo pipefail
+          python3 m54-avatar/run_review.py --jdk "$JAVA_HOME" --cache build/m54-avatar/cache
+          python3 m54-avatar/check_scope.py
+          git diff --exit-code HEAD
+      - name: Hash small public text evidence only
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          root=Path('build/m54-avatar/reports')
+          files=sorted(root.glob('*'))
+          for p in files:
+              assert p.is_file() and not p.is_symlink() and p.suffix in ('.json','.log') and p.stat().st_size<2*1024**2
+              p.read_bytes().decode('utf-8')
+          (root/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in files))
+          PY
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: m54-avatar-review-${{ github.sha }}
+          path: build/m54-avatar/reports/
+          retention-days: 90
+          if-no-files-found: error
