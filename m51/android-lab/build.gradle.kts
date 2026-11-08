@@ -13,6 +13,15 @@ val prepareM51Sources by tasks.registering(Exec::class) {
     outputs.dir(generated)
     commandLine("python3", rootProject.file("m51/prepare_sources.py"), "--output", generated.get().asFile)
 }
+val r1Enabled = providers.gradleProperty("m51R1").orNull == "true"
+val r1Tests = layout.buildDirectory.dir("generated/r1-tests")
+val prepareR1Tests by tasks.registering(Exec::class) {
+    onlyIf { r1Enabled }
+    inputs.dir(rootProject.file("app/src/androidTest/java"))
+    inputs.file(rootProject.file("m51/r1/prepare_tests.py"))
+    outputs.dir(r1Tests)
+    commandLine("python3",rootProject.file("m51/r1/prepare_tests.py"),"--out",r1Tests.get().asFile)
+}
 android {
     namespace = "com.jarvis.interfaceapp"
     compileSdk = 35
@@ -47,7 +56,9 @@ android {
         getByName("baseline").java.srcDir(generated.map { it.dir("baseline") })
         getByName("candidate").java.srcDir(generated.map { it.dir("candidate") })
         getByName("test").java.srcDir(rootProject.file("app/src/test/java"))
-        getByName("androidTest").java.srcDir(rootProject.file("app/src/androidTest/java"))
+        if (r1Enabled) {
+            getByName("androidTest").java.setSrcDirs(listOf(file("src/androidTest/java"),r1Tests.get().asFile,rootProject.file("m51/r1/androidTest")))
+        } else getByName("androidTest").java.srcDir(rootProject.file("app/src/androidTest/java"))
         getByName("androidTestCandidate").java.srcDir("src/candidateAndroidTest/java")
     }
     buildFeatures { compose = true; buildConfig = true }
@@ -57,7 +68,7 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
 }
-tasks.configureEach { if (name == "preBuild" || name.startsWith("compile")) dependsOn(prepareM51Sources) }
+tasks.configureEach { if (name == "preBuild" || name.startsWith("compile")) dependsOn(prepareM51Sources, prepareR1Tests) }
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2025.04.01"))
     implementation("androidx.compose.ui:ui")
