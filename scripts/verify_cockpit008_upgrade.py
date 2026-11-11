@@ -45,15 +45,17 @@ stop();adb('install','-r',a.apk);launch();node('open-settings')
 assert 'cockpit-v2' not in xml(),'V2 must not open by default after upgrade'
 assert 'Disposition enregistrée.' in xml(),'Upgrade did not restore the valid layout'
 assert stored()==raw,'Upgrade changed layout document'
-tap('open-settings');tap('open-cockpit-v2');node('v2-draft');tap('v2-draft')
+tap('open-settings');tap('open-cockpit-v2');node('v2-draft')
 phrase='MISSION008_EPHEMERAL_TEST'
-# Wait for a focused editor and the IME layout to settle before shell key input.
-end=time.monotonic()+15
-while time.monotonic()<end:
+# Use Android keyboard navigation, not accessibility-bounds pixel coordinates.
+for attempt in range(10):
  text=xml()
- if any(n.attrib.get('class')=='android.widget.EditText' and n.attrib.get('focused')=='true' for n in ET.fromstring(text).iter('node')):break
+ if any(n.attrib.get('focused')=='true' and (n.attrib.get('class')=='android.widget.EditText' or n.attrib.get('resource-id','').split(':id/')[-1]=='v2-draft') for n in ET.fromstring(text).iter('node')):break
+ adb('shell','input','keyevent','KEYCODE_TAB')
  time.sleep(.25)
-else:raise AssertionError('Local editor did not gain focus')
+else:
+ failure=Path(a.output).parent/'upgrade-focus-failure.xml';failure.parent.mkdir(parents=True,exist_ok=True);failure.write_text(text)
+ raise AssertionError('Local editor did not gain focus; see '+str(failure))
 time.sleep(.5)
 adb('shell','input','text',phrase)
 end=time.monotonic()+15

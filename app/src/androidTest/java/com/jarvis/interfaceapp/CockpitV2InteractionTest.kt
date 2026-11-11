@@ -78,7 +78,8 @@ class CockpitV2InteractionTest {
             ui.onNodeWithTag("v2-command-explanation").assertTextContains("non connectés", substring = true)
             ui.onNodeWithTag("v2-send").performTouchInput { click() }
             ui.onNodeWithTag("v2-microphone").performTouchInput { click() }
-            ui.onNodeWithTag("v2-draft").performTextInput("AUCUN ENVOI TEST")
+            ui.reachCockpit("v2-draft").performTouchInput { click() }
+            ui.onNodeWithTag("v2-draft").assertIsFocused().performTextInput("AUCUN ENVOI TEST")
             ui.onNodeWithTag("v2-draft").performImeAction()
             ui.onNodeWithTag("v2-draft").assertTextContains("AUCUN ENVOI TEST")
             click("v2-wheel"); listOf("CORE", "SERVICES", "VOICE").forEach { ui.onNodeWithTag("v2-unavailable-$it").assertIsNotEnabled() }
