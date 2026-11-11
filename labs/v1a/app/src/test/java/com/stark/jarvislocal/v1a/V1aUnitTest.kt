@@ -214,5 +214,7 @@ class V1aUnitTest {
         val low = ModelStore(Files.createTempDirectory("v1a-low").toFile()) { 10L }
         assertTrue(runCatching { low.import(ByteArrayInputStream(bytes), sha(bytes)) }.exceptionOrNull()!!.message!!.contains("Stockage"))
         assertTrue(runCatching { store.import(ByteArrayInputStream(bytes), sha(bytes)) { true } }.isSuccess) // already installed: no rewrite
+        root.deleteRecursively() // directory removed after construction (emulator run 43092086007)
+        assertEquals(sha(bytes), store.import(ByteArrayInputStream(bytes), sha(bytes)).sha256)
     }
 }

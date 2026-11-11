@@ -22,6 +22,8 @@ class ModelStore(private val root: File, private val availableBytes: () -> Long)
     fun import(input: InputStream, expectedSha256: String, cancelled: () -> Boolean = { false }): Entry {
         val sha = expectedSha256.trim().lowercase()
         require(sha.matches(Regex("[a-f0-9]{64}"))) { "SHA-256 attendu invalide (64 caractères hexadécimaux)" }
+        // The private directory may have been cleared since construction (user, test, backup restore).
+        check(root.isDirectory || root.mkdirs()) { "Stockage privé indisponible" }
         val target = File(root, "$sha.gguf")
         if (target.isFile) return Entry(target, sha) // A02 re-hashes before any load.
         val partial = File(root, "$sha.part")
