@@ -66,6 +66,8 @@ class V1aRealModelTest {
             assertEquals(sha, trace.getString("sealedSha256"))
             // Android SELinux forbids re-opening the memfd through procfs: the loader must be served from the sealed fd.
             assertTrue(trace.getInt("loaderOpensServedFromSealedFd") > 0)
+            // Pre-6.7 kernels refuse MAP_SHARED on a write-sealed memfd: weights must be mapped read-only private.
+            assertEquals(1, trace.getInt("readOnlyPrivateMapsOfSealedFd"))
             assertFalse(trace.getBoolean("sourceInodeMapped"))
             val rssLoaded = status("VmRSS"); val shmLoaded = status("RssShmem")
 
