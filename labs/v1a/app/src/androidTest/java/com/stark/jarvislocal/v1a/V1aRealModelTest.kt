@@ -93,7 +93,10 @@ class V1aRealModelTest {
 
             // Stop during a real generation: CORE drains, the gate reopens, nothing is appended.
             assertTrue(main { client.submit("Compte lentement de un à cinquante, en toutes lettres.") })
-            Thread.sleep(1_500)
+            // Stop as soon as real streamed text is visible while the engine is still generating.
+            waitFor(240_000, "first streamed text before stop") { client.state.value.text.isNotEmpty() || !client.state.value.busy }
+            val stoppedMidStream = main { client.state.value.busy }
+            assertTrue("generation finished before Stop could be exercised", stoppedMidStream)
             main { client.cancel() }
             val stopMs = waitFor(120_000, "stop drain") { !core.coordinator.state.value.busy && !client.state.value.busy }
             assertEquals(3, core.history.snapshot().size)
