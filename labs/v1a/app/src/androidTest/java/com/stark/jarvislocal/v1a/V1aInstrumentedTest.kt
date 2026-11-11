@@ -51,7 +51,8 @@ class V1aInstrumentedTest {
         val before = fds()
         ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
             val ok = refusal { native.loadSealedFd(h, pfd.fd, bytes.size.toLong(), sha(bytes).toByteArray(), 1L shl 31, 512, 1, true) }
-            // Not an A02_* code: snapshot, seals, re-hash and /proc identity all passed inside the app.
+            // Not an A02_* code: snapshot, seals, re-hash and /proc identity passed inside the app; the protected
+            // validator (served from the sealed fd, no procfs re-open) then refuses the non-GGUF payload.
             assertFalse("A02 refused in app context: $ok", ok.startsWith("A02_") || ok == "ADMITTED")
             assertEquals("A02_DIGEST_REFUSED", refusal { native.loadSealedFd(h, pfd.fd, bytes.size.toLong(), ("0".repeat(64)).toByteArray(), 1L shl 31, 512, 1, true) })
             assertEquals("A02_SIZE_REFUSED", refusal { native.loadSealedFd(h, pfd.fd, bytes.size + 1L, sha(bytes).toByteArray(), 1L shl 31, 512, 1, true) })

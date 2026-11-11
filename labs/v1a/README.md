@@ -9,7 +9,7 @@ historique INTERFACE et du laboratoire M50-S1B, qui restent inchangés (garde su
 - **CORE** (`bubth720/JAVIS-Local-v2@5da9838`, inchangé) : `SessionCoordinator`, `LocalLanguageModel`,
   `InferenceContract`, modèles et événements — 6 fichiers extraits par blob Git.
 - **INTERFACE** (`3a08412`, inchangé) : client de conversation et port d'événements — 3 fichiers.
-- **LLM** (`bubth720/JARVIS-LLM@216ca0d`) : `libjarvis_llm_a02.so` compilé depuis `a02/native`, qui
+- **LLM** (`bubth720/JARVIS-LLM@168f562`) : `libjarvis_llm_a02.so` compilé depuis `a02/native`, qui
   inclut le `bridge.cpp` protégé inchangé. Chargement **uniquement** par `loadSealedFd` (memfd scellé,
   SHA-256 revérifié) ; le chargeur par chemin n'est pas exporté. Un seul moteur dans l'APK ;
   `llama-android` de CORE n'y est pas.

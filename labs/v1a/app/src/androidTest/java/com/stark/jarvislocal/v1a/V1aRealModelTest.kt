@@ -64,6 +64,9 @@ class V1aRealModelTest {
             val trace = JSONObject(requireNotNull(model.lastTrace))
             assertTrue(trace.getBoolean("sealedInodeMapped"))
             assertEquals(sha, trace.getString("sealedSha256"))
+            // Android SELinux forbids re-opening the memfd through procfs: the loader must be served from the sealed fd.
+            assertTrue(trace.getInt("loaderOpensServedFromSealedFd") > 0)
+            assertFalse(trace.getBoolean("sourceInodeMapped"))
             val rssLoaded = status("VmRSS"); val shmLoaded = status("RssShmem")
 
             var streamingObserved = false
