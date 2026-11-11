@@ -106,3 +106,16 @@ jobs:
             interface/labs/v1a/app/build/outputs/apk/debug/app-debug.apk
             ${{ runner.temp }}/v1a-evidence/APK.json
             ${{ runner.temp }}/v1a-evidence/apk-sha256.txt
+      - name: Delivery summary (APK SHA-256 and real-model reports, printed last for traceability)
+        if: always()
+        run: |
+          {
+            echo "## V1-A delivery — ${GITHUB_SHA}"
+            echo
+            echo "APK SHA-256: $(cut -d' ' -f1 "$RUNNER_TEMP/v1a-evidence/apk-sha256.txt" 2>/dev/null || echo NOT_PRODUCED)"
+            for api in 29 35; do
+              echo
+              echo "### API ${api} real-model report"
+              cat "$RUNNER_TEMP/v1a-evidence/api${api}/v1a-real-report.json" 2>/dev/null || echo "NOT_RUN_OR_FAILED"
+            done
+          } | tee -a "$GITHUB_STEP_SUMMARY"
