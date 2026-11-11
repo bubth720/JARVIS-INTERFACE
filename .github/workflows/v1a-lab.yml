@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+defaults:
+  run:
+    shell: bash  # pipefail: a failure piped into tee fails the step
 concurrency:
   group: v1a-${{ github.ref_name }}
   cancel-in-progress: true
