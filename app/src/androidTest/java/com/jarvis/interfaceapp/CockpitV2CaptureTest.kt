@@ -3,6 +3,7 @@ package com.jarvis.interfaceapp
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -24,7 +25,9 @@ class CockpitV2CaptureTest {
     private fun capture(name: String) {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         instrumentation.waitForIdleSync()
-        val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
+        ui.onNodeWithTag("cockpit-v2").assertIsDisplayed()
+        // PixelCopy of the rendered Compose root synchronizes with its frame.
+        val bitmap = ui.onRoot().captureToImage().asAndroidBitmap()
         val directory = File(ui.activity.getExternalFilesDir(null), "mission008").apply { mkdirs() }
         File(directory, name).outputStream().use { assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)) }
         bitmap.recycle()
@@ -38,7 +41,8 @@ class CockpitV2CaptureTest {
         ui.onNodeWithTag("v2-draft").performImeAction()
         rotate(false)
         ui.onNodeWithTag("v2-draft").assertTextContains("ROTATION TEST ÉPHÉMÈRE")
-        ui.onNodeWithTag("v2-draft").performTextClearance()
+        click("v2-return"); click("open-settings"); click("open-cockpit-v2")
+        assertEquals("", ui.onNodeWithTag("v2-draft").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.EditableText].text)
         click("v2-demo-open")
         ui.onNodeWithTag("v2-knowledge-card").assertExists(); ui.onNodeWithTag("v2-sphere-art").assertExists()
         capture("landscape.png")

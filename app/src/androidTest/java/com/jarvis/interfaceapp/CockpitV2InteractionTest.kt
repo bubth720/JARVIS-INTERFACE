@@ -101,7 +101,15 @@ class CockpitV2InteractionTest {
         val wheel = ui.onNodeWithTag("v2-wheel")
         if (!wheel.isDisplayed()) wheel.performScrollTo()
         wheel.assertWidthIsAtLeast(androidx.compose.ui.unit.Dp(48f)).assertHeightIsAtLeast(androidx.compose.ui.unit.Dp(48f))
-        wheel.performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+        // Enter touch-independent keyboard mode through real Tab events.
+        repeat(10) {
+            val config = wheel.fetchSemanticsNode().config
+            val key = androidx.compose.ui.semantics.SemanticsProperties.Focused
+            if (!config.contains(key) || !config[key]) {
+                ui.onRoot().performKeyInput { pressKey(Key.Tab) }
+            }
+        }
+        wheel.assertIsFocused()
         wheel.performKeyInput { pressKey(Key.Enter) }
         ui.onNodeWithTag("v2-wheel-menu").assertIsDisplayed()
         ui.onNodeWithTag("v2-go-dashboard").assertHeightIsAtLeast(androidx.compose.ui.unit.Dp(48f))

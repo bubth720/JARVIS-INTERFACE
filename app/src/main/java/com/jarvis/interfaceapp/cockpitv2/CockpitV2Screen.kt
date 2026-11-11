@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
@@ -39,6 +40,7 @@ fun CockpitV2Screen(
     sphere: @Composable (Modifier) -> Unit = { StaticKnowledgeSphere(it) },
 ) {
     BackHandler(onBack = session::back)
+    Surface(color = CockpitInk, contentColor = Color(0xFFE4EEF8)) {
     BoxWithConstraints(Modifier.fillMaxSize()
         .background(Brush.verticalGradient(listOf(Color(0xFF10182D), CockpitInk)))
         .windowInsetsPadding(WindowInsets.safeDrawing).imePadding().padding(12.dp)
@@ -47,7 +49,6 @@ fun CockpitV2Screen(
         val pageScrolls = maxHeight < 480.dp || LocalDensity.current.fontScale > 1.4f
         val scroll = rememberScrollState()
         val pageScroll = rememberScrollState()
-        val visualHeight = if (wide) (maxHeight - 250.dp).coerceIn(180.dp, 420.dp) else 180.dp
         LaunchedEffect(state.knowledgeOpen) { if (!state.knowledgeOpen) scroll.scrollTo(0) }
         Column(if (pageScrolls) Modifier.fillMaxSize().verticalScroll(pageScroll) else Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -61,8 +62,15 @@ fun CockpitV2Screen(
                 TextButton(onDashboard, Modifier.heightIn(min = 48.dp).testTag("v2-return")) { Text("Retour") }
             }
             val deckModifier = if (pageScrolls) Modifier.fillMaxWidth() else
-                Modifier.weight(1f).fillMaxWidth().verticalScroll(scroll)
-            Column(deckModifier.testTag("v2-deck"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Modifier.weight(1f).fillMaxWidth()
+            BoxWithConstraints(deckModifier.testTag("v2-deck")) {
+            val deckHeight = if (pageScrolls) 400.dp else maxHeight
+            val visualHeight = when {
+                wide -> (deckHeight - 160.dp).coerceIn(100.dp, 420.dp)
+                state.knowledgeOpen && !pageScrolls -> (deckHeight - 260.dp).coerceIn(80.dp, 180.dp)
+                else -> 180.dp
+            }
+            Column(Modifier.fillMaxWidth().then(if (pageScrolls) Modifier else Modifier.verticalScroll(scroll)), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     VisualPanel("AVATAR", Modifier.weight(if (wide) .28f else .38f).testTag("v2-avatar")) {
                         avatar(Modifier.fillMaxWidth().height(visualHeight))
@@ -77,14 +85,17 @@ fun CockpitV2Screen(
                         }
                     }
                     if (wide) {
-                        if (state.knowledgeOpen) KnowledgeCard(session::hideKnowledge, Modifier.weight(.28f))
+                        if (state.knowledgeOpen) KnowledgeCard(session::hideKnowledge, Modifier.weight(.28f).heightIn(max = deckHeight).verticalScroll(rememberScrollState()))
                         else Spacer(Modifier.weight(.28f))
                     }
                 }
-                if (!wide && state.knowledgeOpen) KnowledgeCard(session::hideKnowledge, Modifier.fillMaxWidth())
+                if (!wide && state.knowledgeOpen) KnowledgeCard(session::hideKnowledge, Modifier.fillMaxWidth()
+                    .heightIn(max = (deckHeight - visualHeight - 190.dp).coerceIn(120.dp, 280.dp)).verticalScroll(rememberScrollState()))
+            }
             }
             CommandBar(state, session, onDashboard, onSettings)
         }
+    }
     }
 }
 
@@ -117,14 +128,15 @@ private fun KnowledgeCard(close: () -> Unit, modifier: Modifier) {
 @Composable
 private fun CommandBar(state: CockpitState, session: CockpitSession, dashboard: () -> Unit, settings: () -> Unit) {
     val keyboard = LocalSoftwareKeyboardController.current
+    val focus = LocalFocusManager.current
     Surface(Modifier.fillMaxWidth().testTag("v2-command-bar"), color = Color(0xFF111D32),
         shape = RoundedCornerShape(16.dp), border = BorderStroke(1.dp, CockpitViolet.copy(alpha = .35f))) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 OutlinedTextField(state.draft, session::editDraft, Modifier.weight(1f).testTag("v2-draft"),
                     label = { Text("Texte local") }, singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { keyboard?.hide() }))
+                    keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { focus.clearFocus(); keyboard?.hide() }))
                 IconButton({}, Modifier.size(48.dp).testTag("v2-send").semantics {
                     contentDescription = "Envoyer"; stateDescription = "Indisponible : CORE non connecté, aucun envoi."
                 }, enabled = false) { CommandSymbol(false) }

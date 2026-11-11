@@ -39,13 +39,31 @@ fixture['profiles']['wide'][0].update(x=1,y=1,width=5,height=3,locked=True)
 raw=json.dumps(fixture,separators=(',',':')).encode()
 stop();adb('install','-r',a.base_apk);adb('shell','run-as',PACKAGE,'mkdir','-p','files/datastore')
 adb('shell','run-as',PACKAGE,'tee','files/datastore/dashboard.json',input=raw)
-launch();node('open-settings');assert stored()==raw,'Base 006 rewrote fixture unexpectedly'
+launch();node('open-settings');assert 'Disposition enregistrée.' in xml(),'Base did not accept the supported fixture'
+assert stored()==raw,'Base 006 rewrote fixture unexpectedly'
 stop();adb('install','-r',a.apk);launch();node('open-settings')
 assert 'cockpit-v2' not in xml(),'V2 must not open by default after upgrade'
+assert 'Disposition enregistrée.' in xml(),'Upgrade did not restore the valid layout'
 assert stored()==raw,'Upgrade changed layout document'
 tap('open-settings');tap('open-cockpit-v2');node('v2-draft');tap('v2-draft')
-phrase='MISSION008_EPHEMERAL_TEST';adb('shell','input','text',phrase)
-assert phrase in xml(),'Local text was not entered through the Android input path'
+phrase='MISSION008_EPHEMERAL_TEST'
+# Wait for a focused editor and the IME layout to settle before shell key input.
+end=time.monotonic()+15
+while time.monotonic()<end:
+ text=xml()
+ if any(n.attrib.get('class')=='android.widget.EditText' and n.attrib.get('focused')=='true' for n in ET.fromstring(text).iter('node')):break
+ time.sleep(.25)
+else:raise AssertionError('Local editor did not gain focus')
+time.sleep(.5)
+adb('shell','input','text',phrase)
+end=time.monotonic()+15
+while time.monotonic()<end:
+ text=xml()
+ if phrase in text:break
+ time.sleep(.25)
+else:
+ failure=Path(a.output).parent/'upgrade-window-failure.xml';failure.parent.mkdir(parents=True,exist_ok=True);failure.write_text(text)
+ raise AssertionError('Local text not observed after Android input; see '+str(failure))
 assert stored()==raw,'Ephemeral input changed DataStore'
 pid_before=adb('shell','pidof',PACKAGE).decode().strip()
 stop();assert not adb('shell','sh','-c','"pidof '+PACKAGE+' || true"').decode().strip()
