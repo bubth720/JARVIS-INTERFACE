@@ -1,0 +1,142 @@
+{
+  "schema": "jarvis.v1a.sources/1",
+  "modules": [
+    {
+      "id": "CORE",
+      "repo": "bubth720/JAVIS-Local-v2",
+      "sha": "5da98383ed12cb5a54e896fbe57560bacc432fb5",
+      "tree": "bef8a470e25847cff8a09351792133adfa268c38",
+      "files": [
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/SessionCoordinator.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "eebc7d05eeda7da036a07efcead1bbbf888794da",
+          "size": 12957
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/Models.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "60f0bb4ae3474f05faa6606980b033533e6be78b",
+          "size": 1196
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/events/CoreEventBus.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "53f571fca4154661bc16f7b3e0ff70337e34e956",
+          "size": 4108
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/events/CoreSessionEvents.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "447e8dd6b80157661bc2a346841289f61e455c62",
+          "size": 5534
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/LocalLanguageModel.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c54f469cfba53d0fe4f706329158d7cce6288bd8",
+          "size": 1288
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/InferenceContract.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87df84dde2f4b23b8757e54da2282e6b0c3ba2f2",
+          "size": 2665
+        }
+      ]
+    },
+    {
+      "id": "INTERFACE",
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "sha": "3a0841266fd691b74fae784004804429e6e2e219",
+      "tree": "9c0f615aa9d8795bd376cd0bbe922d8333acb130",
+      "files": [
+        {
+          "path": "app/src/main/java/com/jarvis/interfaceapp/ui/chat/CoreEventUiPort.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "90b6e5a5119c757a67c6073cfd648ae289744f57",
+          "size": 2592
+        },
+        {
+          "path": "app/src/main/java/com/jarvis/interfaceapp/ui/chat/core/CoreConversationTransport.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "117c2dadfd21578ce121be2d15ae7e78365c09e8",
+          "size": 2711
+        },
+        {
+          "path": "app/src/main/java/com/jarvis/interfaceapp/ui/chat/core/CoreConversationClientAdapter.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2b68ecfaf2d6f1640a71c249b9e4655b94973535",
+          "size": 9435
+        }
+      ]
+    },
+    {
+      "id": "LLM",
+      "repo": "bubth720/JARVIS-LLM",
+      "sha": "95ae3c1c4a8aeac3944c08892d4c9730f7d016f4",
+      "tree": "c1905c00359600370df213eeb737d62a39bde761",
+      "native": [
+        {
+          "path": "a02/native/CMakeLists.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b07ee525f788191695319692fc2844888a2d3b08",
+          "size": 1904
+        },
+        {
+          "path": "a02/native/a02_bridge.cpp",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d884008ceaa2678aef0b23c990ae30ed792a9b4",
+          "size": 5883
+        },
+        {
+          "path": "a02/native/a02_snapshot.h",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "40348277c6870c5b23f4e5e07e4deafb856a9400",
+          "size": 7367
+        },
+        {
+          "path": "a02/native/a02_sha256.h",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d089b3a61ee95bf90b46b500c24faa771ae3eabb",
+          "size": 4092
+        },
+        {
+          "path": "perf03/candidate/native/a02_sealed_fd.h",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d8af81e4f15aa39bc4acaf86bd95019b9b1d40a5",
+          "size": 1129
+        },
+        {
+          "path": "app/src/main/cpp/bridge.cpp",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "61323878ca612a4a60b73597932c2ec990c71510",
+          "size": 32164
+        },
+        {
+          "path": "tools/prepare-native.sh",
+          "mode": "100755",
+          "type": "blob",
+          "sha": "50a1a3aa7e46c1e81a29e194973f0dbf874e9ef4",
+          "size": 877
+        }
+      ]
+    }
+  ],
+  "scope": "Nine original Kotlin files (CORE x6, INTERFACE x3) compiled unchanged + JARVIS-LLM A02 native engine at an exact SHA. Private laboratory build; no relicensing or public distribution."
+}

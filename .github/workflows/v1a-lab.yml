@@ -1,0 +1,105 @@
+name: V1-A CORE + JARVIS-LLM (A02) + INTERFACE Android laboratory
+on:
+  push:
+    branches: ['claude/repos-folders-analysis-sr65sg']
+    paths:
+      - '.github/workflows/v1a-lab.yml'
+      - 'labs/v1a/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v1a-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: interface, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JAVIS-Local-v2, ref: 5da98383ed12cb5a54e896fbe57560bacc432fb5, path: core, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-LLM, ref: 95ae3c1c4a8aeac3944c08892d4c9730f7d016f4, path: llm, persist-credentials: false}
+      - name: Scope guards (original M50 guard in its context + V1-A successor) and exact sources
+        run: |
+          mkdir -p "$RUNNER_TEMP/v1a-evidence"
+          git -C interface config user.email ci@invalid && git -C interface config user.name ci
+          python3 interface/labs/v1a/tools/check_scope.py --interface interface | tee "$RUNNER_TEMP/v1a-evidence/scope.log"
+          python3 interface/labs/v1a/tools/prepare_sources.py --core core --interface interface --llm llm --output "$RUNNER_TEMP/v1a-sources"
+          python3 -m unittest discover -s interface/labs/v1a/tests -v 2>&1 | tee "$RUNNER_TEMP/v1a-evidence/python-tests.log"
+      - name: Pinned llama.cpp for the A02 engine
+        run: llm/tools/prepare-native.sh
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.13'}
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          cmdline-tools-version: '11076708'
+          log-accepted-android-sdk-licenses: false
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0 ndk;28.1.13356709 cmake;3.22.1'
+      - name: Real CORE + A02 engine composition, unit tests, APKs and Lint
+        run: |
+          gradle -p interface/labs/v1a -PlabSources="$RUNNER_TEMP/v1a-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" \
+            -Pv1aAbis=arm64-v8a,x86_64 :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug \
+            --no-daemon --max-workers=2 --console=plain
+      - name: Inspect the actual APK (no installation on any personal device)
+        run: |
+          bin="$ANDROID_HOME/ndk/28.1.13356709/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          apk=interface/labs/v1a/app/build/outputs/apk/debug/app-debug.apk
+          python3 interface/labs/v1a/tools/verify_apk.py --apk "$apk" --aapt "$ANDROID_HOME/build-tools/35.0.0/aapt" \
+            --readelf "$bin/llvm-readelf" --nm "$bin/llvm-nm" --output "$RUNNER_TEMP/v1a-evidence/APK.json"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$apk" > "$RUNNER_TEMP/v1a-evidence/signature.txt"
+          sha256sum "$apk" | tee "$RUNNER_TEMP/v1a-evidence/apk-sha256.txt"
+      - name: Enable emulator acceleration
+        run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
+      - name: API29 app-context A02 + CORE instrumentation (airplane mode, no model)
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: |
+            adb shell cmd connectivity airplane-mode enable || adb shell settings put global airplane_mode_on 1
+            adb shell settings get global airplane_mode_on > "$RUNNER_TEMP/v1a-evidence/api29-airplane.txt"
+            gradle -p interface/labs/v1a -PlabSources="$RUNNER_TEMP/v1a-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -Pv1aAbis=arm64-v8a,x86_64 :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --console=plain
+            mkdir -p "$RUNNER_TEMP/v1a-evidence/api29" && cp -r interface/labs/v1a/app/build/outputs/androidTest-results/connected "$RUNNER_TEMP/v1a-evidence/api29/" || true
+      - name: API35 app-context A02 + CORE instrumentation (airplane mode, no model)
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: |
+            adb shell cmd connectivity airplane-mode enable || adb shell settings put global airplane_mode_on 1
+            adb shell settings get global airplane_mode_on > "$RUNNER_TEMP/v1a-evidence/api35-airplane.txt"
+            gradle -p interface/labs/v1a -PlabSources="$RUNNER_TEMP/v1a-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -Pv1aAbis=arm64-v8a,x86_64 :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --console=plain
+            mkdir -p "$RUNNER_TEMP/v1a-evidence/api35" && cp -r interface/labs/v1a/app/build/outputs/androidTest-results/connected "$RUNNER_TEMP/v1a-evidence/api35/" || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v1a-evidence-${{ github.sha }}
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/v1a-evidence/
+            interface/labs/v1a/app/build/test-results/
+            interface/labs/v1a/app/build/reports/
+            interface/labs/v1a/app/build/outputs/androidTest-results/
+      - name: Publish the V1-A lab APK (GO-LAB-ONLY, model not bundled, never auto-installed)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: JARVIS-V1A-LAB-APK-${{ github.sha }}
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            interface/labs/v1a/app/build/outputs/apk/debug/app-debug.apk
+            ${{ runner.temp }}/v1a-evidence/APK.json
+            ${{ runner.temp }}/v1a-evidence/apk-sha256.txt

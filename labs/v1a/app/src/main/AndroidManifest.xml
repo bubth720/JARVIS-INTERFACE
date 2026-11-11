@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- No permission at all: no INTERNET, no storage, no microphone. Models enter via the system picker. -->
+    <application android:name="com.stark.jarvislocal.v1a.V1aApplication"
+        android:label="JARVIS V1-A" android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:allowBackup="false" android:fullBackupContent="false"
+        android:usesCleartextTraffic="false" android:extractNativeLibs="false"
+        android:supportsRtl="true">
+        <activity android:name="com.stark.jarvislocal.v1a.V1aActivity" android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
