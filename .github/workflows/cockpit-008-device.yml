@@ -1,0 +1,86 @@
+name: Cockpit V2 008 device evidence
+on:
+  push:
+    branches: [feature/interface-cockpit-v2-008]
+    paths-ignore: ['docs/mission-008/**', 'README.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cockpit-008-device-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  device:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: phone
+            size: 1080x1920
+            density: 420
+          - profile: tablet
+            size: 1200x1920
+            density: 240
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          cmdline-tools-version: '11076708'
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: false
+      - name: Verify unchanged 006 contracts
+        run: python3 scripts/verify_mission008_scope.py
+      - name: Enable KVM on disposable hosted runner
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Native tests, screenshots and actual 006 to 008 update
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
+        with:
+          api-level: 34
+          target: default
+          arch: x86_64
+          disable-animations: true
+          script: |
+            mkdir -p evidence008
+            adb shell wm size ${{ matrix.size }}
+            adb shell wm density ${{ matrix.density }}
+            adb shell settings put system accelerometer_rotation 0
+            adb shell settings put system user_rotation 0
+            adb shell svc wifi disable
+            adb shell svc data disable
+            ./gradlew connectedDebugAndroidTest --no-daemon || touch evidence008/tests-failed
+            adb install -r app/build/outputs/apk/debug/app-debug.apk
+            adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            adb shell am instrument -w -e class com.jarvis.interfaceapp.CockpitV2CaptureTest com.jarvis.interfaceapp.test/androidx.test.runner.AndroidJUnitRunner > evidence008/capture-test.txt
+            python3 scripts/check_android_test_output.py evidence008/capture-test.txt
+            adb pull /sdcard/Android/data/com.jarvis.interfaceapp/files/mission008/. evidence008/
+            "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose app/build/outputs/apk/debug/app-debug.apk > evidence008/signature.txt
+            "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging app/build/outputs/apk/debug/app-debug.apk > evidence008/package.txt
+            sha256sum app/build/outputs/apk/debug/app-debug.apk > evidence008/apk-sha256.txt
+            adb shell wm size > evidence008/display-size.txt
+            adb shell wm density > evidence008/display-density.txt
+            adb shell dumpsys meminfo com.jarvis.interfaceapp > evidence008/memory.txt
+            adb logcat -d -b crash > evidence008/crashes.txt
+            git worktree add base-006 ebd6c5fc873054d3f04bb2388d53e407dc73b7b7
+            ./base-006/gradlew -p base-006 assembleDebug --no-daemon
+            python3 scripts/verify_cockpit008_upgrade.py --serial emulator-5554 --base-apk base-006/app/build/outputs/apk/debug/app-debug.apk --apk app/build/outputs/apk/debug/app-debug.apk --allow-test-fixture
+            test ! -f evidence008/tests-failed
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: cockpit-008-${{ matrix.profile }}
+          path: |
+            evidence008/
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/androidTest-results/
+            app/build/reports/androidTests/

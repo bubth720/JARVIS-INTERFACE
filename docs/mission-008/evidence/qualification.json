@@ -1,0 +1,92 @@
+{
+  "source": "6e9dea5efa746c922d0d28a8573621e833892c41",
+  "base": "ebd6c5fc873054d3f04bb2388d53e407dc73b7b7",
+  "build_run": 42995632626,
+  "device_run": 42995632542,
+  "devices": {
+    "phone": {
+      "instrumentation": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "upgrade": {
+        "base": "ebd6c5fc873054d3f04bb2388d53e407dc73b7b7",
+        "source": "6e9dea5efa746c922d0d28a8573621e833892c41",
+        "serial": "emulator-5554",
+        "same_key_apk_update": true,
+        "layout_bytes_unchanged": true,
+        "layout_sha256": "38fe6526be0e5c92cf857c5c386c969285cd760272a625a6680fcbe62225d359",
+        "unknown_extension_preserved": true,
+        "pid_before": "3038",
+        "pid_after": "3339",
+        "mode_default_after_restart": "historical-dashboard",
+        "ephemeral_input_not_restored": true,
+        "app_apk_sha256": "24e2964fe0e3147d373e2e7d9421629afeb89057a19b305d40c301b2ca397d2f",
+        "base_apk_sha256": "f8cb6e2119b2c8a6a68d0d3f442763b2ee33803e9edd1c93eebc59cc5d39411d"
+      },
+      "apk_sha256": "24e2964fe0e3147d373e2e7d9421629afeb89057a19b305d40c301b2ca397d2f",
+      "display_size": "Physical size: 320x640\nOverride size: 1080x1920",
+      "display_density": "Physical density: 160\nOverride density: 420",
+      "capture_dimensions_px": {
+        "portrait": [
+          1080,
+          1920
+        ],
+        "landscape": [
+          1920,
+          1080
+        ]
+      },
+      "crash_log_empty": true
+    },
+    "tablet": {
+      "instrumentation": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "upgrade": {
+        "base": "ebd6c5fc873054d3f04bb2388d53e407dc73b7b7",
+        "source": "6e9dea5efa746c922d0d28a8573621e833892c41",
+        "serial": "emulator-5554",
+        "same_key_apk_update": true,
+        "layout_bytes_unchanged": true,
+        "layout_sha256": "38fe6526be0e5c92cf857c5c386c969285cd760272a625a6680fcbe62225d359",
+        "unknown_extension_preserved": true,
+        "pid_before": "3037",
+        "pid_after": "3343",
+        "mode_default_after_restart": "historical-dashboard",
+        "ephemeral_input_not_restored": true,
+        "app_apk_sha256": "e924b324092a39afa32da96de7f1ab64e6e2e39b06dc83a60019691998307823",
+        "base_apk_sha256": "5f3175886ffe575bbd26ca753c99504cacf29fc8478afb8820e8373b61d152d2"
+      },
+      "apk_sha256": "e924b324092a39afa32da96de7f1ab64e6e2e39b06dc83a60019691998307823",
+      "display_size": "Physical size: 320x640\nOverride size: 1200x1920",
+      "display_density": "Physical density: 160\nOverride density: 240",
+      "capture_dimensions_px": {
+        "portrait": [
+          1200,
+          1920
+        ],
+        "landscape": [
+          1920,
+          1200
+        ]
+      },
+      "crash_log_empty": true
+    }
+  },
+  "jvm": {
+    "tests": 66,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 25
+  }
+}

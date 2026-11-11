@@ -19,6 +19,21 @@ import com.jarvis.interfaceapp.domain.PlacementError
 
 @Composable
 fun JarvisApp(viewModel: HomeViewModel) {
+    val cockpit by viewModel.cockpitSession.state.collectAsStateWithLifecycle()
+    if (cockpit.open) {
+        com.jarvis.interfaceapp.cockpitv2.CockpitV2Screen(
+            cockpit, viewModel.cockpitSession,
+            onDashboard = {
+                viewModel.cockpitSession.close()
+                viewModel.dispatch(HomeAction.CloseSettings)
+            },
+            onSettings = {
+                viewModel.cockpitSession.close()
+                viewModel.dispatch(HomeAction.OpenSettings)
+            },
+        )
+        return
+    }
     val ui by viewModel.state.collectAsStateWithLifecycle()
     val state = ui.home
     var confirmReset by remember { mutableStateOf(false) }
@@ -81,6 +96,12 @@ fun JarvisApp(viewModel: HomeViewModel) {
                         verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Paramètres", style = MaterialTheme.typography.headlineMedium)
                         Text("Les modifications validées sont enregistrées automatiquement sur cet appareil. Le statut indique quand leur sauvegarde est terminée.")
+                        OutlinedButton(onClick = {
+                            viewModel.dispatch(HomeAction.CloseSettings)
+                            viewModel.cockpitSession.open()
+                        }, modifier = Modifier.testTag("open-cockpit-v2")) {
+                            Text("Tester le cockpit V2")
+                        }
                         OutlinedButton(onClick = { confirmReset = true },
                             enabled = ui.storage.phase != SavePhase.SAVING,
                             modifier = Modifier.testTag("reset-layouts")) {

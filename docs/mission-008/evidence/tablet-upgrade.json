@@ -1,0 +1,15 @@
+{
+  "base": "ebd6c5fc873054d3f04bb2388d53e407dc73b7b7",
+  "source": "6e9dea5efa746c922d0d28a8573621e833892c41",
+  "serial": "emulator-5554",
+  "same_key_apk_update": true,
+  "layout_bytes_unchanged": true,
+  "layout_sha256": "38fe6526be0e5c92cf857c5c386c969285cd760272a625a6680fcbe62225d359",
+  "unknown_extension_preserved": true,
+  "pid_before": "3037",
+  "pid_after": "3343",
+  "mode_default_after_restart": "historical-dashboard",
+  "ephemeral_input_not_restored": true,
+  "app_apk_sha256": "e924b324092a39afa32da96de7f1ab64e6e2e39b06dc83a60019691998307823",
+  "base_apk_sha256": "5f3175886ffe575bbd26ca753c99504cacf29fc8478afb8820e8373b61d152d2"
+}

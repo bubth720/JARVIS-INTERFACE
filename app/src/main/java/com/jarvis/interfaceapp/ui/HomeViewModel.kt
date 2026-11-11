@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.jarvis.interfaceapp.domain.HomeAction
 
 class HomeViewModel(private val controller: DashboardController) : ViewModel() {
+    // Experimental UI state stays in RAM and never reaches the layout repository.
+    val cockpitSession = com.jarvis.interfaceapp.cockpitv2.CockpitSession()
     val state = controller.state
     init { controller.startSession() }
     fun dispatch(action: HomeAction) = controller.dispatch(action)
