@@ -48,6 +48,8 @@ private fun sha(bytes: ByteArray) = MessageDigest.getInstance("SHA-256").digest(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class V1aUnitTest {
+    /** settle() ignores backgroundScope work (client + transport live there): drive it explicitly. */
+    private fun TestScope.settle() { repeat(20) { runCurrent(); advanceTimeBy(500) }; runCurrent() }
     private fun TestScope.wire(model: LocalLanguageModel) = V1aCoreTransport(backgroundScope, model, StandardTestDispatcher(testScheduler))
 
     @Test fun realCoreCoordinatorDeliversExactlyTheEngineText() = runTest {
@@ -59,7 +61,7 @@ class V1aUnitTest {
         assertEquals(CoreTextLink.READY, core.connection.value)
         assertTrue(client.submit("Qui es-tu ?")); runCurrent()
         assertEquals(1, core.acknowledgements)
-        advanceUntilIdle()
+        settle()
         assertEquals("Je suis JARVIS.", client.state.value.text)
         assertFalse(client.state.value.text.contains("SYNTHETIC"))
         assertEquals(1, model.prompts.size)
@@ -73,8 +75,8 @@ class V1aUnitTest {
         val core = wire(model)
         val client = CoreConversationClientAdapter(core, backgroundScope)
         runCurrent()
-        client.submit("Je m'appelle Thomas."); advanceUntilIdle()
-        client.submit("Comment je m'appelle ?"); advanceUntilIdle()
+        client.submit("Je m'appelle Thomas."); settle()
+        client.submit("Comment je m'appelle ?"); settle()
         assertEquals(2, core.history.snapshot().size)
         assertTrue(model.prompts[1].first.startsWith("UTILISATEUR: Je m'appelle Thomas.\nASSISTANT: Enchanté.\n"))
         assertEquals("Thomas.", client.state.value.text)
@@ -85,7 +87,7 @@ class V1aUnitTest {
         val model = RecordingModel(0) { error("Calcul natif arrêté") }
         val core = wire(model)
         val client = CoreConversationClientAdapter(core, backgroundScope)
-        runCurrent(); client.submit("x"); advanceUntilIdle()
+        runCurrent(); client.submit("x"); settle()
         assertEquals("Calcul natif arrêté", core.lastError.value)
         assertEquals("", client.state.value.text)
         assertTrue(core.history.snapshot().isEmpty())
@@ -109,7 +111,7 @@ class V1aUnitTest {
         assertTrue(core.coordinator.state.value.busy)
         client.cancel(); runCurrent()
         assertTrue(model.stops >= 1)
-        advanceUntilIdle(); client.close()
+        settle(); client.close()
     }
 
     @Test fun releaseEngineUnloads() = runTest {

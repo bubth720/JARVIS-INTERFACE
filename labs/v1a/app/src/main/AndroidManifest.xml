@@ -3,7 +3,7 @@
     <application android:name="com.stark.jarvislocal.v1a.V1aApplication"
         android:label="JARVIS V1-A" android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:allowBackup="false" android:fullBackupContent="false"
-        android:usesCleartextTraffic="false" android:extractNativeLibs="false"
+        android:usesCleartextTraffic="false"
         android:supportsRtl="true">
         <activity android:name="com.stark.jarvislocal.v1a.V1aActivity" android:exported="true"
             android:windowSoftInputMode="adjustResize">

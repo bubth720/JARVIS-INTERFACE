@@ -76,7 +76,8 @@ class V1aCoreTransport(
             }
             return ChatMessage(role = "assistant", text = answer)
         }
-        override suspend fun reportError(detail: String) { lastError.value = detail }
+        // Keep the engine's exact error; CORE's formatted detail only fills an empty slot.
+        override suspend fun reportError(detail: String) { if (lastError.value == null) lastError.value = detail }
         override suspend fun importPdf(uri: String): Unit = error("UNSUPPORTED")
         override suspend fun startRecording(): Unit = error("UNSUPPORTED")
         override suspend fun awaitRecording(): File = error("UNSUPPORTED")
