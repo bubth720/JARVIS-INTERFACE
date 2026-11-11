@@ -1,0 +1,8 @@
+
+com.jarvis.interfaceapp.CockpitV2CaptureTest:.
+
+Time: 6.806
+
+OK (1 test)
+
+
