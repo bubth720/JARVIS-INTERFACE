@@ -58,34 +58,34 @@ jobs:
             --readelf "$bin/llvm-readelf" --nm "$bin/llvm-nm" --output "$RUNNER_TEMP/v1a-evidence/APK.json"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$apk" > "$RUNNER_TEMP/v1a-evidence/signature.txt"
           sha256sum "$apk" | tee "$RUNNER_TEMP/v1a-evidence/apk-sha256.txt"
+      - name: Download the user-authorized GGUF (exact revision + size + SHA-256; never committed or bundled)
+        run: |
+          read -r url size sha < <(python3 -c "import json;s=json.load(open('interface/labs/v1a/model-authorization.json'))['source'];print(s['url'],s['bytes'],s['sha256'])")
+          curl --fail --location --retry 2 "$url" -o "$RUNNER_TEMP/v1a-model.gguf"
+          test "$(stat -c %s "$RUNNER_TEMP/v1a-model.gguf")" = "$size"
+          echo "$sha  $RUNNER_TEMP/v1a-model.gguf" | sha256sum -c - | tee "$RUNNER_TEMP/v1a-evidence/model-sha256-check.txt"
       - name: Enable emulator acceleration
         run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
-      - name: API29 app-context A02 + CORE instrumentation (airplane mode, no model)
+      - name: API29 — app-sandbox A02 + REAL authorized model through CORE (airplane mode)
         uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
         with:
           api-level: 29
           target: google_apis
           arch: x86_64
+          ram-size: 4096M
           disable-animations: true
           emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
-          script: |
-            adb shell cmd connectivity airplane-mode enable || adb shell settings put global airplane_mode_on 1
-            adb shell settings get global airplane_mode_on > "$RUNNER_TEMP/v1a-evidence/api29-airplane.txt"
-            gradle -p interface/labs/v1a -PlabSources="$RUNNER_TEMP/v1a-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -Pv1aAbis=arm64-v8a,x86_64 :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --console=plain
-            mkdir -p "$RUNNER_TEMP/v1a-evidence/api29" && cp -r interface/labs/v1a/app/build/outputs/androidTest-results/connected "$RUNNER_TEMP/v1a-evidence/api29/" || true
-      - name: API35 app-context A02 + CORE instrumentation (airplane mode, no model)
+          script: bash interface/labs/v1a/tools/run_emulator.sh 29 "$RUNNER_TEMP/v1a-model.gguf" "$(python3 -c "import json;print(json.load(open('interface/labs/v1a/model-authorization.json'))['source']['sha256'])")" "$RUNNER_TEMP/v1a-evidence/api29"
+      - name: API35 — app-sandbox A02 + REAL authorized model through CORE (airplane mode)
         uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
         with:
           api-level: 35
           target: google_apis
           arch: x86_64
+          ram-size: 4096M
           disable-animations: true
           emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
-          script: |
-            adb shell cmd connectivity airplane-mode enable || adb shell settings put global airplane_mode_on 1
-            adb shell settings get global airplane_mode_on > "$RUNNER_TEMP/v1a-evidence/api35-airplane.txt"
-            gradle -p interface/labs/v1a -PlabSources="$RUNNER_TEMP/v1a-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -Pv1aAbis=arm64-v8a,x86_64 :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --console=plain
-            mkdir -p "$RUNNER_TEMP/v1a-evidence/api35" && cp -r interface/labs/v1a/app/build/outputs/androidTest-results/connected "$RUNNER_TEMP/v1a-evidence/api35/" || true
+          script: bash interface/labs/v1a/tools/run_emulator.sh 35 "$RUNNER_TEMP/v1a-model.gguf" "$(python3 -c "import json;print(json.load(open('interface/labs/v1a/model-authorization.json'))['source']['sha256'])")" "$RUNNER_TEMP/v1a-evidence/api35"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
