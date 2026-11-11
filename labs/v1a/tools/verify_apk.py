@@ -16,7 +16,14 @@ def inspect(apk, aapt, readelf, nm):
     libs = {}
     with zipfile.ZipFile(apk) as archive:
         names = archive.namelist()
-        assert not any(n.lower().endswith(('.gguf', '.bin')) for n in names), 'Model bundled in APK'
+        # No model may be bundled: any GGUF, any .bin above 1 MiB (small library resources such as
+        # kotlinx DebugProbesKt.bin are allowed) and any non-native entry above 32 MiB are refused.
+        infos = archive.infolist()
+        suspicious = [i.filename for i in infos if i.filename.lower().endswith('.gguf')
+                      or (i.filename.lower().endswith('.bin') and i.file_size > 1 << 20)
+                      or (i.file_size > 32 << 20 and not i.filename.endswith('.so'))]
+        assert not suspicious, 'Model bundled in APK: ' + ', '.join(suspicious)
+        small_bins = sorted(f'{i.filename}:{i.file_size}' for i in infos if i.filename.lower().endswith('.bin'))
         so = [n for n in names if n.startswith('lib/') and n.endswith('.so')]
         assert so and all(n.endswith('/libjarvis_llm_a02.so') or n.endswith('/libc++_shared.so') for n in so), so
         assert any(n == 'lib/arm64-v8a/libjarvis_llm_a02.so' for n in so), 'ARM64 engine missing'
@@ -35,7 +42,7 @@ def inspect(apk, aapt, readelf, nm):
                 assert 'Java_fr_jarvis_llm_a02_SealedNativeBridge_loadSealedFd' in symbols
     return {'schema': 'jarvis.v1a.apk/1', 'sha256': hashlib.sha256(apk.read_bytes()).hexdigest(), 'size': apk.stat().st_size,
             'application_id': 'fr.jarvis.v1a.lab', 'min_sdk': 29, 'target_sdk': 35, 'test_only': True, 'permissions': [],
-            'native_libraries': libs, 'models_bundled': [], 'backup_enabled': False, 'path_loader_exported': False,
+            'native_libraries': libs, 'models_bundled': [], 'small_bin_resources': small_bins, 'backup_enabled': False, 'path_loader_exported': False,
             'android_execution': 'NOT_PROVEN_BY_THIS_CHECK'}
 
 if __name__ == '__main__':
