@@ -55,7 +55,7 @@ class V1aRealModelTest {
             object : SourceDescriptor { override val fd = pfd.fd; override fun close() = pfd.close() }
         }, entry.sizeBytes, entry.sha256), app::memoryBudgetBytes)
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-        val core = main { V1aCoreTransport(scope, model, settings = JarvisSettings(contextSize = 1024, maxTokens = 40)) }
+        val core = main { V1aCoreTransport(scope, model, settings = JarvisSettings(contextSize = 768, maxTokens = 48)) }
         val client = main { CoreConversationClientAdapter(core, scope) }
         val turns = JSONArray()
         try {
@@ -66,19 +66,30 @@ class V1aRealModelTest {
             assertEquals(sha, trace.getString("sealedSha256"))
             val rssLoaded = status("VmRSS"); val shmLoaded = status("RssShmem")
 
+            var streamingObserved = false
             fun turn(q: String): String {
                 assertTrue(main { client.submit(q) })
-                val ms = waitFor(240_000, "reply to '$q'") { !client.state.value.busy }
+                val started = SystemClock.elapsedRealtime()
+                var firstTextMs = -1L
+                val ms = waitFor(240_000, "reply to '$q'") {
+                    val s = client.state.value
+                    if (firstTextMs < 0 && s.text.isNotEmpty()) {
+                        firstTextMs = SystemClock.elapsedRealtime() - started
+                        if (s.busy) streamingObserved = true // text visible while generation still running
+                    }
+                    !s.busy
+                }
                 val text = main { client.state.value.text }
                 assertNull("engine error: ${core.lastError.value}", core.lastError.value)
                 assertTrue("empty reply", text.isNotBlank())
-                turns.put(JSONObject().put("question", q).put("ms", ms).put("chars", text.length).put("answer", text.take(300)))
+                turns.put(JSONObject().put("question", q).put("ms", ms).put("firstVisibleTextMs", firstTextMs).put("chars", text.length).put("answer", text.take(300)))
                 return text
             }
             turn("Bonjour, présente-toi en une phrase.")
             turn("Je m'appelle Thomas.")
             turn("Comment je m'appelle ?")
             assertEquals(3, core.history.snapshot().size)
+            assertTrue("no partial text observed while generating", streamingObserved)
 
             // Stop during a real generation: CORE drains, the gate reopens, nothing is appended.
             assertTrue(main { client.submit("Compte lentement de un à cinquante, en toutes lettres.") })
@@ -96,7 +107,7 @@ class V1aRealModelTest {
                 .put("sdk", android.os.Build.VERSION.SDK_INT)
                 .put("model", JSONObject().put("sha256", sha).put("bytes", entry.sizeBytes))
                 .put("importMs", importMs).put("loadMs", loadMs).put("trace", trace)
-                .put("turns", turns).put("stopDrainMs", stopMs).put("unload", unload.name)
+                .put("turns", turns).put("streamingObserved", streamingObserved).put("engine", JSONObject().put("context", 768).put("threads", 1).put("maxTokens", 48)).put("stopDrainMs", stopMs).put("unload", unload.name)
                 .put("rssKb", JSONObject().put("beforeLoad", rssBefore).put("loaded", rssLoaded))
                 .put("shmemKb", JSONObject().put("loaded", shmLoaded).put("afterUnload", shmAfter))
                 .put("memoryBudgetBytesAtEnd", app.memoryBudgetBytes())

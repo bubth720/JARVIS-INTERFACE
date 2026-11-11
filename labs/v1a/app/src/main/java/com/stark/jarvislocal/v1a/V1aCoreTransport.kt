@@ -21,7 +21,8 @@ class V1aCoreTransport(
     private val model: LocalLanguageModel,
     worker: CoroutineDispatcher = Dispatchers.Default,
     val history: ConversationHistory = ConversationHistory(),
-    val settings: JarvisSettings = JarvisSettings(contextSize = 2048, maxTokens = 192),
+    /** Protected engine limits for Qwen3 0.6B: context 768, output <= 96 tokens. */
+    val settings: JarvisSettings = JarvisSettings(contextSize = 768, maxTokens = 80),
     private val ackTimeoutMs: Long = 1_500
 ) : CoreConversationTransport {
     private class Turn(val submissionId: String) {
@@ -61,13 +62,34 @@ class V1aCoreTransport(
             turn.key.await()
             val request = history.request(text, settings.systemPrompt,
                 GenerationLimits(settings.contextSize, settings.maxTokens), model.capabilities)
-            val response = try { model.infer(request) } catch (e: Exception) {
+            val streaming = model as? StreamingLanguageModel
+            var streamed = false
+            val response = try {
+                if (streaming != null) {
+                    validateInference(request, streaming.capabilities) // same CORE contract gate as infer()
+                    val pending = StringBuilder()
+                    fun flush() {
+                        val piece = synchronized(pending) { pending.toString().also { pending.setLength(0) } }
+                        if (piece.isNotEmpty()) scope.launch(ui) {
+                            if (!closed && !poisoned && !stopped.get() && active === turn) emit(turn, ContentBody.AssistantTextChunk(piece))
+                        }
+                    }
+                    val full = streaming.generateStreaming(request.renderPrompt(), request.systemPrompt, request.settings()) { piece ->
+                        val ready = synchronized(pending) { pending.append(piece); pending.length >= 24 || piece.contains('\n') }
+                        if (ready) flush()
+                    }
+                    flush()
+                    withContext(ui) { } // FIFO barrier: every streamed chunk is emitted before CORE's completion
+                    streamed = true
+                    InferenceResponse(request.sessionId, request.requestId, full)
+                } else model.infer(request)
+            } catch (e: Exception) {
                 lastError.value = e.message ?: e.javaClass.simpleName; throw e
             }
             check(response.sessionId == request.sessionId && response.requestId == request.requestId) { "STALE_RESPONSE" }
             val answer = response.text.ifBlank { throw IllegalStateException("EMPTY_MODEL_OUTPUT") }
             if (!stopped.get()) {
-                withContext(ui) {
+                if (!streamed) withContext(ui) {
                     if (!closed && !poisoned && !stopped.get() && active === turn)
                         emit(turn, ContentBody.AssistantTextChunk(answer.take(16 * 1024)))
                 }

@@ -38,6 +38,7 @@ class V1aInstrumentedTest {
         assertTrue(info.requestedPermissions.isNullOrEmpty())
         assertEquals(29, info.applicationInfo!!.minSdkVersion)
         assertEquals(0, info.applicationInfo!!.flags and ApplicationInfo.FLAG_ALLOW_BACKUP)
+        assertNotEquals(0, info.applicationInfo!!.flags and ApplicationInfo.FLAG_TEST_ONLY)
         val libs = File(info.applicationInfo!!.nativeLibraryDir).list().orEmpty().toList()
         assertFalse(libs.any { it.contains("llama-android") || it == "libjarvis_llm.so" })
     }

@@ -9,7 +9,7 @@ tapk=interface/labs/v1a/app/build/outputs/apk/androidTest/debug/app-debug-androi
 mkdir -p "$out"
 adb shell cmd connectivity airplane-mode enable || adb shell settings put global airplane_mode_on 1
 adb shell settings get global airplane_mode_on | tee "$out/airplane.txt"
-adb install -r "$apk"; adb install -r "$tapk"
+adb install -r -t "$apk"; adb install -r -t "$tapk"
 adb push "$model" /data/local/tmp/v1a-model.gguf
 adb shell chmod 644 /data/local/tmp/v1a-model.gguf
 adb shell am instrument -w -r -e modelPath /data/local/tmp/v1a-model.gguf -e modelSha "$sha" \
@@ -20,4 +20,4 @@ adb shell rm -f /data/local/tmp/v1a-model.gguf
 grep -q '^OK (' "$out/instrumentation.txt" || { echo "Instrumentation did not pass on API $api" >&2; exit 1; }
 grep -q 'realOfflineConversationThroughCoreAndA02' "$out/instrumentation.txt"
 grep -q 'AssumptionViolatedException' "$out/instrumentation.txt" && { echo 'Real-model test was skipped' >&2; exit 1; }
-python3 -c "import json,sys; r=json.load(open(sys.argv[1])); assert len(r['turns'])==3 and r['unload']=='CONFIRMED' and r['trace']['sealedInodeMapped']; print(json.dumps(r, ensure_ascii=False)[:2000])" "$out/v1a-real-report.json"
+python3 -c "import json,sys; r=json.load(open(sys.argv[1])); assert len(r['turns'])==3 and r['streamingObserved'] and r['unload']=='CONFIRMED' and r['trace']['sealedInodeMapped']; print(json.dumps(r, ensure_ascii=False)[:2000])" "$out/v1a-real-report.json"

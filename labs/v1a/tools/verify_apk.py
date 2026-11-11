@@ -9,6 +9,7 @@ def inspect(apk, aapt, readelf, nm):
     permissions = subprocess.check_output([str(aapt), 'dump', 'permissions', str(apk)], text=True)
     assert "package: name='fr.jarvis.v1a.lab'" in badging
     assert "sdkVersion:'29'" in badging and "targetSdkVersion:'35'" in badging
+    assert re.search(r'android:testOnly[^\n]*0xffffffff', manifest), 'testOnly missing'
     assert re.search(r'android:allowBackup[^\n]*0x0\b', manifest), 'Backup enabled'
     assert 'uses-permission' not in permissions and 'uses-permission' not in manifest, 'Permission requested'
     assert not re.search(r'E: (service|provider|receiver)\b', manifest)
@@ -33,7 +34,7 @@ def inspect(apk, aapt, readelf, nm):
                 assert 'Java_fr_jarvis_llm_engine_NativeBridge_load\n' not in symbols, 'Pathname loader exported'
                 assert 'Java_fr_jarvis_llm_a02_SealedNativeBridge_loadSealedFd' in symbols
     return {'schema': 'jarvis.v1a.apk/1', 'sha256': hashlib.sha256(apk.read_bytes()).hexdigest(), 'size': apk.stat().st_size,
-            'application_id': 'fr.jarvis.v1a.lab', 'min_sdk': 29, 'target_sdk': 35, 'permissions': [],
+            'application_id': 'fr.jarvis.v1a.lab', 'min_sdk': 29, 'target_sdk': 35, 'test_only': True, 'permissions': [],
             'native_libraries': libs, 'models_bundled': [], 'backup_enabled': False, 'path_loader_exported': False,
             'android_execution': 'NOT_PROVEN_BY_THIS_CHECK'}
 

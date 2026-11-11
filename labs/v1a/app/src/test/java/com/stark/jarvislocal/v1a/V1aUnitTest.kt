@@ -3,6 +3,7 @@ package com.stark.jarvislocal.v1a
 import com.jarvis.interfaceapp.ui.chat.core.*
 import com.stark.jarvislocal.*
 import fr.jarvis.llm.a02.A02Native
+import fr.jarvis.llm.a02.NativeStreamSink
 import java.io.ByteArrayInputStream
 import java.nio.file.Files
 import java.security.MessageDigest
@@ -40,8 +41,28 @@ private class FakeNative : A02Native {
         calls += "gen:${roles.map { String(it) }}:$maxTokens:${String(system)}"
         return "  Bonjour Thomas  ".toByteArray()
     }
+    var streamTerminal = 2
+    override fun generateStream(handle: Long, system: ByteArray, question: ByteArray, maxTokens: Int, contextLimit: Int, binding: ByteArray, callback: NativeStreamSink): Int {
+        calls += "stream:$maxTokens:$contextLimit:${binding.size}"
+        if (!callback.onNativePrepared("<|im_start|>user\n".toByteArray() + question, "tmpl".toByteArray(), 12)) return 4
+        callback.onNativeEvent(binding, 0, 0, ByteArray(0), 0, -1, 1)
+        for (p in listOf("Bon", "jour ", "Thomas")) callback.onNativeEvent(binding, 1, 1, p.toByteArray(), 1, 5, 1)
+        callback.onNativeEvent(binding, streamTerminal, 4, ByteArray(0), 3, 5, 1)
+        return streamTerminal
+    }
     override fun unload(handle: Long) { calls += "unload" }
     override fun destroy(handle: Long) { calls += "destroy" }
+}
+
+/** Test double streaming several pieces, like the real engine. */
+private class StreamingFake(private val pieces: List<String>) : StreamingLanguageModel {
+    override suspend fun warmUp(settings: JarvisSettings) {}
+    override suspend fun generate(prompt: String, systemPrompt: String, settings: JarvisSettings) = error("non-streaming path must not be used")
+    override fun isLoaded() = true
+    override suspend fun generateStreaming(prompt: String, systemPrompt: String, settings: JarvisSettings, onText: (String) -> Unit): String {
+        pieces.forEach { onText(it); delay(10) }
+        return pieces.joinToString("")
+    }
 }
 
 private fun sha(bytes: ByteArray) = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it.toInt() and 255) }
@@ -121,6 +142,30 @@ class V1aUnitTest {
         assertEquals(1, model.unloaded)
     }
 
+    @Test fun streamingDeliversEveryPieceInOrderBeforeCompletion() = runTest {
+        val pieces = (1..12).map { "morceau-$it " }
+        val core = wire(StreamingFake(pieces))
+        val client = CoreConversationClientAdapter(core, backgroundScope)
+        runCurrent()
+        assertTrue(client.submit("Raconte.")); settle()
+        assertEquals(pieces.joinToString("").trim(), client.state.value.text.trim())
+        assertFalse(client.state.value.busy)
+        assertEquals(1, core.history.snapshot().size)
+        client.close()
+    }
+
+    @Test fun a02StreamingMapsTerminalsAndRespectsEngineLimits() = runBlocking {
+        val native = FakeNative()
+        val m = A02LanguageModel(native, VerifiedModel({ object : SourceDescriptor { override val fd = 5; override fun close() {} } }, 99L, "c".repeat(64)), { 2_000_000_000L })
+        m.warmUp(JarvisSettings(contextSize = 2048))
+        val seen = StringBuilder()
+        assertEquals("Bonjour Thomas", m.generateStreaming("UTILISATEUR: salut\nASSISTANT:", "S", JarvisSettings(maxTokens = 500)) { seen.append(it) })
+        assertEquals("Bonjour Thomas", seen.toString())
+        assertTrue(native.calls.any { it == "stream:96:768:64" })
+        native.streamTerminal = 3
+        assertEquals("Calcul natif arrêté", runCatching { m.generateStreaming("x", "S", JarvisSettings()) { } }.exceptionOrNull()?.message)
+    }
+
     @Test fun historyDropsOldestTurnsToFitCoreBudget() {
         val h = ConversationHistory()
         repeat(30) { h.record("question numéro $it " + "x".repeat(80), "réponse $it " + "y".repeat(80)) }
@@ -137,10 +182,10 @@ class V1aUnitTest {
             1234L, "a".repeat(64)), { 2_000_000_000L })
         m.warmUp(JarvisSettings(contextSize = 2048))
         assertTrue(closed)
-        assertTrue(native.calls.any { it == "load:42:1234:${"a".repeat(64)}:2000000000:2048" })
+        assertTrue(native.calls.any { it == "load:42:1234:${"a".repeat(64)}:2000000000:768" })
         val out = m.generate("UTILISATEUR: salut\nASSISTANT:", "Système", JarvisSettings(maxTokens = 999))
         assertEquals("Bonjour Thomas", out)
-        assertTrue(native.calls.any { it == "gen:[user]:256:Système" })
+        assertTrue(native.calls.any { it == "gen:[user]:96:Système" })
         assertEquals(UnloadResult.CONFIRMED, m.unload())
         assertFalse(m.isLoaded())
     }

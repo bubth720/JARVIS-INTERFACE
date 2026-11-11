@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {repository: bubth720/JAVIS-Local-v2, ref: 5da98383ed12cb5a54e896fbe57560bacc432fb5, path: core, fetch-depth: 0, persist-credentials: false}
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with: {repository: bubth720/JARVIS-LLM, ref: 95ae3c1c4a8aeac3944c08892d4c9730f7d016f4, path: llm, persist-credentials: false}
+        with: {repository: bubth720/JARVIS-LLM, ref: 216ca0d6636fbbac28b75a54fb8df736c986c8d2, path: llm, persist-credentials: false}
       - name: Scope guards (original M50 guard in its context + V1-A successor) and exact sources
         run: |
           mkdir -p "$RUNNER_TEMP/v1a-evidence"
