@@ -38,9 +38,16 @@ fun AvatarDemo(
 ) {
     val motionEnabled=LocalAvatarMotionEnabled.current
     var v2Preview by remember { mutableStateOf(false) }
+    var pngPreview by remember { mutableStateOf(false) }
     val packRepository = remember { com.jarvis.interfaceapp.avatar.v2.AvatarPackRepository() }
     val loadedPacks = remember { mutableMapOf<String, com.jarvis.interfaceapp.avatar.v2.LoadedPremiumPack>() }
     var selectedArtwork by remember { mutableStateOf<AvatarArtwork?>(null) }
+    val appContext = androidx.compose.ui.platform.LocalContext.current.applicationContext
+    val pngStore = remember(appContext) { com.jarvis.interfaceapp.avatar.png.PngPoseStore(appContext) }
+    LaunchedEffect(pngStore) {
+        val restored = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { pngStore.activeArtwork() }
+        if (restored != null && selectedArtwork == null) selectedArtwork = restored
+    }
     val effectiveArtwork = selectedArtwork ?: artwork
     val frameArtwork = effectiveArtwork as? com.jarvis.interfaceapp.avatar.v2.FrameDrivenAvatarArtwork
     val noPendingFrames = remember { kotlinx.coroutines.flow.MutableStateFlow(false) }
@@ -70,14 +77,14 @@ fun AvatarDemo(
     DisposableEffect(effectiveArtwork) { onDispose { effectiveArtwork.release() } }
     SideEffect {
         controller.setForeground(resumed)
-        controller.setVisible(motionEnabled && !assetsPreview && !v2Preview && !failed && if (preview) previewVisible else panelVisible)
+        controller.setVisible(motionEnabled && effectiveArtwork !is com.jarvis.interfaceapp.avatar.png.PngPoseArtwork && !assetsPreview && !v2Preview && !pngPreview && !failed && if (preview) previewVisible else panelVisible)
         val size = if (preview) previewSize else panelSize
         controller.resize(size.width, size.height)
     }
     // Do not rely only on a lifecycle-aware Flow collector: it stops collecting
     // below STARTED, so local lifecycle/visibility gates must cancel the clock too.
     val viewport = if (preview) previewSize else panelSize
-    val active = motionEnabled && resumed && !assetsPreview && !v2Preview && !failed && (if (preview) previewVisible else panelVisible) &&
+    val active = motionEnabled && resumed && effectiveArtwork !is com.jarvis.interfaceapp.avatar.png.PngPoseArtwork && !assetsPreview && !v2Preview && !pngPreview && !failed && (if (preview) previewVisible else panelVisible) &&
         viewport.width > 0 && viewport.height > 0 && (status.advancing || artworkPending)
     LaunchedEffect(controller, effectiveArtwork, active, lifecycleGeneration) {
         if (active) {
@@ -119,6 +126,13 @@ fun AvatarDemo(
             Text("Démo 2.5D", style = MaterialTheme.typography.labelSmall)
         }
     }
+    if (pngPreview) Dialog(onDismissRequest = { pngPreview = false }) {
+        Surface(shape = MaterialTheme.shapes.large) {
+            com.jarvis.interfaceapp.avatar.png.PngPoseGallery(
+                onApply = { selectedArtwork = it },
+                onClose = { pngPreview = false })
+        }
+    }
     if (v2Preview) Dialog(onDismissRequest = { v2Preview = false }) {
         Surface(shape = MaterialTheme.shapes.large) {
             com.jarvis.interfaceapp.avatar.v2.AvatarV2Preview(packRepository, loadedPacks,
@@ -148,6 +162,8 @@ fun AvatarDemo(
                     modifier = Modifier.testTag("avatar-engine-status"))
                 if (showAssetButton) OutlinedButton(onClick = { preview = false; assetsPreview = true },
                     modifier = Modifier.fillMaxWidth().testTag("avatar-assets")) { Text("Ressources et calques locaux") }
+                if (showAssetButton) OutlinedButton(onClick = { preview = false; pngPreview = true },
+                    modifier = Modifier.fillMaxWidth().testTag("avatar-png-open")) { Text("JARVIS AVATAR · bibliothèque PNG") }
                 if (showAssetButton) OutlinedButton(onClick = { preview = false; v2Preview = true },
                     modifier = Modifier.fillMaxWidth().testTag("avatar-v2-open")) { Text("Athéna V2 · packs et comparaison") }
                 for (animation in AvatarAnimationId.entries) {
