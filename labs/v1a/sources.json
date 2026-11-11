@@ -83,8 +83,8 @@
     {
       "id": "LLM",
       "repo": "bubth720/JARVIS-LLM",
-      "sha": "168f562ddfdbc20cc1e418c49be4f74df258f505",
-      "tree": "770e1a328c052d768007cc25e8f3695e2fa3017c",
+      "sha": "1325a5a21b4e95c8b2436fe570e441aa10519c9c",
+      "tree": "4c69b15e4b6dc69845c13afbe731bd8d5933f096",
       "native": [
         {
           "path": "a02/native/CMakeLists.txt",
@@ -97,8 +97,8 @@
           "path": "a02/native/a02_bridge.cpp",
           "mode": "100644",
           "type": "blob",
-          "sha": "c19e7444e54b762ebc77ecbdd82bc53971525f6a",
-          "size": 8378
+          "sha": "59a803bd12361d2edd8cff80c8b786771208af03",
+          "size": 11004
         },
         {
           "path": "a02/native/a02_snapshot.h",

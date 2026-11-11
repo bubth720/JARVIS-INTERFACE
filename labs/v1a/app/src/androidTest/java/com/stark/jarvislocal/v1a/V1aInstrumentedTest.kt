@@ -54,6 +54,8 @@ class V1aInstrumentedTest {
             // Not an A02_* code: snapshot, seals, re-hash and /proc identity passed inside the app; the protected
             // validator (served from the sealed fd, no procfs re-open) then refuses the non-GGUF payload.
             assertFalse("A02 refused in app context: $ok", ok.startsWith("A02_") || ok == "ADMITTED")
+            // The protected validator must have READ the sealed bytes (not failed to open them).
+            assertTrue("payload not read through the sealed fd: $ok", ok.contains("invalid magic"))
             assertEquals("A02_DIGEST_REFUSED", refusal { native.loadSealedFd(h, pfd.fd, bytes.size.toLong(), ("0".repeat(64)).toByteArray(), 1L shl 31, 512, 1, true) })
             assertEquals("A02_SIZE_REFUSED", refusal { native.loadSealedFd(h, pfd.fd, bytes.size + 1L, sha(bytes).toByteArray(), 1L shl 31, 512, 1, true) })
             assertEquals("A02_MEMORY_BUDGET_REFUSED", refusal { native.loadSealedFd(h, pfd.fd, bytes.size.toLong(), sha(bytes).toByteArray(), bytes.size.toLong(), 512, 1, true) })
