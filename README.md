@@ -1,5 +1,20 @@
 # JARVIS INTERFACE
 
+## Mission 008 — cockpit V2 expérimental
+
+Depuis **Paramètres → Tester le cockpit V2**, ouvrir le prototype natif : avatar
+provisoire statique, sphère 2D, fiche de démonstration volontaire, champ éphémère
+et roue unique. Le dashboard historique reste l’accueil par défaut. Le mode V2
+et le brouillon vivent seulement en RAM, sans modification du DataStore v1.
+Les commandes d’envoi/microphone sont indisponibles : aucun CORE, SERVICES ou
+VOICE n’est connecté. Retour quitte le menu, puis la fiche, puis le cockpit.
+
+[Audit et réutilisation](docs/mission-008/AUDIT.md) ·
+[Guide et architecture](docs/mission-008/README.md) ·
+[Résultats et livrables](docs/mission-008/RESULTS.md).
+
+Les sections suivantes décrivent le dashboard historique préservé.
+
 Application Android native autonome — mission 006 en attente de validation physique, version 0.1.0.
 
 ## Fonctionnement
