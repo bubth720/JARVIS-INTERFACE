@@ -49,11 +49,15 @@ fun CockpitV2Screen(
         val pageScrolls = maxHeight < 480.dp || LocalDensity.current.fontScale > 1.4f
         val scroll = rememberScrollState()
         val pageScroll = rememberScrollState()
+        val pageHeight = maxHeight
         LaunchedEffect(state.knowledgeOpen, scroll.maxValue, wide, pageScrolls) {
             if (!state.knowledgeOpen) scroll.scrollTo(0)
             else if (!wide && !pageScrolls) scroll.scrollTo(scroll.maxValue)
         }
-        Column(if (pageScrolls) Modifier.fillMaxSize().verticalScroll(pageScroll) else Modifier.fillMaxSize(),
+        // Keep the same scroll/focus ancestor when the IME changes the viewport.
+        // A bounded inner column preserves the anchored footer in normal windows.
+        Column(Modifier.fillMaxSize().verticalScroll(pageScroll)) {
+        Column(if (pageScrolls) Modifier.fillMaxWidth() else Modifier.fillMaxWidth().height(pageHeight),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
@@ -97,6 +101,7 @@ fun CockpitV2Screen(
             }
             }
             CommandBar(state, session, onDashboard, onSettings)
+        }
         }
     }
     }
