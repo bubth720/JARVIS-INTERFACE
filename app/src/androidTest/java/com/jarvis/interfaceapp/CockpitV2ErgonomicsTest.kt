@@ -20,11 +20,7 @@ import org.junit.Test
 /** Bounded windows and semantics; does not claim spoken TalkBack or a physical device. */
 class CockpitV2ErgonomicsTest {
     @get:Rule val ui = createComposeRule()
-    private fun reach(tag: String): SemanticsNodeInteraction {
-        val node = ui.onNodeWithTag(tag)
-        if (!node.isDisplayed()) node.performScrollTo()
-        return node.assertIsDisplayed()
-    }
+    private fun reach(tag: String) = ui.reachCockpit(tag)
     @Test fun shortWindowAndDoubleTextKeepEveryActionReachableWithoutOverlappingTargets() {
         val session = CockpitSession().apply { open() }
         ui.setContent {
@@ -39,6 +35,7 @@ class CockpitV2ErgonomicsTest {
         reach("v2-demo-open").performClick(); reach("v2-source-status")
         reach("v2-demo-close").performClick()
         reach("v2-draft").performTextInput("TEXTE AGRANDI TEST")
+        ui.onNodeWithTag("v2-draft").performImeAction()
         val send = reach("v2-send").assertIsNotEnabled().fetchSemanticsNode()
         assertTrue(send.config[SemanticsProperties.StateDescription].contains("CORE non connecté"))
         val mic = reach("v2-microphone").assertIsNotEnabled().fetchSemanticsNode()

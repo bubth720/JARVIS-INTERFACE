@@ -2,10 +2,8 @@ package com.jarvis.interfaceapp
 
 import android.app.Instrumentation
 import android.content.Intent
-import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.input.key.Key
 import com.jarvis.interfaceapp.domain.*
 import com.jarvis.interfaceapp.ui.*
 import kotlinx.coroutines.runBlocking
@@ -21,7 +19,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 class CockpitV2InteractionTest {
     @get:Rule val ui = createAndroidComposeRule<MainActivity>()
     private val controller get() = (ui.activity.application as JarvisApplication).dashboard
-    private fun click(tag: String) { val node = ui.onNodeWithTag(tag); if (!node.isDisplayed()) node.performScrollTo(); node.performClick() }
+    private fun click(tag: String) { ui.reachCockpit(tag).performClick() }
     private fun idle() { runBlocking { withTimeout(30_000) { controller.awaitIdle() } }; ui.waitForIdle() }
     private fun open() { click("open-settings"); click("open-cockpit-v2"); ui.onNodeWithTag("cockpit-v2").assertExists() }
     private fun stored() = File(ui.activity.filesDir, "datastore/dashboard.json").readBytes()
@@ -39,9 +37,10 @@ class CockpitV2InteractionTest {
         ui.onNodeWithTag("v2-knowledge-card").assertDoesNotExist()
         listOf("v2-avatar", "v2-sphere", "v2-command-bar", "v2-wheel").forEach { ui.onNodeWithTag(it).assertExists() }
         ui.onNodeWithTag("v2-draft").performTextInput("TEST ÉPHÉMÈRE 008")
+        ui.onNodeWithTag("v2-draft").performImeAction()
         click("v2-demo-open"); ui.onNodeWithTag("v2-knowledge-card").assertExists()
         ui.onNodeWithTag("v2-source-status").assertTextContains("aucune source consultée", substring = true)
-        ui.onNodeWithTag("v2-sphere").assertExists()
+        ui.onNodeWithTag("v2-sphere-art").assertIsDisplayed()
         click("v2-demo-close"); ui.onNodeWithTag("v2-knowledge-card").assertDoesNotExist()
         click("v2-return"); idle()
         listOf("AVATAR", "SYSTEM", "APPLICATIONS", "COMMANDS").forEach { ui.onNodeWithTag("panel-$it").assertExists() }
@@ -106,11 +105,14 @@ class CockpitV2InteractionTest {
             val config = wheel.fetchSemanticsNode().config
             val key = androidx.compose.ui.semantics.SemanticsProperties.Focused
             if (!config.contains(key) || !config[key]) {
-                ui.onRoot().performKeyInput { pressKey(Key.Tab) }
+                InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_TAB)
+                ui.waitForIdle()
             }
         }
         wheel.assertIsFocused()
-        wheel.performKeyInput { pressKey(Key.Enter) }
+        ui.reachCockpit("v2-wheel")
+        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_ENTER)
+        ui.waitForIdle()
         ui.onNodeWithTag("v2-wheel-menu").assertIsDisplayed()
         ui.onNodeWithTag("v2-go-dashboard").assertHeightIsAtLeast(androidx.compose.ui.unit.Dp(48f))
     }

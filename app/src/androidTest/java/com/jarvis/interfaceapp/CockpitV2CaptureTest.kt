@@ -16,7 +16,7 @@ import java.io.File
 class CockpitV2CaptureTest {
     @get:Rule val ui = createAndroidComposeRule<MainActivity>()
     @Before fun prepare() { ui.resetLayoutFixture() }
-    private fun click(tag: String) { val node = ui.onNodeWithTag(tag); if (!node.isDisplayed()) node.performScrollTo(); node.performClick() }
+    private fun click(tag: String) { ui.reachCockpit(tag).performClick() }
     private fun rotate(portrait: Boolean) {
         ui.runOnIdle { ui.activity.requestedOrientation = if (portrait) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
         ui.waitUntil(15000) { ui.activity.resources.configuration.orientation == if (portrait) Configuration.ORIENTATION_PORTRAIT else Configuration.ORIENTATION_LANDSCAPE }
