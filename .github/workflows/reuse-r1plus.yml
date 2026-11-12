@@ -194,8 +194,9 @@ jobs:
         run: |
           cat build/m55-p4-host/host.json 2>/dev/null || echo NO_HOST_REPORT
           cat build/m55-p4-device/diagnostic.json 2>/dev/null || echo NO_DIAGNOSTIC_REPORT
-          for f in build/m55-p4-device/*picker.jsonl; do [ -f "$f" ] && { echo "== $f"; head -c 6000 "$f"; echo; }; done
-          for f in build/m55-p4-device/*-instrumentation.txt; do [ -f "$f" ] && { echo "== $f"; tail -n 40 "$f"; }; done
+          # API 35 is preflight-only (no picker/instrumentation files): a missing file is not a failure.
+          for f in build/m55-p4-device/*picker.jsonl; do if [ -f "$f" ]; then echo "== $f"; head -c 6000 "$f"; echo; fi; done
+          for f in build/m55-p4-device/*-instrumentation.txt; do if [ -f "$f" ]; then echo "== $f"; tail -n 40 "$f"; fi; done
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         if: always()
         with:
