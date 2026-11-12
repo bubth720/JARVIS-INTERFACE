@@ -91,9 +91,14 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
+          # Judge EVERY API level even when one fails (run 43186945601 stopped after API 29).
+          status=0
           for api in 29 35; do
-            echo "== API $api"; python3 llm/a02/tests/dialogue_gate.py "$RUNNER_TEMP/v1b-evidence/api${api}/v1b-real-report.json" | tee "$RUNNER_TEMP/v1b-evidence/api${api}/dialogue-gate.txt"
+            echo "== API $api"
+            python3 llm/a02/tests/dialogue_gate.py "$RUNNER_TEMP/v1b-evidence/api${api}/v1b-real-report.json" > "$RUNNER_TEMP/v1b-evidence/api${api}/dialogue-gate.txt" || status=1
+            cat "$RUNNER_TEMP/v1b-evidence/api${api}/dialogue-gate.txt"
           done
+          exit $status
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
