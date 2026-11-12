@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Setup() {
+    private fun ColumnScope.Setup() {
         refresh.let { }
         val missing = app.missing()
         Text("Ressources locales (vérifiées par empreinte SHA-256, jamais téléchargées par l'app) :", color = Palette.muted, fontSize = 13.sp)
@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Conversation(s: V1Session) {
+    private fun ColumnScope.Conversation(s: V1Session) {
         val vm = s.cockpit
         Row(Modifier.fillMaxWidth().height(220.dp)) {
             KnowledgeSphere(vm.state, vm.level, vm.regulator.mode, vm.rotation, vm.stats, vm.regulator, vm.thermal, Modifier.weight(0.62f).fillMaxHeight())
