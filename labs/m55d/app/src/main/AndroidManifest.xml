@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- testOnly laboratory. No permission at all: no INTERNET, no RECORD_AUDIO, no storage. -->
+    <application android:label="JARVIS M55-D" android:allowBackup="false" android:testOnly="true"
+        android:usesCleartextTraffic="false" android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.NoActionBar">
+        <activity android:name="fr.jarvis.m55d.MainActivity" android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

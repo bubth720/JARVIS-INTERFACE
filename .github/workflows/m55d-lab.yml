@@ -1,0 +1,77 @@
+name: M55-D cockpit laboratory (3D sphere, 2.5D avatar, adaptive modes)
+on:
+  push:
+    branches: ['codex/m55-d-cockpit-sphere']
+    paths: ['.github/workflows/m55d-lab.yml', 'labs/m55d/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: m55d-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: interface, fetch-depth: 0, persist-credentials: false}
+      - name: Scope guard (V1-B, V1-A and M50 guards in their own contexts; additions only in labs/m55d)
+        run: |
+          git -C interface config user.email ci@invalid && git -C interface config user.name ci
+          python3 interface/labs/m55d/tools/check_scope.py --interface interface
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.13'}
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          cmdline-tools-version: '11076708'
+          log-accepted-android-sdk-licenses: false
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - name: Unit tests, APKs, Lint
+        run: gradle -p interface/labs/m55d :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug --no-daemon --max-workers=2 --console=plain
+      - name: APK identity (no permission, testOnly)
+        run: |
+          apk=interface/labs/m55d/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$apk" | tee perms.txt
+          ! grep -q uses-permission perms.txt
+          mkdir -p "$RUNNER_TEMP/m55d"; sha256sum "$apk" | tee "$RUNNER_TEMP/m55d/apk-sha256.txt"
+      - name: Enable emulator acceleration
+        run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
+      - name: API29 — cockpit benchmark (airplane mode)
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: bash interface/labs/m55d/tools/run_emulator.sh 29 "$RUNNER_TEMP/m55d/api29"
+      - name: API35 — cockpit benchmark (airplane mode)
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: bash interface/labs/m55d/tools/run_emulator.sh 35 "$RUNNER_TEMP/m55d/api35"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: m55d-evidence-${{ github.sha }}
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/m55d/
+            interface/labs/m55d/app/build/outputs/apk/debug/app-debug.apk
+            interface/labs/m55d/app/build/reports/
+            interface/labs/m55d/app/build/test-results/
+      - name: Summary
+        if: always()
+        run: |
+          echo "APK SHA-256: $(cut -d' ' -f1 "$RUNNER_TEMP/m55d/apk-sha256.txt" 2>/dev/null || echo NOT_PRODUCED)"
+          for api in 29 35; do echo "### API $api"; cat "$RUNNER_TEMP/m55d/api$api/m55d-report.json" 2>/dev/null || echo NOT_RUN_OR_FAILED; echo; done
