@@ -18,6 +18,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -107,12 +109,20 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun ColumnScope.Conversation(s: V1Session) {
         val vm = s.cockpit
-        Row(Modifier.fillMaxWidth().height(220.dp)) {
+        val keyboard = LocalSoftwareKeyboardController.current
+        // Cockpit proportional to the screen so the conversation stays visible on small screens / with the keyboard open.
+        val cockpitHeight = (LocalConfiguration.current.screenHeightDp * 0.28f).dp.coerceIn(110.dp, 220.dp)
+        Row(Modifier.fillMaxWidth().height(cockpitHeight)) {
             KnowledgeSphere(vm.state, vm.level, vm.regulator.mode, vm.rotation, vm.stats, vm.regulator, vm.thermal, Modifier.weight(0.62f).fillMaxHeight())
             Avatar25D(vm.state, vm.level, vm.atlas, Modifier.weight(0.38f).fillMaxHeight())
         }
         Text(s.status, color = Palette.text, modifier = Modifier.testTag("status"))
         listOfNotNull(s.sttUnavailable, s.ttsUnavailable).forEach { Text(it, color = Palette.muted, fontSize = 11.sp) }
+        // Latest exchange always shown right under the status (the history below may be scrolled or squeezed).
+        val last = s.exchanges.lastOrNull()
+        if (s.partial.isNotBlank() && s.busy) Text("JARVIS : ${s.partial}", color = Palette.text, modifier = Modifier.testTag("partial"))
+        else if (last != null) Text("JARVIS : ${last.answer.ifBlank { last.error ?: "(interrompu)" }}", color = Palette.text,
+            maxLines = 6, modifier = Modifier.testTag("answer"))
         if (startError.isNotBlank()) Text(startError, color = Palette.of(fr.jarvis.m55d.CockpitState.ERROR), fontSize = 12.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = {
@@ -127,12 +137,11 @@ class MainActivity : ComponentActivity() {
         var typed by remember { mutableStateOf("") }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(typed, { typed = it }, Modifier.weight(1f).testTag("input"), singleLine = true, label = { Text("Ou écrivez") })
-            Button(onClick = { s.textTurn(typed); typed = "" }, enabled = typed.isNotBlank() && s.phase == Phase.READY, modifier = Modifier.testTag("send")) { Text("Envoyer") }
+            Button(onClick = { keyboard?.hide(); s.textTurn(typed); typed = "" }, enabled = typed.isNotBlank() && s.phase == Phase.READY, modifier = Modifier.testTag("send")) { Text("Envoyer") }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             RenderMode.entries.forEach { m -> FilterChip(selected = vm.regulator.mode == m, onClick = { vm.forceMode(m) }, label = { Text(m.name.lowercase(), fontSize = 11.sp) }) }
         }
-        if (s.partial.isNotBlank() && s.busy) Text("JARVIS : ${s.partial}", color = Palette.text)
         LazyColumn(Modifier.weight(1f)) {
             items(s.exchanges.reversed()) { e ->
                 Text("Vous${if (e.viaVoice) " 🎤" else ""} : ${e.user}", color = Palette.muted, fontSize = 13.sp)

@@ -151,7 +151,7 @@ jobs:
           echo "APK SHA-256: $(cut -d' ' -f1 "$RUNNER_TEMP/v1/apk-sha256.txt" 2>/dev/null || echo NOT_PRODUCED)"
           for api in 29 35; do
             echo "### API $api results"; cat "$RUNNER_TEMP/v1/api$api/results.txt" 2>/dev/null || echo NOT_RUN
-            for f in v1-report v1-restart v1-ui v1-textonly v1-mic; do echo "--- API $api $f"; cat "$RUNNER_TEMP/v1/api$api/$f.json" 2>/dev/null || echo NOT_PRODUCED; echo; done
+            for f in v1-report v1-restart v1-ui v1-tts v1-textonly v1-mic; do echo "--- API $api $f"; cat "$RUNNER_TEMP/v1/api$api/$f.json" 2>/dev/null || echo NOT_PRODUCED; echo; done
           done
           echo "API29 step: ${{ steps.api29.outcome }} / API35 step: ${{ steps.api35.outcome }}"
       - name: Qualification verdict (both API levels must pass every required test)

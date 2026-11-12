@@ -36,6 +36,7 @@ adb shell pm grant fr.jarvis.v1 android.permission.RECORD_AUDIO || true
 run c_realAndroidMicrophoneCapture informational; pull v1-mic.json
 run d_coldRestartResourcesPersistAndTextConversationKeepsContext required -e afterImport 1; pull v1-restart.json
 run f_realScreenTypedQuestionShowsGeneratedAnswer required -e afterImport 1; pull v1-ui.json; pull v1-ui.png
+run h_pocketSynthesisIsRealSpeechRecognisedBySttRoundTrip required -e afterImport 1; pull v1-tts.json
 run g_textOnlyWithoutVoiceResources required -e afterImport 1; pull v1-textonly.json
 # Close and reopen the real app (force-stop = full process kill), then screenshot the reopened screen.
 adb shell am force-stop fr.jarvis.v1
