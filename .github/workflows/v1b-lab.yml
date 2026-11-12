@@ -1,0 +1,136 @@
+name: V1-B conversation + performance (CORE + JARVIS-LLM A02 + INTERFACE) Android laboratory
+on:
+  push:
+    branches: ['codex/jarvis-v1b-conversation-performance']
+    paths:
+      - '.github/workflows/v1b-lab.yml'
+      - 'labs/v1b/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash  # pipefail: a failure piped into tee fails the step
+concurrency:
+  group: v1b-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: interface, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JAVIS-Local-v2, ref: 5da98383ed12cb5a54e896fbe57560bacc432fb5, path: core, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-LLM, ref: 211d458eb97d5c01f07c563982c63ec2d5cb222d, path: llm, persist-credentials: false}
+      - name: Scope guards (V1-A guard + original M50 guard in their contexts, V1-B successor) and exact sources
+        run: |
+          mkdir -p "$RUNNER_TEMP/v1b-evidence"
+          git -C interface config user.email ci@invalid && git -C interface config user.name ci
+          python3 interface/labs/v1b/tools/check_scope.py --interface interface | tee "$RUNNER_TEMP/v1b-evidence/scope.log"
+          python3 interface/labs/v1b/tools/prepare_sources.py --core core --interface interface --llm llm --output "$RUNNER_TEMP/v1b-sources"
+          python3 -m unittest discover -s interface/labs/v1b/tests -v 2>&1 | tee "$RUNNER_TEMP/v1b-evidence/python-tests.log"
+      - name: Pinned llama.cpp for the A02 engine
+        run: llm/tools/prepare-native.sh
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.13'}
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          cmdline-tools-version: '11076708'
+          log-accepted-android-sdk-licenses: false
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0 ndk;28.1.13356709 cmake;3.22.1'
+      - name: Real CORE + A02 engine composition, unit tests, APKs and Lint
+        run: |
+          gradle -p interface/labs/v1b -PlabSources="$RUNNER_TEMP/v1b-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" \
+            -Pv1bAbis=arm64-v8a,x86_64 :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug \
+            --no-daemon --max-workers=2 --console=plain
+      - name: Inspect the actual APK (no installation on any personal device)
+        run: |
+          bin="$ANDROID_HOME/ndk/28.1.13356709/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          apk=interface/labs/v1b/app/build/outputs/apk/debug/app-debug.apk
+          python3 interface/labs/v1b/tools/verify_apk.py --apk "$apk" --aapt "$ANDROID_HOME/build-tools/35.0.0/aapt" \
+            --readelf "$bin/llvm-readelf" --nm "$bin/llvm-nm" --output "$RUNNER_TEMP/v1b-evidence/APK.json"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$apk" > "$RUNNER_TEMP/v1b-evidence/signature.txt"
+          sha256sum "$apk" | tee "$RUNNER_TEMP/v1b-evidence/apk-sha256.txt"
+      - name: Download the user-authorized GGUF (exact revision + size + SHA-256; never committed or bundled)
+        run: |
+          read -r url size sha < <(python3 -c "import json;s=json.load(open('interface/labs/v1b/model-authorization.json'))['source'];print(s['url'],s['bytes'],s['sha256'])")
+          curl --fail --location --retry 2 "$url" -o "$RUNNER_TEMP/v1b-model.gguf"
+          test "$(stat -c %s "$RUNNER_TEMP/v1b-model.gguf")" = "$size"
+          echo "$sha  $RUNNER_TEMP/v1b-model.gguf" | sha256sum -c - | tee "$RUNNER_TEMP/v1b-evidence/model-sha256-check.txt"
+      - name: Enable emulator acceleration
+        run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
+      - name: API29 — app-sandbox A02 + REAL authorized model through CORE (airplane mode)
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          disable-animations: true
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: bash interface/labs/v1b/tools/run_emulator.sh 29 "$RUNNER_TEMP/v1b-model.gguf" "$(python3 -c "import json;print(json.load(open('interface/labs/v1b/model-authorization.json'))['source']['sha256'])")" "$RUNNER_TEMP/v1b-evidence/api29"
+      - name: API35 — app-sandbox A02 + REAL authorized model through CORE (airplane mode)
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          disable-animations: true
+          emulator-options: -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: bash interface/labs/v1b/tools/run_emulator.sh 35 "$RUNNER_TEMP/v1b-model.gguf" "$(python3 -c "import json;print(json.load(open('interface/labs/v1b/model-authorization.json'))['source']['sha256'])")" "$RUNNER_TEMP/v1b-evidence/api35"
+      - name: Dialogue quality gate on the REAL emulator transcripts (judged, never edited)
+        id: gate
+        if: always()
+        continue-on-error: true
+        run: |
+          for api in 29 35; do
+            echo "== API $api"; python3 llm/a02/tests/dialogue_gate.py "$RUNNER_TEMP/v1b-evidence/api${api}/v1b-real-report.json" | tee "$RUNNER_TEMP/v1b-evidence/api${api}/dialogue-gate.txt"
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v1b-evidence-${{ github.sha }}
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/v1b-evidence/
+            interface/labs/v1b/app/build/test-results/
+            interface/labs/v1b/app/build/reports/
+            interface/labs/v1b/app/build/outputs/androidTest-results/
+      - name: Publish the V1-B lab APK (GO-LAB-ONLY, model not bundled, never auto-installed)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: JARVIS-V1B-LAB-APK-${{ github.sha }}
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            interface/labs/v1b/app/build/outputs/apk/debug/app-debug.apk
+            ${{ runner.temp }}/v1b-evidence/APK.json
+            ${{ runner.temp }}/v1b-evidence/apk-sha256.txt
+      - name: Delivery summary (APK SHA-256 and real-model reports, printed last for traceability)
+        if: always()
+        run: |
+          {
+            echo "## V1-B delivery — ${GITHUB_SHA}"
+            echo
+            echo "APK SHA-256: $(cut -d' ' -f1 "$RUNNER_TEMP/v1b-evidence/apk-sha256.txt" 2>/dev/null || echo NOT_PRODUCED)"
+            for api in 29 35; do
+              echo
+              echo "### API ${api} real-model report"
+              cat "$RUNNER_TEMP/v1b-evidence/api${api}/v1b-real-report.json" 2>/dev/null || echo "NOT_RUN_OR_FAILED"
+              echo; echo "### API ${api} dialogue gate"
+              cat "$RUNNER_TEMP/v1b-evidence/api${api}/dialogue-gate.txt" 2>/dev/null || echo "NOT_RUN"
+            done
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Fail the run if the dialogue gate failed (evidence and APK are already published)
+        if: steps.gate.outcome == 'failure'
+        run: |
+          echo "V1-B dialogue quality gate FAILED on at least one API level: see the delivery summary." >&2
+          exit 1

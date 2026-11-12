@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- testOnly lab build (installable only with adb install -t). No permission at all: no INTERNET, no storage, no microphone. Models enter via the system picker. -->
+    <application android:name="com.stark.jarvislocal.v1b.V1bApplication"
+        android:label="JARVIS V1-B" android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:allowBackup="false" android:fullBackupContent="false"
+        android:usesCleartextTraffic="false" android:testOnly="true"
+        android:supportsRtl="true">
+        <activity android:name="com.stark.jarvislocal.v1b.V1bActivity" android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
