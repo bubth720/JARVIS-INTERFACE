@@ -3,7 +3,6 @@ package fr.jarvis.m55d
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.SystemClock
-import android.view.MotionEvent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -25,15 +24,18 @@ class M55dDeviceTest {
 
     @Test fun manifestHasNoPermissionAndIsTestOnly() {
         val info = ctx.packageManager.getPackageInfo(ctx.packageName, PackageManager.GET_PERMISSIONS)
-        assertTrue(info.requestedPermissions.isNullOrEmpty())
+        val requested = info.requestedPermissions.orEmpty().toList()
+        // androidx adds its own signature-level "<package>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION";
+        // the requirement is: no network, microphone, storage, camera, location or other sensitive permission.
+        val unexpected = requested.filterNot { it == ctx.packageName + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" }
+        assertTrue("unexpected permissions: $unexpected", unexpected.isEmpty())
         assertNotEquals(0, info.applicationInfo!!.flags and ApplicationInfo.FLAG_TEST_ONLY)
     }
 
+    /** Real system input path (same as a finger through InputManager), not an in-process synthetic dispatch. */
     private fun swipe(fromX: Float, toX: Float, y: Float) {
-        val t0 = SystemClock.uptimeMillis()
-        inst.sendPointerSync(MotionEvent.obtain(t0, t0, MotionEvent.ACTION_DOWN, fromX, y, 0))
-        for (i in 1..10) inst.sendPointerSync(MotionEvent.obtain(t0, t0 + i * 25L, MotionEvent.ACTION_MOVE, fromX + (toX - fromX) * i / 10, y, 0))
-        inst.sendPointerSync(MotionEvent.obtain(t0, t0 + 275, MotionEvent.ACTION_UP, toX, y, 0))
+        inst.uiAutomation.executeShellCommand("input swipe ${fromX.toInt()} ${y.toInt()} ${toX.toInt()} ${y.toInt()} 400").close()
+        SystemClock.sleep(900)
     }
 
     @Test fun cockpitBenchmarkRotationModesStatesAndRecreation() {
