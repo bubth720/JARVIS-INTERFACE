@@ -123,16 +123,40 @@ class V1bRealModelTest {
             report.put("v1bDialogues", dialogues).put("streamingObserved", streamingObserved)
 
             // ---- 2. Stop during a real generation ---------------------------------------------
-            val before = core.history.snapshot().size
-            assertTrue(main { client.submit("Compte lentement de un à cinquante, en toutes lettres.") })
-            waitFor(240_000, "first streamed text before stop") { client.state.value.text.isNotEmpty() || !client.state.value.busy }
-            assertTrue("generation finished before Stop could be exercised", main { client.state.value.busy })
-            val stopAt = SystemClock.elapsedRealtime()
-            main { client.cancel() }
-            waitFor(120_000, "stop drain") { !core.coordinator.state.value.busy && !client.state.value.busy }
-            val stopMs = SystemClock.elapsedRealtime() - stopAt
-            assertEquals(before, core.history.snapshot().size)
+            // A brief model may finish a "long" request before any Stop: try several long requests and
+            // Stop as soon as streamed text is visible; as a last resort Stop during prefill. The mode
+            // actually exercised is recorded, never assumed.
+            core.history.clear()
+            var stopMode = "NOT_EXERCISED"; var stopMs = -1L; var stopPieces = ""
+            for (q in listOf("Écris les nombres de un à cent en toutes lettres, séparés par des virgules.",
+                    "Raconte une longue histoire détaillée sur un dragon et un chevalier.",
+                    "Liste trente fruits différents, un par ligne, avec une phrase sur chacun.")) {
+                core.history.clear()
+                assertTrue(main { client.submit(q) })
+                waitFor(240_000, "first streamed text before stop") { client.state.value.text.isNotEmpty() || !client.state.value.busy }
+                if (main { client.state.value.busy }) {
+                    stopPieces = main { client.state.value.text }
+                    val at = SystemClock.elapsedRealtime()
+                    main { client.cancel() }
+                    waitFor(120_000, "stop drain") { !core.coordinator.state.value.busy && !client.state.value.busy }
+                    stopMs = SystemClock.elapsedRealtime() - at; stopMode = "MID_STREAM"
+                    assertTrue("a stopped turn must not be recorded", core.history.snapshot().isEmpty())
+                    break
+                }
+                waitFor(240_000, "turn end") { !core.coordinator.state.value.busy }
+            }
+            if (stopMode == "NOT_EXERCISED") {
+                core.history.clear()
+                assertTrue(main { client.submit("Écris les nombres de un à cent en toutes lettres.") })
+                val at = SystemClock.elapsedRealtime()
+                main { client.cancel() }
+                waitFor(120_000, "stop drain") { !core.coordinator.state.value.busy && !client.state.value.busy }
+                stopMs = SystemClock.elapsedRealtime() - at; stopMode = "DURING_PREFILL"
+                assertTrue("a stopped turn must not be recorded", core.history.snapshot().isEmpty())
+            }
             assertNotEquals(CoreTextLink.UNKNOWN, main { client.state.value.link })
+            val before = core.history.snapshot().size
+            report.put("stop", JSONObject().put("mode", stopMode).put("drainMs", stopMs).put("visibleCharsBeforeStop", stopPieces.length))
             report.put("stopDrainMs", stopMs)
 
             // ---- 3. Visible error, nothing recorded, session still usable ---------------------
@@ -161,6 +185,11 @@ class V1bRealModelTest {
             bench(m256, 256, benchQuestion)
             assertEquals(UnloadResult.CONFIRMED, runBlocking { m256.destroy() })
             report.put("v1bBench", bench)
+        } catch (e: Throwable) {
+            // Keep the partial evidence of a failing run (dialogues so far, metrics, error).
+            report.put("failure", e.toString())
+            File(context.filesDir, "v1b-real-report.json").writeText(report.toString(2))
+            throw e
         } finally {
             main { client.close() }
             runBlocking { model.destroy() }
