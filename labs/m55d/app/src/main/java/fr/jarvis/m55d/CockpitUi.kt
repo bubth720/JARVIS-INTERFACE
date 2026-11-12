@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -39,7 +40,12 @@ object Palette {
 }
 
 /** Shared, test-observable rotation state of the sphere (radians). */
-class SphereRotation { var yaw by mutableFloatStateOf(0.4f); var pitch by mutableFloatStateOf(-0.25f); var vYaw = 0f; var vPitch = 0f }
+class SphereRotation {
+    var yaw by mutableFloatStateOf(0.4f); var pitch by mutableFloatStateOf(-0.25f); var vYaw = 0f; var vPitch = 0f
+    /** Evidence for tests: drag events actually received, and the sphere bounds on screen (px). */
+    @Volatile var dragEvents = 0
+    @Volatile var screenBounds: androidx.compose.ui.geometry.Rect? = null
+}
 
 @Composable
 fun KnowledgeSphere(state: CockpitState, level: Float, mode: RenderMode, rotation: SphereRotation, stats: FrameStats,
@@ -65,10 +71,14 @@ fun KnowledgeSphere(state: CockpitState, level: Float, mode: RenderMode, rotatio
     val color = Palette.of(state)
     Canvas(modifier
         .testTag("sphere")
+        .onGloballyPositioned { c ->
+            val topLeft = c.localToScreen(Offset.Zero)
+            rotation.screenBounds = androidx.compose.ui.geometry.Rect(topLeft, androidx.compose.ui.geometry.Size(c.size.width.toFloat(), c.size.height.toFloat()))
+        }
         .semantics { contentDescription = "Sphère de connaissances 3D, faites glisser pour la tourner"; stateDescription = Palette.label(state) }
         .pointerInput(Unit) {
             detectDragGestures(onDrag = { change, drag ->
-                change.consume()
+                change.consume(); rotation.dragEvents++
                 rotation.yaw += drag.x * 0.008f; rotation.pitch = (rotation.pitch - drag.y * 0.008f).coerceIn(-1.2f, 1.2f)
                 rotation.vYaw = drag.x * 0.5f; rotation.vPitch = -drag.y * 0.5f
             })
