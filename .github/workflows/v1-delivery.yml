@@ -75,10 +75,10 @@ jobs:
           get https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/50968a4468ef4233ed78cd7c3de230dd1d61a56b/Qwen3-0.6B-Q4_K_M.gguf "$r/llm.gguf" 396705472 ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
           get https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base-q5_1.bin "$r/stt.bin" 59707625 422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898
           python3 voice/scripts/pocket/prepare_model.py --work-dir "$RUNNER_TEMP/pocket-work" --output "$r/tts.zip"
-          sudo apt-get install -y -q espeak-ng >/dev/null
+          sudo apt-get install -y -q espeak-ng sox >/dev/null
           espeak-ng -v fr -s 135 -w "$r/u1.wav" "Bonjour, je m'appelle Thomas."
           espeak-ng -v fr -s 135 -w "$r/u2.wav" "Comment je m'appelle ?"
-          for i in 1 2; do ffmpeg -loglevel error -y -i "$r/u$i.wav" -af "adelay=300,apad=pad_dur=1" -ar 16000 -ac 1 -sample_fmt s16 "$r/utt$i.wav"; done
+          for i in 1 2; do sox "$r/u$i.wav" -r 16000 -c 1 -b 16 -e signed-integer "$r/utt$i.wav" pad 0.3 1; done
           ls -l "$r" | tee "$RUNNER_TEMP/v1/resources.txt"; sha256sum "$r"/tts.zip "$r"/utt*.wav | tee -a "$RUNNER_TEMP/v1/resources.txt"
       - name: Enable emulator acceleration and a virtual microphone (PulseAudio, best effort)
         run: |
