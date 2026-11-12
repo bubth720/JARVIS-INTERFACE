@@ -43,6 +43,17 @@ object V1bPolicy {
      * Linux host harness (JARVIS-LLM a02/tests/jni/SealedNativeBridge.java V1B_SYSTEM).
      */
     const val SYSTEM_PROMPT = "Tu converses avec l'utilisateur. Retiens ce qu'il dit de lui (prénom, goûts) et réutilise-le quand il le demande. Toi, tu es JARVIS : ne prends jamais son prénom. /no_think"
+    /** Host session memory: the last first name the user stated about himself (same rule as the Linux harness). */
+    private val NAME = Regex("(?i:je m'appelle|je m’appelle|mon prénom est|mon prenom est|mon nom est|appelle-moi)\\s+(\\p{L}[\\p{L}-]{1,30})")
+    const val MEMORY_ENABLED = true
+    fun userName(history: List<ConversationHistory.Turn>, question: String): String? =
+        (history.map { it.user } + question).flatMap { NAME.findAll(it).map { m -> m.groupValues[1] }.toList() }
+            .lastOrNull()?.replaceFirstChar { it.uppercaseChar() }
+    /** Subordinate instructions actually sent for this turn (memory fact appended when a name is known). */
+    fun systemFor(history: List<ConversationHistory.Turn>, question: String): String {
+        val name = if (MEMORY_ENABLED) userName(history, question) else null
+        return if (name == null) SYSTEM_PROMPT else "$SYSTEM_PROMPT Fait connu : l'utilisateur s'appelle $name (ce n'est pas ton nom)."
+    }
     private val FORBIDDEN = listOf("<|", "<think>", "</think>", "/think", "[INST]", "[/INST]", "<<SYS>>", "/no_think", "\u0000")
     /** A stored turn is re-sent only if the protected P2 validator would accept its texts. */
     fun admissible(text: String) = text.isNotBlank() && FORBIDDEN.none { text.contains(it) }
@@ -123,7 +134,7 @@ class A02LanguageModel(
     /** Newest admissible exchanges that fit, measured with the engine's own tokenizer. */
     internal fun window(history: List<ConversationHistory.Turn>, question: String, maxTokens: Int): Window {
         val eligible = history.filter { V1bPolicy.admissible(it.user) && V1bPolicy.admissible(it.assistant) }
-        val system = V1bPolicy.SYSTEM_PROMPT.toByteArray(Charsets.UTF_8)
+        val system = V1bPolicy.systemFor(history, question).toByteArray(Charsets.UTF_8)
         for (keep in minOf(V1bPolicy.MAX_HISTORY_PAIRS, eligible.size) downTo 0) {
             val kept = eligible.takeLast(keep)
             val roles = ArrayList<ByteArray>(); val texts = ArrayList<ByteArray>()
@@ -134,11 +145,11 @@ class A02LanguageModel(
             roles += "user".toByteArray(); texts += question.toByteArray(Charsets.UTF_8)
             val tokens = native.countTurnsTokens(handle, system, roles.toTypedArray(), texts.toTypedArray())
             if (tokens > 0 && tokens + maxTokens + V1bPolicy.CONTEXT_MARGIN <= loadedContext)
-                return Window(roles.toTypedArray(), texts.toTypedArray(), keep, tokens)
+                return Window(roles.toTypedArray(), texts.toTypedArray(), keep, tokens, system)
         }
         throw IllegalStateException("Question trop longue pour le contexte : raccourcis-la")
     }
-    internal class Window(val roles: Array<ByteArray>, val texts: Array<ByteArray>, val pairs: Int, val promptTokens: Int)
+    internal class Window(val roles: Array<ByteArray>, val texts: Array<ByteArray>, val pairs: Int, val promptTokens: Int, val system: ByteArray)
 
     override suspend fun generateTurns(history: List<ConversationHistory.Turn>, question: String, maxTokens: Int, onText: (String) -> Unit): TurnResult {
         check(loaded && !destroyed) { "MODEL_NOT_LOADED" }
@@ -151,7 +162,7 @@ class A02LanguageModel(
             generating.set(true)
             val start = nanos()
             val terminal = try {
-                native.generateStreamTurns(handle, V1bPolicy.SYSTEM_PROMPT.toByteArray(Charsets.UTF_8), window.roles, window.texts,
+                native.generateStreamTurns(handle, window.system, window.roles, window.texts,
                     tokens, loadedContext, binding(question), sink)
             } finally { generating.set(false) }
             val end = nanos()

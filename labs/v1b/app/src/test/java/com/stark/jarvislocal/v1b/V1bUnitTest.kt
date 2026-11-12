@@ -41,6 +41,7 @@ private class FakeNative : A02Native {
     val calls = mutableListOf<String>()
     val sentRoles = mutableListOf<List<String>>()
     val sentTexts = mutableListOf<List<String>>()
+    val sentSystems = mutableListOf<String>()
     var loadFailure: String? = null
     var ceilingFailure = false
     var ceiling = 96
@@ -70,7 +71,8 @@ private class FakeNative : A02Native {
         error("V1-B must not use the single-question stream")
     override fun generateStreamTurns(handle: Long, system: ByteArray, roles: Array<ByteArray>, texts: Array<ByteArray>, maxTokens: Int, contextLimit: Int, binding: ByteArray, callback: NativeStreamSink): Int {
         check(maxTokens <= ceiling) { "Moteur non prêt ou sortie hors budget" }
-        calls += "turns:${roles.size}:$maxTokens:$contextLimit:${String(system) == V1bPolicy.SYSTEM_PROMPT}"
+        calls += "turns:${roles.size}:$maxTokens:$contextLimit:${String(system).startsWith(V1bPolicy.SYSTEM_PROMPT)}"
+        sentSystems += String(system, Charsets.UTF_8)
         sentRoles += roles.map { String(it) }; sentTexts += texts.map { String(it, Charsets.UTF_8) }
         if (!callback.onNativePrepared("<|im_start|>user\n".toByteArray() + texts.last(), "tmpl".toByteArray(), 40)) return 4
         callback.onNativeEvent(binding, 0, 0, ByteArray(0), 0, -1, 1)
@@ -139,6 +141,23 @@ class V1bUnitTest {
         assertEquals(listOf("Bonjour, présente-toi.", "Je suis JARVIS.", "Je m'appelle Thomas.", "Enchanté Thomas.", "Comment je m'appelle ?"), native.sentTexts.last())
         assertTrue(native.calls.contains("turns:5:128:768:true"))
         assertFalse(native.sentTexts.last().any { it.contains("UTILISATEUR") })
+    }
+
+    @Test fun sessionMemoryKeepsTheLastStatedNameEvenOutsideTheWindow() = runBlocking {
+        assertEquals("Julien", V1bPolicy.userName(listOf(ConversationHistory.Turn("Je m'appelle Thomas.", "Enchanté."),
+            ConversationHistory.Turn("En fait non, je m'appelle julien.", "D'accord.")), "Comment je m'appelle ?"))
+        assertNull(V1bPolicy.userName(emptyList(), "Comment je m'appelle ?"))
+        assertEquals(V1bPolicy.SYSTEM_PROMPT, V1bPolicy.systemFor(emptyList(), "Quelle est la capitale de la France ?"))
+        val native = FakeNative()
+        val m = model(native)
+        m.warmUp(JarvisSettings(contextSize = 768))
+        // The name was given 10 long turns ago: the token window drops that turn, the memory fact keeps it.
+        val history = listOf(ConversationHistory.Turn("Je m'appelle Thomas.", "Enchanté, Thomas.")) +
+            (0 until 9).map { ConversationHistory.Turn("question $it " + "x".repeat(300), "réponse $it " + "y".repeat(300)) }
+        m.generateTurns(history, "Comment je m'appelle ?", 128) { }
+        assertFalse(native.sentTexts.last().contains("Je m'appelle Thomas."))
+        assertTrue(native.sentSystems.last().endsWith("Fait connu : l'utilisateur s'appelle Thomas (ce n'est pas ton nom)."))
+        assertTrue(native.sentSystems.last().startsWith(V1bPolicy.SYSTEM_PROMPT))
     }
 
     @Test fun outputCeilingIsOptedInAfterEveryLoadAndBounded() = runBlocking {

@@ -69,7 +69,7 @@ class V1bCoreTransport(
             // CORE contract gate (CORE's own validateInference, unchanged) on the current request:
             // question + system prompt + output budget. History is budgeted by exact token count below.
             val request = InferenceRequest(sessionId = history.sessionId, requestId = UUID.randomUUID().toString(),
-                systemPrompt = settings.systemPrompt, question = text, context = "",
+                systemPrompt = V1bPolicy.systemFor(history.snapshot(), text), question = text, context = "",
                 limits = GenerationLimits(settings.contextSize, settings.maxTokens))
             val result = try {
                 validateInference(request, model.capabilities)
