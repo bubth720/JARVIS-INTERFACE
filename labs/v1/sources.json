@@ -1,0 +1,239 @@
+{
+  "schema": "jarvis.v1.sources/1",
+  "modules": [
+    {
+      "id": "CORE",
+      "repo": "bubth720/JAVIS-Local-v2",
+      "sha": "5da98383ed12cb5a54e896fbe57560bacc432fb5",
+      "tree": "bef8a470e25847cff8a09351792133adfa268c38",
+      "files": [
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/SessionCoordinator.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "eebc7d05eeda7da036a07efcead1bbbf888794da",
+          "size": 12957
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/Models.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "60f0bb4ae3474f05faa6606980b033533e6be78b",
+          "size": 1196
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/events/CoreEventBus.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "53f571fca4154661bc16f7b3e0ff70337e34e956",
+          "size": 4108
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/events/CoreSessionEvents.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "447e8dd6b80157661bc2a346841289f61e455c62",
+          "size": 5534
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/LocalLanguageModel.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c54f469cfba53d0fe4f706329158d7cce6288bd8",
+          "size": 1288
+        },
+        {
+          "path": "app/src/main/java/com/stark/jarvislocal/InferenceContract.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87df84dde2f4b23b8757e54da2282e6b0c3ba2f2",
+          "size": 2665
+        }
+      ]
+    },
+    {
+      "id": "INTERFACE",
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "sha": "3a0841266fd691b74fae784004804429e6e2e219",
+      "tree": "9c0f615aa9d8795bd376cd0bbe922d8333acb130",
+      "files": [
+        {
+          "path": "app/src/main/java/com/jarvis/interfaceapp/ui/chat/CoreEventUiPort.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "90b6e5a5119c757a67c6073cfd648ae289744f57",
+          "size": 2592
+        },
+        {
+          "path": "app/src/main/java/com/jarvis/interfaceapp/ui/chat/core/CoreConversationTransport.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "117c2dadfd21578ce121be2d15ae7e78365c09e8",
+          "size": 2711
+        },
+        {
+          "path": "app/src/main/java/com/jarvis/interfaceapp/ui/chat/core/CoreConversationClientAdapter.kt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2b68ecfaf2d6f1640a71c249b9e4655b94973535",
+          "size": 9435
+        }
+      ]
+    },
+    {
+      "id": "LLM",
+      "repo": "bubth720/JARVIS-LLM",
+      "sha": "2e011776d9e0f675bcae49b739f12a3a6dbf4de4",
+      "tree": "930df030522107801fb5761add2c304088a91be9",
+      "native": [
+        {
+          "path": "a02/native/CMakeLists.txt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "69f64ef6e72c33ff3f943d64c1272def7ec2debf",
+          "size": 2071
+        },
+        {
+          "path": "a02/native/a02_bridge.cpp",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "eeefda98e6f3307acae1ae108873509642f1728b",
+          "size": 18988
+        },
+        {
+          "path": "a02/native/a02_output_policy.h",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4b905d13d22c99d01e465756c67730aa728d78ab",
+          "size": 1885
+        },
+        {
+          "path": "a02/native/a02_snapshot.h",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "40348277c6870c5b23f4e5e07e4deafb856a9400",
+          "size": 7367
+        },
+        {
+          "path": "a02/native/a02_sha256.h",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d089b3a61ee95bf90b46b500c24faa771ae3eabb",
+          "size": 4092
+        },
+        {
+          "path": "perf03/candidate/native/a02_sealed_fd.h",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d8af81e4f15aa39bc4acaf86bd95019b9b1d40a5",
+          "size": 1129
+        },
+        {
+          "path": "app/src/main/cpp/bridge.cpp",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "61323878ca612a4a60b73597932c2ec990c71510",
+          "size": 32164
+        },
+        {
+          "path": "tools/prepare-native.sh",
+          "mode": "100755",
+          "type": "blob",
+          "sha": "50a1a3aa7e46c1e81a29e194973f0dbf874e9ef4",
+          "size": 877
+        }
+      ]
+    }
+  ],
+  "scope": "Nine original Kotlin files (CORE x6, INTERFACE x3) compiled unchanged + JARVIS-LLM A02 native engine at an exact SHA. Private laboratory build; no relicensing or public distribution.",
+  "reused_byte_identical": [
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "d592505d03607d29c0b86dea0de5a2f0f375916b",
+      "source": "labs/v1b/app/src/main/java/com/stark/jarvislocal/v1b/A02LanguageModel.kt",
+      "target": "labs/v1/app/src/main/java/com/stark/jarvislocal/v1b/A02LanguageModel.kt",
+      "blob": "f4c97b852dc20184bb9a81ef640524ff9fa60f5f"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "d592505d03607d29c0b86dea0de5a2f0f375916b",
+      "source": "labs/v1b/app/src/main/java/com/stark/jarvislocal/v1b/ConversationHistory.kt",
+      "target": "labs/v1/app/src/main/java/com/stark/jarvislocal/v1b/ConversationHistory.kt",
+      "blob": "71cc2e454e6c44b4fb2507036683eea0c0b28afe"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "d592505d03607d29c0b86dea0de5a2f0f375916b",
+      "source": "labs/v1b/app/src/main/java/com/stark/jarvislocal/v1b/ModelStore.kt",
+      "target": "labs/v1/app/src/main/java/com/stark/jarvislocal/v1b/ModelStore.kt",
+      "blob": "f256f097b43fe334f8abb6ea9141263716470adc"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "d592505d03607d29c0b86dea0de5a2f0f375916b",
+      "source": "labs/v1b/app/src/main/java/com/stark/jarvislocal/v1b/V1bCoreTransport.kt",
+      "target": "labs/v1/app/src/main/java/com/stark/jarvislocal/v1b/V1bCoreTransport.kt",
+      "blob": "27818476799d90a5450ff9a930a51114cc7ed205"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "d592505d03607d29c0b86dea0de5a2f0f375916b",
+      "source": "labs/v1b/app/src/main/java/fr/jarvis/llm/a02/SealedNativeBridge.kt",
+      "target": "labs/v1/app/src/main/java/fr/jarvis/llm/a02/SealedNativeBridge.kt",
+      "blob": "6bf471a595e205a6ac0b9dcdd6a955cfe8be9b1c"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "b0181526c7b9fa74dff6c6822121c71eceff5827",
+      "source": "labs/m55d/app/src/main/java/fr/jarvis/m55d/CockpitContract.kt",
+      "target": "labs/v1/app/src/main/java/fr/jarvis/m55d/CockpitContract.kt",
+      "blob": "6402682c28255265ff479dd18dd2be296295cf8b"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "b0181526c7b9fa74dff6c6822121c71eceff5827",
+      "source": "labs/m55d/app/src/main/java/fr/jarvis/m55d/SphereModel.kt",
+      "target": "labs/v1/app/src/main/java/fr/jarvis/m55d/SphereModel.kt",
+      "blob": "1f5f4b5beff71c095aa259eca41db4ba4164390a"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "b0181526c7b9fa74dff6c6822121c71eceff5827",
+      "source": "labs/m55d/app/src/main/java/fr/jarvis/m55d/RenderRegulator.kt",
+      "target": "labs/v1/app/src/main/java/fr/jarvis/m55d/RenderRegulator.kt",
+      "blob": "56b99e89720880144a33e379125759f3ac6b6eed"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "b0181526c7b9fa74dff6c6822121c71eceff5827",
+      "source": "labs/m55d/app/src/main/java/fr/jarvis/m55d/CockpitUi.kt",
+      "target": "labs/v1/app/src/main/java/fr/jarvis/m55d/CockpitUi.kt",
+      "blob": "e1034d3a8266d033e8d5d75916822a8ee4a94c3a"
+    },
+    {
+      "repo": "bubth720/JARVIS-INTERFACE",
+      "commit": "b0181526c7b9fa74dff6c6822121c71eceff5827",
+      "source": "labs/m55d/app/src/main/java/fr/jarvis/m55d/CockpitViewModel.kt",
+      "target": "labs/v1/app/src/main/java/fr/jarvis/m55d/CockpitViewModel.kt",
+      "blob": "bf74258d62500d321fcd84177f5d8e6069a10a25"
+    },
+    {
+      "repo": "bubth720/JARVIS-VOICE",
+      "commit": "92d07453260553466c92196454b56929b7494b2f",
+      "source": "pocketProbe/src/main/java/com/jarvis/voice/pocketprobe/PcmPlayer.kt",
+      "target": "labs/v1/app/src/main/java/com/jarvis/voice/pocketprobe/PcmPlayer.kt",
+      "blob": "551d41fd09c2f5af8852ab964c93e22c6bab278d"
+    }
+  ],
+  "voice": {
+    "repo": "bubth720/JARVIS-VOICE",
+    "sha": "92d07453260553466c92196454b56929b7494b2f",
+    "module": "pocketRuntime",
+    "note": "compiled unchanged from the pinned checkout (srcDir), with its model-lock.json resource"
+  },
+  "whisper_cpp": {
+    "repo": "https://github.com/ggml-org/whisper.cpp",
+    "tag": "v1.8.4",
+    "sha": "9386f239401074690479731c1e41683fbbeac557"
+  }
+}

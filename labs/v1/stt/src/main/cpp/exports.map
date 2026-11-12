@@ -1,0 +1,4 @@
+{
+  global: Java_fr_jarvis_v1_stt_*; JNI_OnLoad;
+  local: *;
+};

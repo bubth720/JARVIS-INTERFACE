@@ -1,0 +1,36 @@
+{
+  "schema": "jarvis.v1.resources/1",
+  "note": "Everything the V1 app needs at runtime. Nothing is bundled in the APK or downloaded by the app: the owner imports these files once; each is verified (SHA-256) before use.",
+  "resources": [
+    {
+      "id": "llm",
+      "role": "Modèle de langage (A02 scellé)",
+      "repository": "unsloth/Qwen3-0.6B-GGUF",
+      "revision": "50968a4468ef4233ed78cd7c3de230dd1d61a56b",
+      "filename": "Qwen3-0.6B-Q4_K_M.gguf",
+      "bytes": 396705472,
+      "sha256": "ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a",
+      "license": "apache-2.0"
+    },
+    {
+      "id": "stt",
+      "role": "Reconnaissance vocale française (whisper.cpp)",
+      "repository": "ggerganov/whisper.cpp",
+      "revision": "5359861c739e955e79d9a303bcbc70fb988958b1",
+      "filename": "ggml-base-q5_1.bin",
+      "bytes": 59707625,
+      "sha256": "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898",
+      "license": "mit",
+      "resolvedBy": "JARVIS-LLM run 43279761953 (read-only metadata)"
+    },
+    {
+      "id": "tts",
+      "role": "Synthèse vocale Pocket TTS (voix publique « alba », français 6 couches)",
+      "repository": "Alias-Alias/pocket-3-3-0-tts-onnx",
+      "revision": "71a4d6d11a76e26b98709fa163477c77d16bdbdb",
+      "filename": "pocket-fr-6l-alba.zip (préparé par JARVIS-VOICE scripts/pocket/prepare_model.py @ 92d0745)",
+      "verification": "chaque fichier du ZIP est vérifié contre pocketRuntime/src/main/resources/model-lock.json (ModelPack.install/verify)",
+      "license": "voir THIRD_PARTY_NOTICES du dépôt VOICE (pack public, aucune voix privée)"
+    }
+  ]
+}

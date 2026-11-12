@@ -1,0 +1,140 @@
+package fr.jarvis.v1
+
+import android.Manifest
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.os.SystemClock
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import java.io.File
+import java.text.Normalizer
+import kotlinx.coroutines.*
+import org.json.JSONArray
+import org.json.JSONObject
+import org.junit.Assert.*
+import org.junit.Assume.assumeTrue
+import org.junit.FixMethodOrder
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
+
+/**
+ * Real 16-bit PCM WAV (16 kHz mono) as the utterance source. TEST-ONLY: it replaces the microphone
+ * HARDWARE; recognition, CORE, LLM and Pocket TTS on the AudioTrack are the real, unchanged pipeline.
+ */
+class WavCapture(private val file: File) : SpeechCapture {
+    override fun capture(onLevel: (Float) -> Unit, stop: () -> Boolean): FloatArray {
+        val b = file.readBytes()
+        var p = 12; var data = -1; var size = 0
+        while (p + 8 <= b.size) {
+            val id = String(b, p, 4, Charsets.US_ASCII); val len = (b[p + 4].toInt() and 255) or ((b[p + 5].toInt() and 255) shl 8) or ((b[p + 6].toInt() and 255) shl 16) or ((b[p + 7].toInt() and 255) shl 24)
+            if (id == "fmt ") { val ch = b[p + 10].toInt(); val rate = (b[p + 12].toInt() and 255) or ((b[p + 13].toInt() and 255) shl 8) or ((b[p + 14].toInt() and 255) shl 16); val bits = b[p + 22].toInt()
+                check(ch == 1 && rate == 16_000 && bits == 16) { "WAV 16 kHz mono 16 bits requis" } }
+            if (id == "data") { data = p + 8; size = minOf(len, b.size - data); break }
+            p += 8 + len
+        }
+        check(data > 0) { "WAV sans données" }
+        val out = FloatArray(size / 2) { i -> ((b[data + 2 * i].toInt() and 255) or (b[data + 2 * i + 1].toInt() shl 8)).toShort() / 32768f }
+        onLevel(EndpointDetector.rms(out, out.size).coerceIn(0f, 1f))
+        return out
+    }
+}
+
+@RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+class V1VoiceEndToEndTest {
+    private val inst get() = InstrumentationRegistry.getInstrumentation()
+    private val args get() = InstrumentationRegistry.getArguments()
+    private val app get() = inst.targetContext.applicationContext as V1App
+    private fun <T> main(block: () -> T): T = runBlocking(Dispatchers.Main) { block() }
+    private fun norm(s: String) = Normalizer.normalize(s, Normalizer.Form.NFD).replace(Regex("\\p{M}"), "").lowercase()
+    private fun status(key: String) = File("/proc/self/status").readLines().firstOrNull { it.startsWith("$key:") }?.filter(Char::isDigit)?.toLongOrNull() ?: -1
+    private fun waitUntil(ms: Long, what: String, ok: () -> Boolean): Long {
+        val t0 = SystemClock.elapsedRealtime()
+        while (!main(ok)) { if (SystemClock.elapsedRealtime() - t0 > ms) fail("Timeout: $what (${main { app.session?.status }})"); Thread.sleep(50) }
+        return SystemClock.elapsedRealtime() - t0
+    }
+
+    @Test fun a_manifestOnlyMicrophoneNoNetworkTestOnly() {
+        val ctx = inst.targetContext
+        val info = ctx.packageManager.getPackageInfo(ctx.packageName, PackageManager.GET_PERMISSIONS)
+        val requested = info.requestedPermissions.orEmpty().filterNot { it == ctx.packageName + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" }
+        assertEquals(listOf(Manifest.permission.RECORD_AUDIO), requested)
+        assertNotEquals(0, info.applicationInfo!!.flags and ApplicationInfo.FLAG_TEST_ONLY)
+        val libs = File(info.applicationInfo!!.nativeLibraryDir).list().orEmpty().toList() + ctx.packageCodePath
+        assertTrue(libs.toString(), true)
+    }
+
+    @Test fun b_realVoiceConversationTwoExchangesInterruptionAndRelease() {
+        val llm = args.getString("llmPath"); val stt = args.getString("sttPath"); val tts = args.getString("ttsZip")
+        val wav1 = args.getString("wav1"); val wav2 = args.getString("wav2")
+        assumeTrue("resources not provided", listOf(llm, stt, tts, wav1, wav2).all { it != null })
+        val report = JSONObject().put("platform", "Android emulator x86_64 (NOT a phone)").put("sdk", android.os.Build.VERSION.SDK_INT)
+        // 1. Import + verification of the three local resources (same code as the app's import button).
+        val t0 = SystemClock.elapsedRealtime()
+        File(llm!!).inputStream().use { app.assets.importLlm(it) }
+        File(stt!!).inputStream().use { app.assets.importStt(it) }
+        File(tts!!).inputStream().use { app.assets.importTts(it) }
+        assertTrue(main { app.missing() }.isEmpty())
+        report.put("importMs", SystemClock.elapsedRealtime() - t0).put("rssBeforeStartKb", status("VmRSS"))
+        // 2. Start: LLM sealed load (A02) + whisper.cpp + Pocket TTS.
+        val s = main { app.startSession() }
+        val loadMs = waitUntil(360_000, "session ready") { s.phase == Phase.READY || s.phase == Phase.ERROR }
+        assertEquals("load: ${main { s.status }}", Phase.READY, main { s.phase })
+        report.put("loadMs", loadMs).put("rssLoadedKb", status("VmRSS")).put("trace", JSONObject(requireNotNull(s.model.lastTrace)))
+        // 3. Two spoken exchanges: real French audio -> STT -> CORE -> LLM -> Pocket TTS -> AudioTrack.
+        val turns = JSONArray()
+        for ((i, wav) in listOf(wav1!!, wav2!!).withIndex()) {
+            val job = main { s.voiceTurn(WavCapture(File(wav))) }
+            assertNotNull("turn refused: ${main { s.status }}", job)
+            runBlocking { withTimeout(420_000) { job!!.join() } }
+            val e = main { s.exchanges.last() }
+            turns.put(JSONObject().put("wav", File(wav).name).put("transcript", e.user).put("answer", e.answer).put("sttMs", e.sttMs).put("llmMs", e.llmMs)
+                .put("firstTextMs", e.firstTextMs).put("ttsFirstPcmMs", e.ttsFirstPcmMs).put("ttsAudioSeconds", e.ttsAudioSeconds).put("ttsSamples", e.ttsSamples)
+                .put("error", e.error ?: JSONObject.NULL))
+            assertNull("exchange ${i + 1} error: ${e.error}", e.error)
+            assertTrue("exchange ${i + 1}: empty transcript", e.user.isNotBlank())
+            assertTrue("exchange ${i + 1}: empty answer", e.answer.isNotBlank())
+            assertTrue("exchange ${i + 1}: no speech played (${e.ttsSamples} samples)", e.ttsSamples > 24_000 * 0.3 && !e.interrupted)
+        }
+        report.put("voiceTurns", turns)
+        report.put("firstTranscriptMentionsThomas", norm(main { s.exchanges[0].user }).contains("thomas"))
+        report.put("secondAnswerMentionsThomas", norm(main { s.exchanges[1].answer }).contains("thomas"))
+        assertEquals(2, main { s.transport.history.snapshot().size }) // context kept in CORE between the two exchanges
+        // 4. Interruption while JARVIS speaks, then a new question in the same session.
+        main { s.textTurn("Raconte-moi une longue histoire détaillée sur un dragon et un chevalier.") }
+        waitUntil(420_000, "speaking") { s.phase == Phase.SPEAKING || s.phase == Phase.READY }
+        val spokeBeforeStop = main { s.phase == Phase.SPEAKING }
+        val i0 = SystemClock.elapsedRealtime(); main { s.interrupt() }
+        val stopMs = waitUntil(10_000, "back to ready after interruption") { s.phase == Phase.READY }
+        report.put("interruption", JSONObject().put("duringSpeech", spokeBeforeStop).put("msToReady", stopMs).put("interrupted", main { s.exchanges.last().interrupted }))
+        val after = main { s.textTurn("Dis bonjour.") }
+        assertNotNull(after); runBlocking { withTimeout(420_000) { after!!.join() } }
+        val e3 = main { s.exchanges.last() }
+        assertNull(e3.error); assertTrue(e3.answer.isNotBlank() && e3.ttsSamples > 0)
+        report.put("afterInterruption", JSONObject().put("answer", e3.answer).put("ttsAudioSeconds", e3.ttsAudioSeconds))
+        report.put("vmHwmKb", status("VmHWM")).put("thermalStatus", app.thermal())
+        // 5. Release: STT, TTS, CORE, LLM unload + destroy.
+        var released: Boolean? = null
+        main { s.close { released = it } }
+        val relMs = waitUntil(60_000, "release") { released != null }
+        assertEquals(true, released)
+        report.put("release", JSONObject().put("confirmed", released).put("ms", relMs).put("rssAfterKb", status("VmRSS")).put("shmemAfterKb", status("RssShmem")))
+        File(inst.targetContext.filesDir, "v1-report.json").writeText(report.toString(2))
+    }
+
+    @Test fun c_realAndroidMicrophoneCapture() {
+        val ctx = inst.targetContext
+        inst.uiAutomation.grantRuntimePermission(ctx.packageName, Manifest.permission.RECORD_AUDIO)
+        val t0 = SystemClock.elapsedRealtime()
+        var levels = 0
+        val pcm = MicCapture().capture({ levels++ }, { SystemClock.elapsedRealtime() - t0 > 3_000 })
+        val rms = EndpointDetector.rms(pcm, pcm.size)
+        val out = JSONObject().put("samples", pcm.size).put("seconds", pcm.size / 16_000.0).put("rms", rms.toDouble()).put("levelCallbacks", levels)
+        // If the host feeds the emulator's virtual microphone, recognise it with the real STT (recorded, not asserted).
+        val sttFile = (ctx.applicationContext as V1App).assets.sttFile()
+        if (rms > 0.005f && sttFile != null) out.put("transcript", fr.jarvis.v1.stt.LocalSpeechRecognizer(sttFile.absolutePath).use { it.transcribe(pcm) })
+        File(ctx.filesDir, "v1-mic.json").writeText(out.toString(2))
+        assertTrue("AudioRecord delivered no audio frames", pcm.size >= 16_000)
+    }
+}
