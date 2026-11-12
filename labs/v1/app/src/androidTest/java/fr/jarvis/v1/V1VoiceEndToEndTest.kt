@@ -17,6 +17,12 @@ import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
+import androidx.test.core.app.ActivityScenario
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Configurator
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
+import android.graphics.Bitmap
 
 /**
  * Real 16-bit PCM WAV (16 kHz mono) as the utterance source. TEST-ONLY: it replaces the microphone
@@ -60,7 +66,7 @@ class V1VoiceEndToEndTest {
         val info = ctx.packageManager.getPackageInfo(ctx.packageName, PackageManager.GET_PERMISSIONS)
         val requested = info.requestedPermissions.orEmpty().filterNot { it == ctx.packageName + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" }
         assertEquals(listOf(Manifest.permission.RECORD_AUDIO), requested)
-        assertNotEquals(0, info.applicationInfo!!.flags and ApplicationInfo.FLAG_TEST_ONLY)
+        assertEquals("delivery APK must install without -t", 0, info.applicationInfo!!.flags and ApplicationInfo.FLAG_TEST_ONLY)
         val libs = File(info.applicationInfo!!.nativeLibraryDir).list().orEmpty().toList() + ctx.packageCodePath
         assertTrue(libs.toString(), true)
     }
@@ -136,5 +142,94 @@ class V1VoiceEndToEndTest {
         if (rms > 0.005f && sttFile != null) out.put("transcript", fr.jarvis.v1.stt.LocalSpeechRecognizer(sttFile.absolutePath).use { it.transcribe(pcm) })
         File(ctx.filesDir, "v1-mic.json").writeText(out.toString(2))
         assertTrue("AudioRecord delivered no audio frames", pcm.size >= 16_000)
+    }
+
+    /** Text exchange; a TTS-only failure (emulator audio output) is recorded, never hidden, and does not void the answer. */
+    private fun typed(s: V1Session, text: String): JSONObject {
+        val job = main { s.textTurn(text) }
+        assertNotNull("turn refused: ${main { s.status }}", job)
+        runBlocking { withTimeout(420_000) { job!!.join() } }
+        val e = main { s.exchanges.last() }
+        assertTrue("LLM error: ${e.error}", e.error == null || e.error.startsWith("TTS"))
+        assertTrue("empty answer for \"$text\"", e.answer.isNotBlank())
+        return JSONObject().put("question", text).put("answer", e.answer).put("llmMs", e.llmMs).put("firstTextMs", e.firstTextMs)
+            .put("ttsSamples", e.ttsSamples).put("ttsError", e.error ?: JSONObject.NULL)
+    }
+    private fun release(s: V1Session): JSONObject {
+        var released: Boolean? = null
+        main { s.close { released = it } }
+        val ms = waitUntil(60_000, "release") { released != null }
+        assertEquals(true, released)
+        return JSONObject().put("confirmed", released).put("ms", ms).put("rssAfterKb", status("VmRSS"))
+    }
+
+    /** Runs in a NEW process (separate instrumentation): resources persist, no re-import; multi-message context in CORE. */
+    @Test fun d_coldRestartResourcesPersistAndTextConversationKeepsContext() {
+        assumeTrue("needs the resources imported by test b", args.getString("afterImport") != null)
+        assertEquals(emptyList<String>(), main { app.missing() })
+        assertEquals(emptyList<String>(), main { app.optionalMissing() })
+        val s = main { app.startSession() }
+        val loadMs = waitUntil(360_000, "session ready") { s.phase == Phase.READY || s.phase == Phase.ERROR }
+        assertEquals("load: ${main { s.status }}", Phase.READY, main { s.phase })
+        val turns = JSONArray()
+        for (q in listOf("Bonjour, je m'appelle Thomas.", "Comment je m'appelle ?", "Quelle est la capitale de la France ?")) turns.put(typed(s, q))
+        assertEquals(3, main { s.transport.history.snapshot().size })
+        val report = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("platform", "Android emulator x86_64 (NOT a phone)")
+            .put("coldRestartNoReimport", true).put("loadMs", loadMs).put("turns", turns)
+            .put("secondAnswerMentionsThomas", norm(turns.getJSONObject(1).getString("answer")).contains("thomas"))
+            .put("thirdAnswerMentionsParis", norm(turns.getJSONObject(2).getString("answer")).contains("paris"))
+            .put("release", release(s))
+        File(inst.targetContext.filesDir, "v1-restart.json").writeText(report.toString(2))
+    }
+
+    /** The real screen, driven by system input (UiAutomator): Start, type a question, Send, the real answer is displayed. */
+    @Test fun f_realScreenTypedQuestionShowsGeneratedAnswer() {
+        assumeTrue("needs the resources imported by test b", args.getString("afterImport") != null)
+        Configurator.getInstance().setWaitForIdleTimeout(0) // the cockpit animates continuously
+        val dev = UiDevice.getInstance(inst)
+        ActivityScenario.launch(MainActivity::class.java).use {
+            requireNotNull(dev.wait(Until.findObject(By.res("start")), 30_000)) { "Start button not shown" }.click()
+            val loadMs = waitUntil(360_000, "session ready from the screen") { app.session?.phase == Phase.READY || app.session?.phase == Phase.ERROR }
+            val s = requireNotNull(main { app.session })
+            assertEquals("load: ${main { s.status }}", Phase.READY, main { s.phase })
+            val input = requireNotNull(dev.wait(Until.findObject(By.res("input")), 20_000)) { "input field not shown" }
+            input.click(); input.text = "Quelle est la capitale de la France ?"
+            requireNotNull(dev.wait(Until.findObject(By.res("send").enabled(true)), 20_000)) { "Send not enabled" }.click()
+            waitUntil(420_000, "answer from the screen") { s.exchanges.isNotEmpty() && s.phase == Phase.READY }
+            val e = main { s.exchanges.last() }
+            assertEquals("Quelle est la capitale de la France ?", e.user)
+            assertTrue("LLM error: ${e.error}", e.error == null || e.error.startsWith("TTS"))
+            assertTrue(e.answer.isNotBlank())
+            val shown = dev.wait(Until.findObject(By.textContains(e.answer.take(20))), 20_000)
+            assertNotNull("generated answer not displayed on screen", shown)
+            inst.uiAutomation.takeScreenshot()?.let { b -> File(inst.targetContext.filesDir, "v1-ui.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            val report = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("loadMs", loadMs).put("question", e.user).put("answer", e.answer)
+                .put("displayed", true).put("llmMs", e.llmMs).put("ttsSamples", e.ttsSamples).put("ttsError", e.error ?: JSONObject.NULL)
+            var released = false
+            main { app.closeSession() }
+            waitUntil(60_000, "release from screen session") { app.previousReleased }.also { released = true }
+            File(inst.targetContext.filesDir, "v1-ui.json").writeText(report.put("released", released).toString(2))
+        }
+    }
+
+    /** Isolation: WITHOUT the optional voice files, JARVIS still starts and answers in text; voice input is refused clearly. */
+    @Test fun g_textOnlyWithoutVoiceResources() {
+        assumeTrue("needs the resources imported by test b", args.getString("afterImport") != null)
+        val files = inst.targetContext.filesDir
+        File(files, "stt").deleteRecursively(); File(files, "tts").deleteRecursively()
+        assertEquals(emptyList<String>(), main { app.missing() })
+        assertEquals(2, main { app.optionalMissing() }.size)
+        val s = main { app.startSession() }
+        waitUntil(360_000, "session ready") { s.phase == Phase.READY || s.phase == Phase.ERROR }
+        assertEquals("load: ${main { s.status }}", Phase.READY, main { s.phase })
+        assertFalse(main { s.voiceInputAvailable })
+        assertNull("voice turn must be refused without STT", main { s.voiceTurn(WavCapture(File("/nonexistent"))) })
+        val t1 = typed(s, "Bonjour, je m'appelle Thomas.")
+        val t2 = typed(s, "Comment je m'appelle ?")
+        assertEquals(0L, t1.getLong("ttsSamples")); assertTrue(t1.isNull("ttsError")); assertTrue(t2.isNull("ttsError"))
+        assertEquals(2, main { s.transport.history.snapshot().size })
+        val report = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("turns", JSONArray().put(t1).put(t2))
+            .put("secondAnswerMentionsThomas", norm(t2.getString("answer")).contains("thomas")).put("release", release(s))
+        File(files, "v1-textonly.json").writeText(report.toString(2))
     }
 }

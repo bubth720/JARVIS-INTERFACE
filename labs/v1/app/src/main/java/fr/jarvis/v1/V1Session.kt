@@ -40,8 +40,8 @@ enum class Phase { LOADING, READY, LISTENING, TRANSCRIBING, THINKING, SPEAKING, 
 class V1Session(
     private val scope: CoroutineScope,
     val model: A02LanguageModel,
-    private val sttModel: File,
-    private val ttsDir: File,
+    private val sttModel: File?,
+    private val ttsDir: File?,
     private val thermal: () -> Int,
     private val lowMemory: () -> Boolean,
 ) {
@@ -58,6 +58,10 @@ class V1Session(
     private val ttsDispatcher = Executors.newSingleThreadExecutor { Thread(it, "jarvis-tts") }.asCoroutineDispatcher()
     private var stt: LocalSpeechRecognizer? = null
     private var tts: PocketSpeech? = null
+    /** Why voice input / voice output is unavailable (null = available). The text conversation never depends on them. */
+    var sttUnavailable by mutableStateOf<String?>(null); private set
+    var ttsUnavailable by mutableStateOf<String?>(null); private set
+    val voiceInputAvailable get() = stt != null
     private val stopRequested = AtomicBoolean(false)
     private var turn: Job? = null
     var closed = false; private set
@@ -69,15 +73,21 @@ class V1Session(
     fun start() {
         scope.launch {
             try {
-                stt = withContext(sttDispatcher) { LocalSpeechRecognizer(sttModel.absolutePath, threads = 2) }
-                tts = withContext(ttsDispatcher) { com.jarvis.voice.pocket.ModelPack.verify(ttsDir); PocketSpeech(PocketEngine(ttsDir, threads = 2)) }
+                // Voice input and output are isolated: a missing or failing voice resource disables that feature only.
+                if (sttModel == null) sttUnavailable = "Reconnaissance vocale non installée"
+                else try { stt = withContext(sttDispatcher) { LocalSpeechRecognizer(sttModel.absolutePath, threads = 2) } }
+                    catch (e: Throwable) { if (e is CancellationException) throw e; sttUnavailable = "Reconnaissance vocale indisponible : ${e.message}" }
+                if (ttsDir == null) ttsUnavailable = "Voix Pocket non installée"
+                else try { tts = withContext(ttsDispatcher) { com.jarvis.voice.pocket.ModelPack.verify(ttsDir); PocketSpeech(PocketEngine(ttsDir, threads = 2)) } }
+                    catch (e: Throwable) { if (e is CancellationException) throw e; ttsUnavailable = "Voix Pocket indisponible : ${e.message}" }
                 val deadline = SystemClock.elapsedRealtime() + 300_000
                 while (client.state.value.link != CoreTextLink.READY && transport.lastError.value == null) {
                     check(SystemClock.elapsedRealtime() < deadline) { "Chargement du modèle de langage trop long" }
                     delay(100)
                 }
                 transport.lastError.value?.let { error(it) }
-                phase = Phase.READY; status = "Prêt · hors ligne · touchez « Parler »"; event(CockpitState.IDLE, EventSource.CORE)
+                phase = Phase.READY
+                status = if (stt != null) "Prêt · hors ligne · touchez « Parler » ou écrivez" else "Prêt · hors ligne · écrivez votre question"; event(CockpitState.IDLE, EventSource.CORE)
             } catch (e: Throwable) {
                 if (e is CancellationException) throw e
                 phase = Phase.ERROR; status = "Échec du chargement : ${e.message}"; event(CockpitState.ERROR, EventSource.CORE, error = "LOAD")
@@ -97,6 +107,7 @@ class V1Session(
     /** Voice turn. Returns the job; [capture] is the microphone in the app (a file source only in tests). */
     fun voiceTurn(capture: SpeechCapture = MicCapture()): Job? {
         gate()?.let { status = it; return null }
+        if (stt == null) { status = sttUnavailable ?: "Reconnaissance vocale indisponible"; return null }
         stopRequested.set(false)
         return scope.launch {
             val t0 = SystemClock.elapsedRealtime()
@@ -146,9 +157,15 @@ class V1Session(
             finish(if (interrupted) "Réponse interrompue" else "Erreur du modèle : ${llmError ?: "réponse vide"}", error = !interrupted); return
         }
         partial = answer
+        val speech = tts
+        if (speech == null) {
+            // No voice output installed/loaded: the real generated answer is shown as text only.
+            exchanges += Exchange(text, answer, viaVoice, captureMs, sttMs, llmMs, firstText)
+            finish("Prêt · hors ligne (réponse écrite : ${ttsUnavailable ?: "voix indisponible"})"); return
+        }
         phase = Phase.SPEAKING; status = "JARVIS parle… (touchez Interrompre)"; event(CockpitState.SPEAKING, EventSource.VOICE)
         val spoken = try {
-            withContext(ttsDispatcher) { requireNotNull(tts).speak(answer) { lvl -> scope.launch { if (phase == Phase.SPEAKING) event(CockpitState.SPEAKING, EventSource.VOICE, lvl) } } }
+            withContext(ttsDispatcher) { speech.speak(answer) { lvl -> scope.launch { if (phase == Phase.SPEAKING) event(CockpitState.SPEAKING, EventSource.VOICE, lvl) } } }
         } catch (e: Exception) {
             exchanges += Exchange(text, answer, viaVoice, captureMs, sttMs, llmMs, firstText, error = "TTS : ${e.message}")
             finish("Synthèse vocale : ${e.message}", error = true); return

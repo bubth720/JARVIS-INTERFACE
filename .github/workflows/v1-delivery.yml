@@ -1,7 +1,7 @@
 name: JARVIS V1 delivery (voice conversation, fully local)
 on:
   push:
-    branches: ['codex/jarvis-v1-delivery']
+    branches: ['codex/jarvis-v1-delivery', 'ccr-5cf17ed2-phgk00']
     paths: ['.github/workflows/v1-delivery.yml', 'labs/v1/**']
   workflow_dispatch:
 permissions:
@@ -80,12 +80,38 @@ jobs:
           espeak-ng -v fr -s 135 -w "$r/u2.wav" "Comment je m'appelle ?"
           for i in 1 2; do sox "$r/u$i.wav" -r 16000 -c 1 -b 16 -e signed-integer "$r/utt$i.wav" pad 0.3 1; done
           ls -l "$r" | tee "$RUNNER_TEMP/v1/resources.txt"; sha256sum "$r"/tts.zip "$r"/utt*.wav | tee -a "$RUNNER_TEMP/v1/resources.txt"
+          # Owner download bundle: the three verified public resources under their canonical names.
+          d="$RUNNER_TEMP/v1-owner"; mkdir -p "$d"
+          ln "$r/llm.gguf" "$d/Qwen3-0.6B-Q4_K_M.gguf"; ln "$r/stt.bin" "$d/ggml-base-q5_1.bin"; ln "$r/tts.zip" "$d/pocket-fr-6l-alba.zip"
+          (cd "$d" && sha256sum *.gguf *.bin *.zip > SHA256SUMS.txt && cat SHA256SUMS.txt)
+          cp interface/labs/v1/resources.json voice/scripts/pocket/MODEL_LICENSE.txt "$d/"
+      - name: Publish JARVIS V1 APK (installable, arm64-v8a + x86_64; resources NOT bundled)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: JARVIS-V1-APK-${{ github.sha }}
+          retention-days: 90
+          if-no-files-found: error
+          path: |
+            interface/labs/v1/app/build/outputs/apk/debug/app-debug.apk
+            interface/labs/v1/INSTALL.md
+            interface/labs/v1/resources.json
+            ${{ runner.temp }}/v1/apk-sha256.txt
+      - name: Publish the three local resources (public, pinned, SHA-256 verified)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: JARVIS-V1-RESSOURCES-${{ github.sha }}
+          retention-days: 90
+          compression-level: 0
+          if-no-files-found: error
+          path: ${{ runner.temp }}/v1-owner/
       - name: Enable emulator acceleration
         # A PulseAudio virtual microphone was tried in run 43299078354: the emulator received silence (RMS 0)
         # and its pa output stopped AudioTrack playback. Standard emulator audio is used (same as the VOICE
         # pocket-probe qualification, where PcmPlayer.drain passes); real speech at the microphone needs a phone.
         run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
       - name: API29 — real voice conversation (airplane mode)
+        id: api29
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
         with:
           api-level: 29
@@ -94,9 +120,12 @@ jobs:
           ram-size: 6144M
           cores: 4
           disable-animations: true
-          emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim -noaudio
+          # Emulator audio left ON: with -noaudio the API 29 AudioTrack head never advanced (run 43301708504).
+          emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim
           script: bash interface/labs/v1/tools/run_emulator.sh 29 "$RUNNER_TEMP/v1-res" "$RUNNER_TEMP/v1/api29"
       - name: API35 — real voice conversation (airplane mode)
+        id: api35
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
         with:
           api-level: 35
@@ -116,23 +145,15 @@ jobs:
             ${{ runner.temp }}/v1/
             interface/labs/v1/app/build/reports/
             interface/labs/v1/app/build/test-results/
-      - name: Publish JARVIS V1 APK (testOnly; resources NOT bundled)
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: JARVIS-V1-APK-${{ github.sha }}
-          retention-days: 30
-          if-no-files-found: error
-          path: |
-            interface/labs/v1/app/build/outputs/apk/debug/app-debug.apk
-            interface/labs/v1/INSTALL.md
-            interface/labs/v1/resources.json
-            ${{ runner.temp }}/v1/apk-sha256.txt
       - name: Delivery summary
         if: always()
         run: |
           echo "APK SHA-256: $(cut -d' ' -f1 "$RUNNER_TEMP/v1/apk-sha256.txt" 2>/dev/null || echo NOT_PRODUCED)"
           for api in 29 35; do
-            echo "### API $api end-to-end"; cat "$RUNNER_TEMP/v1/api$api/v1-report.json" 2>/dev/null || echo NOT_RUN_OR_FAILED
-            echo "### API $api microphone"; cat "$RUNNER_TEMP/v1/api$api/v1-mic.json" 2>/dev/null || echo NOT_RUN_OR_FAILED
-            grep -E "^OK|FAILURES|Tests run" "$RUNNER_TEMP/v1/api$api/instrumentation-mic.txt" 2>/dev/null || true
+            echo "### API $api results"; cat "$RUNNER_TEMP/v1/api$api/results.txt" 2>/dev/null || echo NOT_RUN
+            for f in v1-report v1-restart v1-ui v1-textonly v1-mic; do echo "--- API $api $f"; cat "$RUNNER_TEMP/v1/api$api/$f.json" 2>/dev/null || echo NOT_PRODUCED; echo; done
           done
+          echo "API29 step: ${{ steps.api29.outcome }} / API35 step: ${{ steps.api35.outcome }}"
+      - name: Qualification verdict (both API levels must pass every required test)
+        run: |
+          test "${{ steps.api29.outcome }}" = success && test "${{ steps.api35.outcome }}" = success

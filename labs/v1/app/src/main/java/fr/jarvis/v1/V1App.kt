@@ -27,8 +27,12 @@ class V1App : Application() {
     }
     fun importFolder() = getExternalFilesDir("import")
 
+    /** Required to start: the language model only. Voice input and voice output are optional and isolated. */
     fun missing(): List<String> = buildList {
         if (!assets.llmReady()) add("Modèle de langage (Qwen3-0.6B-Q4_K_M.gguf)")
+    }
+    /** Optional resources not installed: the matching voice feature is disabled, the text conversation works. */
+    fun optionalMissing(): List<String> = buildList {
         if (assets.sttFile() == null) add("Reconnaissance vocale (ggml-base-q5_1.bin)")
         if (!assets.ttsPresent()) add("Voix Pocket (pocket-fr-6l-alba.zip)")
     }
@@ -42,7 +46,7 @@ class V1App : Application() {
             val pfd = ParcelFileDescriptor.open(entry.file, ParcelFileDescriptor.MODE_READ_ONLY)
             object : SourceDescriptor { override val fd = pfd.fd; override fun close() = pfd.close() }
         }, entry.sizeBytes, entry.sha256), ::memoryBudgetBytes)
-        return V1Session(scope, model, checkNotNull(assets.sttFile()), assets.ttsDir(), ::thermal, ::lowMemory)
+        return V1Session(scope, model, assets.sttFile(), assets.ttsDir().takeIf { assets.ttsPresent() }, ::thermal, ::lowMemory)
             .also { session = it; it.start() }
     }
 

@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.0-v1-lab"
+        versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += providers.gradleProperty("v1Abis").getOrElse("arm64-v8a").split(',') }
         externalNativeBuild { cmake { targets += "jarvis_llm_a02"; arguments += listOf("-DLLAMA_SOURCE_DIR=$a02Root/.deps/llama.cpp", "-DANDROID_PLATFORM=android-29") } }
@@ -44,4 +44,5 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test:core-ktx:1.6.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 }
