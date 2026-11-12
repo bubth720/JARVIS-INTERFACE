@@ -83,8 +83,8 @@
     {
       "id": "LLM",
       "repo": "bubth720/JARVIS-LLM",
-      "sha": "211d458eb97d5c01f07c563982c63ec2d5cb222d",
-      "tree": "0d7187b23cba449098fc85ff6c10a5cff983f2f3",
+      "sha": "2e011776d9e0f675bcae49b739f12a3a6dbf4de4",
+      "tree": "930df030522107801fb5761add2c304088a91be9",
       "native": [
         {
           "path": "a02/native/CMakeLists.txt",

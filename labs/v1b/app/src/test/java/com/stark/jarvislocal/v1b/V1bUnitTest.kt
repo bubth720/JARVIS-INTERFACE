@@ -71,7 +71,7 @@ private class FakeNative : A02Native {
         error("V1-B must not use the single-question stream")
     override fun generateStreamTurns(handle: Long, system: ByteArray, roles: Array<ByteArray>, texts: Array<ByteArray>, maxTokens: Int, contextLimit: Int, binding: ByteArray, callback: NativeStreamSink): Int {
         check(maxTokens <= ceiling) { "Moteur non prêt ou sortie hors budget" }
-        calls += "turns:${roles.size}:$maxTokens:$contextLimit:${String(system).startsWith(V1bPolicy.SYSTEM_PROMPT)}"
+        calls += "turns:${roles.size}:$maxTokens:$contextLimit:${String(system).startsWith(V1bPolicy.GENERAL_PROMPT) || String(system).startsWith(V1bPolicy.NAME_PROMPT)}"
         sentSystems += String(system, Charsets.UTF_8)
         sentRoles += roles.map { String(it) }; sentTexts += texts.map { String(it, Charsets.UTF_8) }
         if (!callback.onNativePrepared("<|im_start|>user\n".toByteArray() + texts.last(), "tmpl".toByteArray(), 40)) return 4
@@ -157,7 +157,18 @@ class V1bUnitTest {
         m.generateTurns(history, "Comment je m'appelle ?", 128) { }
         assertFalse(native.sentTexts.last().contains("Je m'appelle Thomas."))
         assertTrue(native.sentSystems.last().endsWith("Fait connu : l'utilisateur s'appelle Thomas (ce n'est pas ton nom)."))
-        assertTrue(native.sentSystems.last().startsWith(V1bPolicy.SYSTEM_PROMPT))
+        assertTrue(native.sentSystems.last().startsWith(V1bPolicy.NAME_PROMPT))
+    }
+
+    @Test fun instructionIsRoutedByIntentAndCarriesTheMemoryFact() {
+        assertEquals(V1bPolicy.GENERAL_PROMPT, V1bPolicy.systemFor(emptyList(), "Quelle est la capitale de la France ?"))
+        assertEquals(V1bPolicy.NAME_PROMPT + " Fait connu : l'utilisateur s'appelle Thomas (ce n'est pas ton nom).",
+            V1bPolicy.systemFor(emptyList(), "Je m'appelle Thomas."))
+        val h = listOf(ConversationHistory.Turn("Je m'appelle Thomas.", "Vous vous appelez Thomas."))
+        assertTrue(V1bPolicy.systemFor(h, "Donne-moi une idée de dessert.").startsWith(V1bPolicy.GENERAL_PROMPT + " Fait connu"))
+        assertTrue(V1bPolicy.systemFor(h, "Au fait, quel est mon prénom ?").startsWith(V1bPolicy.NAME_PROMPT))
+        // Routing never changes the protected checks: every routed text stays P2-admissible.
+        for (q in listOf("Comment je m'appelle ?", "Bonjour")) assertTrue(V1bPolicy.admissible(V1bPolicy.systemFor(h, q)))
     }
 
     @Test fun outputCeilingIsOptedInAfterEveryLoadAndBounded() = runBlocking {

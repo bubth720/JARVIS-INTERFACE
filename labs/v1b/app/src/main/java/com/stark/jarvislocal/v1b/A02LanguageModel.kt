@@ -39,20 +39,29 @@ object V1bPolicy {
     const val CONTEXT_MARGIN = 8
     /**
      * Subordinate instructions appended by the protected engine after its fixed system prompt
-     * ("Tu es JARVIS, un assistant local. Réponds en français, brièvement. …"). Identical to the
-     * Linux host harness (JARVIS-LLM a02/tests/jni/SealedNativeBridge.java V1B_SYSTEM).
+     * ("Tu es JARVIS, un assistant local. Réponds en français, brièvement. …"), ROUTED by intent.
+     * Chosen by a measured study on the real model (JARVIS-LLM a02/tests/jni/SealedNativeBridge.java,
+     * runs 0aa7232, 268b118, e6e9774, 5d134ed): no single instruction handled both name recall and
+     * general questions with Qwen3-0.6B; routing reached 3/4 strict scenarios (all name scenarios).
+     * Identical text in the Linux harness (PRODUCTION = "ROUTE:F|J" + memory).
      */
-    const val SYSTEM_PROMPT = "Tu converses avec l'utilisateur. Retiens ce qu'il dit de lui (prénom, goûts) et réutilise-le quand il le demande. Toi, tu es JARVIS : ne prends jamais son prénom. /no_think"
+    const val GENERAL_PROMPT = "Vouvoie l'utilisateur et réponds seulement à sa dernière question. S'il te demande son prénom, rappelle celui qu'il t'a donné. Donne directement les faits connus, comme les capitales."
+    const val NAME_PROMPT = "Vouvoie l'utilisateur. Ne te présente qu'une fois. S'il demande son prénom, et seulement dans ce cas, réponds « Vous vous appelez » suivi du prénom qu'il t'a donné. Pour une question de culture générale, donne directement la réponse."
+    /** Base (memory-less) instruction for settings and the CORE contract defaults. */
+    const val SYSTEM_PROMPT = GENERAL_PROMPT
+    /** Messages about the user's own name, statement or question (same rule as the harness NAME_INTENT). */
+    private val NAME_INTENT = Regex("(?i)(m'appelle|m’appelle|appelle-moi|pr[ée]nom|mon nom)")
     /** Host session memory: the last first name the user stated about himself (same rule as the Linux harness). */
     private val NAME = Regex("(?i:je m'appelle|je m’appelle|mon prénom est|mon prenom est|mon nom est|appelle-moi)\\s+(\\p{L}[\\p{L}-]{1,30})")
     const val MEMORY_ENABLED = true
     fun userName(history: List<ConversationHistory.Turn>, question: String): String? =
         (history.map { it.user } + question).flatMap { NAME.findAll(it).map { m -> m.groupValues[1] }.toList() }
             .lastOrNull()?.replaceFirstChar { it.uppercaseChar() }
-    /** Subordinate instructions actually sent for this turn (memory fact appended when a name is known). */
+    /** Subordinate instructions actually sent for this turn: routed base + memory fact when a name is known. */
     fun systemFor(history: List<ConversationHistory.Turn>, question: String): String {
+        val base = if (NAME_INTENT.containsMatchIn(question)) NAME_PROMPT else GENERAL_PROMPT
         val name = if (MEMORY_ENABLED) userName(history, question) else null
-        return if (name == null) SYSTEM_PROMPT else "$SYSTEM_PROMPT Fait connu : l'utilisateur s'appelle $name (ce n'est pas ton nom)."
+        return if (name == null) base else "$base Fait connu : l'utilisateur s'appelle $name (ce n'est pas ton nom)."
     }
     private val FORBIDDEN = listOf("<|", "<think>", "</think>", "/think", "[INST]", "[/INST]", "<<SYS>>", "/no_think", "\u0000")
     /** A stored turn is re-sent only if the protected P2 validator would accept its texts. */
