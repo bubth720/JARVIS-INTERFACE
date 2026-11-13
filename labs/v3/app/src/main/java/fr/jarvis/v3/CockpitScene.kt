@@ -169,11 +169,12 @@ fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
     BoxWithConstraints(Modifier.fillMaxSize().background(Holo.background).semantics { testTagsAsResourceId = true }) {
         Canvas(Modifier.fillMaxSize()) { hudBackdrop() }
         val landscape = maxWidth > maxHeight
+        val heroHeight = maxHeight * 0.40f
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 12.dp)) {
             Header(holo, gov, s)
             if (s == null) { Setup(app, actions, sphere, Modifier.weight(1f)); return@Column }
             if (!landscape) {
-                Box(Modifier.fillMaxWidth().height(maxHeight * 0.40f)) {
+                Box(Modifier.fillMaxWidth().height(heroHeight)) {
                     sphere(Modifier.fillMaxSize())
                     StatusBubble(ui.statusBubble, holo, gov, Modifier.align(Alignment.TopCenter))
                 }
