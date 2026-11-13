@@ -1,0 +1,59 @@
+PASS a_manifestSinglePermissionNoNetworkInstallable
+PASS b_firstLaunchThenVerifiedImport
+FAIL c_realEngineStatesCardsMenuLandscapeBackground
+--- instrumentation (tail)
+
+INSTRUMENTATION_STATUS: stream=
+Error in c_realEngineStatesCardsMenuLandscapeBackground(fr.jarvis.v3.V3CockpitTest):
+org.junit.ComparisonFailure: typed text did not reach the input expected:<...itale de la France ?[]> but was:<...itale de la France ?[al]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at fr.jarvis.v3.V3CockpitTest.type(V3CockpitTest.kt:96)
+	at fr.jarvis.v3.V3CockpitTest.c_realEngineStatesCardsMenuLandscapeBackground(V3CockpitTest.kt:160)
+
+INSTRUMENTATION_STATUS: test=c_realEngineStatesCardsMenuLandscapeBackground
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 154.261
+There was 1 failure:
+1) c_realEngineStatesCardsMenuLandscapeBackground(fr.jarvis.v3.V3CockpitTest)
+org.junit.ComparisonFailure: typed text did not reach the input expected:<...itale de la France ?[]> but was:<...itale de la France ?[al]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at fr.jarvis.v3.V3CockpitTest.type(V3CockpitTest.kt:96)
+	at fr.jarvis.v3.V3CockpitTest.c_realEngineStatesCardsMenuLandscapeBackground(V3CockpitTest.kt:160)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1
+--- logcat errors
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:68)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:463)
+11-13 13:27:01.337  3870  3883 E TestRunner: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2594)
+11-13 13:27:01.346  3870  3883 E TestRunner: ----- end exception -----
+--------- beginning of system
+11-13 13:27:01.722   579  2356 E ActivityManager: Unable to freeze binder for 3870: -11
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNKNOWN
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+11-13 13:27:01.785  1242  4070 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+PASS d_reducedMotionStaticSphereAndFirstText
+PASS e_galleryCapturesAndBeforeAfterBench
+PASS reopen_after_force_stop
+PASS no_crash

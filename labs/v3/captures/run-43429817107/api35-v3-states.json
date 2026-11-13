@@ -1,0 +1,29 @@
+{
+  "sdk": 35,
+  "platform": "Android emulator x86_64 (NOT a phone)",
+  "captures": [
+    "02-repos",
+    "03-clavier"
+  ],
+  "loadMs": 9446,
+  "idleFrames": {
+    "frames": 673,
+    "deliveredFps": 134.6,
+    "medianFrameMs": 250.8,
+    "p99FrameMs": 316.9,
+    "onePercentLowFps": 3.2
+  },
+  "governor": {
+    "frames": 862,
+    "fps": 11.3,
+    "p50Ms": 83.33333,
+    "p95Ms": 116.666664,
+    "jankPercent": 99,
+    "mode": "ECONOMY"
+  },
+  "swipe": {
+    "dragEvents": 19,
+    "yawDelta": -6.071431
+  },
+  "keyboardShown": true
+}
