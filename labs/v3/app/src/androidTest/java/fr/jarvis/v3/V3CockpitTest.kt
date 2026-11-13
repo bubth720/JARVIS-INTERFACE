@@ -72,6 +72,12 @@ class V3CockpitTest {
         return SystemClock.elapsedRealtime() - t0
     }
     private fun obj(res: String, ms: Long = 20_000): UiObject2 = requireNotNull(dev.wait(Until.findObject(By.res(res)), ms)) { "element '$res' not shown" }
+    /** True when the soft keyboard is really on screen (InputMethodManagerService state). */
+    private fun imeShown(): Boolean {
+        val pfd = inst.uiAutomation.executeShellCommand("dumpsys input_method")
+        val out = android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd).bufferedReader().use { it.readText() }
+        return out.contains("mInputShown=true") || out.contains("isInputViewShown=true")
+    }
     private fun write(name: String, o: JSONObject) = File(inst.targetContext.filesDir, name).writeText(o.toString(2))
 
     private fun start(): Long {
@@ -144,7 +150,11 @@ class V3CockpitTest {
             SystemClock.sleep(600); r.put("swipe", JSONObject().put("dragEvents", V3Runtime.motion.dragEvents).put("yawDelta", V3Runtime.motion.yaw - yaw0))
             assertTrue("sphere received no drag", V3Runtime.motion.dragEvents > 0)
             // Keyboard shown.
-            obj("input").click(); SystemClock.sleep(1_200); captures.put(shot("03-clavier")); dev.pressBack(); SystemClock.sleep(500)
+            obj("input").click()
+            val kt = SystemClock.elapsedRealtime(); while (!imeShown() && SystemClock.elapsedRealtime() - kt < 4_000) SystemClock.sleep(200)
+            val keyboard = imeShown(); SystemClock.sleep(600); r.put("keyboardShown", keyboard)
+            captures.put(shot(if (keyboard) "03-clavier" else "03-clavier-NON-AFFICHE"))
+            if (keyboard) { dev.pressBack(); SystemClock.sleep(600) }   // Back only closes the keyboard; never the app
             // Typed question: thinking, streaming, speaking, answer, error accent (emulator speaker), back to stable.
             val n0 = main { ui.session!!.exchanges.size }
             r.put("inputMethod", type("Quelle est la capitale de la France ?"))

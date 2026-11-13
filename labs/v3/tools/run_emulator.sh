@@ -19,9 +19,14 @@ adb install -r -t "$tapk"
 for f in llm.gguf stt.bin tts.zip utt1.wav; do adb push "$res/$f" "/data/local/tmp/v3-$f" >/dev/null; adb shell chmod 644 "/data/local/tmp/v3-$f"; done
 T=fr.jarvis.v3.V3CockpitTest; R=fr.jarvis.v3.test/androidx.test.runner.AndroidJUnitRunner; fail=0
 run() { local name="$1"; shift
+  adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS > /dev/null 2>&1 || true
+  adb logcat -c || true
   adb shell am instrument -w -r -e class "$T#$name" "$@" "$R" > "$out/instr-$name.txt" 2>&1
   if grep -q '^OK (1 test)' "$out/instr-$name.txt"; then echo "PASS $name" | tee -a "$out/results.txt"
-  else echo "FAIL $name" | tee -a "$out/results.txt"; grep -m3 -E "AssertionError|Exception|Timeout" "$out/instr-$name.txt" | tee -a "$out/results.txt"; fail=1; fi; }
+  else echo "FAIL $name" | tee -a "$out/results.txt"; fail=1
+       # Evidence of the failure: screen at that moment, end of the instrumentation output, errors in logcat.
+       adb exec-out screencap -p > "$out/shots/api$api-FAIL-$name.png" || true
+       { echo "--- instrumentation (tail)"; tail -n 25 "$out/instr-$name.txt"; echo "--- logcat errors"; adb logcat -d -t 400 '*:E' | grep -vE 'emulator|goldfish|ranchu' | tail -n 25; } | tee -a "$out/results.txt"; fi; }
 pull() { adb exec-out run-as fr.jarvis.v3 cat "files/$1" > "$out/$1" 2>/dev/null || rm -f "$out/$1"; }
 run a_manifestSinglePermissionNoNetworkInstallable
 run b_firstLaunchThenVerifiedImport -e llmPath /data/local/tmp/v3-llm.gguf -e sttPath /data/local/tmp/v3-stt.bin -e ttsZip /data/local/tmp/v3-tts.zip; pull v3-first-launch.json
