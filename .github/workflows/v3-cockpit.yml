@@ -126,7 +126,7 @@ jobs:
             ${{ runner.temp }}/v3/
             interface/labs/v3/app/build/reports/
             interface/labs/v3/app/build/test-results/
-      - name: Commit downscaled review captures to this development branch ([skip ci])
+      - name: Commit downscaled review captures to this development branch (commit marked to skip CI)
         if: always() && github.event_name == 'push'
         env:
           TOKEN: ${{ github.token }}
