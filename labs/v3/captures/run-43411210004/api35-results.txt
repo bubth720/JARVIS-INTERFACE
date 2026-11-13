@@ -1,0 +1,13 @@
+PASS a_manifestSinglePermissionNoNetworkInstallable
+PASS b_firstLaunchThenVerifiedImport
+FAIL c_realEngineStatesCardsMenuLandscapeBackground
+INSTRUMENTATION_STATUS: stack=java.util.NoSuchElementException: List is empty.
+java.util.NoSuchElementException: List is empty.
+java.util.NoSuchElementException: List is empty.
+FAIL d_reducedMotionStaticSphereAndFirstText
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: Timeout: answer (Prêt · hors ligne · touchez « Parler » ou écrivez)
+java.lang.AssertionError: Timeout: answer (Prêt · hors ligne · touchez « Parler » ou écrivez)
+java.lang.AssertionError: Timeout: answer (Prêt · hors ligne · touchez « Parler » ou écrivez)
+PASS e_galleryCapturesAndBeforeAfterBench
+PASS reopen_after_force_stop
+PASS no_crash
