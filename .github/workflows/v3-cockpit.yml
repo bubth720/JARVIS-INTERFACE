@@ -1,0 +1,155 @@
+name: JARVIS V3 holographic cockpit (demo APK, captures, API 29/35)
+on:
+  push:
+    branches: ['ccr-5cf17ed2-phgk00']
+    paths: ['.github/workflows/v3-cockpit.yml', 'labs/v3/**', '!labs/v3/captures/**', '!labs/v3/*.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: v3-cockpit-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 170
+    permissions:
+      contents: write   # only to commit the downscaled review captures ([skip ci]) to this development branch
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: interface, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JAVIS-Local-v2, ref: 5da98383ed12cb5a54e896fbe57560bacc432fb5, path: core, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-LLM, ref: 2e011776d9e0f675bcae49b739f12a3a6dbf4de4, path: llm, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-VOICE, ref: 92d07453260553466c92196454b56929b7494b2f, path: voice, persist-credentials: false}
+      - name: Guards (V1 delivery frozen byte-identical, V1 chain, reused files, exact sources)
+        run: |
+          mkdir -p "$RUNNER_TEMP/v3"
+          git -C interface config user.email ci@invalid && git -C interface config user.name ci
+          python3 interface/labs/v3/tools/check_scope.py --interface interface | tee "$RUNNER_TEMP/v3/scope.log"
+          python3 interface/labs/v1/tools/check_reuse.py --voice voice | tee "$RUNNER_TEMP/v3/reuse.log"
+          python3 interface/labs/v1/tools/prepare_sources.py --core core --interface interface --llm llm --output "$RUNNER_TEMP/v1-sources"
+      - name: Pinned native sources (llama.cpp for A02, whisper.cpp v1.8.4)
+        run: |
+          llm/tools/prepare-native.sh
+          interface/labs/v1/tools/prepare_whisper.sh
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.13'}
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          cmdline-tools-version: '11076708'
+          log-accepted-android-sdk-licenses: false
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0 ndk;28.1.13356709 cmake;3.22.1'
+      - name: Build V3 APK + test APK, unit tests, Lint
+        run: |
+          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" \
+            -PwhisperSource="$GITHUB_WORKSPACE/interface/labs/v1/.deps/whisper.cpp" -Pv1Abis=arm64-v8a,x86_64 \
+            :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug --no-daemon --max-workers=2 --console=plain
+      - name: Inspect the APK (one permission, no INTERNET, engines present, nothing bundled)
+        run: |
+          apk=interface/labs/v3/app/build/outputs/apk/debug/app-debug.apk
+          bt="$ANDROID_HOME/build-tools/35.0.0"
+          "$bt/aapt" dump permissions "$apk" | tee "$RUNNER_TEMP/v3/permissions.txt"
+          test "$(grep -c "uses-permission: name='android.permission" "$RUNNER_TEMP/v3/permissions.txt")" = 1
+          grep -q "uses-permission: name='android.permission.RECORD_AUDIO'" "$RUNNER_TEMP/v3/permissions.txt"
+          ! grep -q "INTERNET" "$RUNNER_TEMP/v3/permissions.txt"
+          unzip -l "$apk" > "$RUNNER_TEMP/v3/apk-content.txt"
+          for lib in libjarvis_llm_a02.so libjarvis_stt.so libonnxruntime.so; do grep -q "lib/arm64-v8a/$lib" "$RUNNER_TEMP/v3/apk-content.txt"; done
+          ! grep -Ei "\.gguf|\.onnx|ggml-.*\.bin|voices\.bin" "$RUNNER_TEMP/v3/apk-content.txt"
+          "$bt/aapt" dump badging "$apk" | grep -E "^package|launchable-activity|application-label" | tee "$RUNNER_TEMP/v3/badging.txt"
+          sha256sum "$apk" | tee "$RUNNER_TEMP/v3/apk-sha256.txt"
+      - name: Publish JARVIS V3 demo APK (installable, arm64-v8a + x86_64; resources NOT bundled)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: JARVIS-V3-APK-${{ github.sha }}
+          retention-days: 90
+          if-no-files-found: error
+          path: |
+            interface/labs/v3/app/build/outputs/apk/debug/app-debug.apk
+            interface/labs/v1/resources.json
+            ${{ runner.temp }}/v3/apk-sha256.txt
+      - name: Local resources (exact revisions + SHA-256) and French test utterance
+        run: |
+          r="$RUNNER_TEMP/v3-res"; mkdir -p "$r"
+          get() { curl --fail --location --retry 2 "$1" -o "$2"; test "$(stat -c %s "$2")" = "$3"; echo "$4  $2" | sha256sum -c -; }
+          get https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/50968a4468ef4233ed78cd7c3de230dd1d61a56b/Qwen3-0.6B-Q4_K_M.gguf "$r/llm.gguf" 396705472 ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+          get https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base-q5_1.bin "$r/stt.bin" 59707625 422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898
+          python3 voice/scripts/pocket/prepare_model.py --work-dir "$RUNNER_TEMP/pocket-work" --output "$r/tts.zip"
+          sudo apt-get install -y -q espeak-ng sox >/dev/null
+          espeak-ng -v fr -s 135 -w "$r/u1.wav" "Bonjour, je m'appelle Thomas."
+          sox "$r/u1.wav" -r 16000 -c 1 -b 16 -e signed-integer "$r/utt1.wav" pad 0.3 1
+      - name: Enable emulator acceleration
+        run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
+      - name: API29 — V3 states, cards, menu, regression, bench (airplane mode, pixel_6)
+        id: api29
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 6144M
+          cores: 4
+          disable-animations: true
+          emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim
+          script: bash interface/labs/v3/tools/run_emulator.sh 29 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api29"
+      - name: API35 — V3 states, cards, menu, regression, bench (airplane mode, pixel_6)
+        id: api35
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 6144M
+          cores: 4
+          disable-animations: true
+          emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim -noaudio
+          script: bash interface/labs/v3/tools/run_emulator.sh 35 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api35"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v3-evidence-${{ github.sha }}
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/v3/
+            interface/labs/v3/app/build/reports/
+            interface/labs/v3/app/build/test-results/
+      - name: Commit downscaled review captures to this development branch ([skip ci])
+        if: always() && github.event_name == 'push'
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          python3 -m pip install -q pillow
+          dst="interface/labs/v3/captures/run-${{ github.run_id }}"
+          for api in 29 35; do [ -d "$RUNNER_TEMP/v3/api$api/shots" ] && python3 interface/labs/v3/tools/shrink.py "$RUNNER_TEMP/v3/api$api/shots" "$dst"; done
+          for api in 29 35; do for f in results.txt v3-states.json v3-reduced.json v3-bench.json v3-first-launch.json; do
+            [ -f "$RUNNER_TEMP/v3/api$api/$f" ] && cp "$RUNNER_TEMP/v3/api$api/$f" "$dst/api$api-$f"; done; done
+          cp "$RUNNER_TEMP/v3/apk-sha256.txt" "$dst/" 2>/dev/null || true
+          cd interface; git add "labs/v3/captures/run-${{ github.run_id }}" || exit 0
+          git diff --cached --quiet && exit 0
+          git -c user.name="jarvis-ci" -c user.email="ci@invalid" commit -q -m "ci(v3): review captures and reports of run ${{ github.run_id }} [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase "https://x-access-token:$TOKEN@github.com/${{ github.repository }}" "${{ github.ref_name }}" && \
+            git push -q "https://x-access-token:$TOKEN@github.com/${{ github.repository }}" "HEAD:${{ github.ref_name }}" && break; sleep 5; done
+      - name: Delivery summary
+        if: always()
+        run: |
+          echo "V3 APK SHA-256: $(cut -d' ' -f1 "$RUNNER_TEMP/v3/apk-sha256.txt" 2>/dev/null || echo NOT_PRODUCED)"
+          for api in 29 35; do
+            echo "### API $api results"; cat "$RUNNER_TEMP/v3/api$api/results.txt" 2>/dev/null || echo NOT_RUN
+            for f in v3-states v3-reduced v3-bench; do echo "--- API $api $f"; cat "$RUNNER_TEMP/v3/api$api/$f.json" 2>/dev/null || echo NOT_PRODUCED; echo; done
+          done
+          echo "API29 step: ${{ steps.api29.outcome }} / API35 step: ${{ steps.api35.outcome }}"
+      - name: Qualification verdict (both API levels must pass every required test)
+        run: test "${{ steps.api29.outcome }}" = success && test "${{ steps.api35.outcome }}" = success
