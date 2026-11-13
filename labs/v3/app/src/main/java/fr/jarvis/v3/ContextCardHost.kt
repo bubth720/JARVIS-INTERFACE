@@ -84,7 +84,7 @@ fun ContextCardView(card: ContextCard, expanded: Boolean, pinned: Boolean, onAct
     Row(modifier.testTag("card")) {
         // Visual link to the sphere core: a thin luminous connector on the inner edge.
         Box(Modifier.width(3.dp).fillMaxHeight().padding(vertical = 18.dp).background(Brush.verticalGradient(listOf(Color.Transparent, Holo.cyan, Color.Transparent))))
-        Column(Modifier.weight(1f).glass(active = true).padding(14.dp)) {
+        Column(Modifier.weight(1f).glass(active = true, opaque = true).padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("FICHE · ${card.kind.category.uppercase()}", style = Holo.label, modifier = Modifier.weight(1f))
                 GlyphButton(if (pinned) "Désépingler la fiche" else "Épingler la fiche", "card-pin", onClick = onPin) { HoloIcons.pin(this, it, pinned) }

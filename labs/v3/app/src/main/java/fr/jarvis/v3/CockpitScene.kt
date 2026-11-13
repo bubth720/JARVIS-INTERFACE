@@ -288,7 +288,7 @@ private fun PanelSheet(visible: Boolean, title: String, tag: String, onClose: ()
     AnimatedVisibility(visible, enter = slideInVertically(tween(Holo.Motion.CARD)) { it / 3 } + fadeIn(tween(Holo.Motion.CARD)),
         exit = slideOutVertically(tween(Holo.Motion.NORMAL)) { it / 3 } + fadeOut(tween(Holo.Motion.NORMAL))) {
         Box(Modifier.fillMaxSize().safeDrawingPadding().padding(12.dp), contentAlignment = Alignment.BottomCenter) {
-            Column(Modifier.fillMaxWidth().fillMaxHeight(0.78f).glass(active = true).padding(16.dp).testTag(tag)) {
+            Column(Modifier.fillMaxWidth().fillMaxHeight(0.78f).glass(active = true, opaque = true).padding(16.dp).testTag(tag)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(title, style = Holo.title, modifier = Modifier.weight(1f))
                     GlyphButton("Fermer le panneau", "$tag-close", onClick = onClose) { HoloIcons.close(this, it) }

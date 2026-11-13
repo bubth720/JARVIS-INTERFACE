@@ -68,10 +68,11 @@ fun HoloTheme(content: @Composable () -> Unit) = MaterialTheme(
 )
 
 /** Smoked dark glass with a 1 dp light line; full frames are reserved to active panels (§02 Matériaux). */
-fun Modifier.glass(active: Boolean = true, corner: Dp = 18.dp): Modifier {
+fun Modifier.glass(active: Boolean = true, corner: Dp = 18.dp, opaque: Boolean = false): Modifier {
     val shape = RoundedCornerShape(corner)
+    val a = if (opaque) 1f else 0.88f; val b = if (opaque) 1f else 0.94f
     return this.clip(shape)
-        .background(Brush.verticalGradient(listOf(Holo.surface.copy(alpha = 0.88f), Holo.background.copy(alpha = 0.94f))))
+        .background(Brush.verticalGradient(listOf(Holo.surface.copy(alpha = a), Holo.background.copy(alpha = b))))
         .border(1.dp, Brush.linearGradient(listOf(Holo.cyan.copy(alpha = if (active) 0.60f else 0.22f), Holo.blue.copy(alpha = 0.10f),
             Holo.cyan.copy(alpha = if (active) 0.34f else 0.12f))), shape)
 }

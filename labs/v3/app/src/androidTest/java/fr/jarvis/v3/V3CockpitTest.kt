@@ -80,7 +80,17 @@ class V3CockpitTest {
         assertEquals("load: ${main { ui.session?.status }}", Phase.READY, phase())
         return ms
     }
-    private fun type(text: String) { val i = obj("input"); i.click(); i.text = text; Thread.sleep(300); obj("send").click() }
+    /** Real system key input (ASCII questions), checked against the UI state; accessibility setText only as a fallback. */
+    private fun type(text: String): String {
+        val i = obj("input"); i.click(); Thread.sleep(400)
+        inst.uiAutomation.executeShellCommand("input text " + text.replace(" ", "%s").replace("'", "")).close()
+        val t0 = SystemClock.elapsedRealtime(); var how = "system-keys"
+        while (main { ui.typed } != text && SystemClock.elapsedRealtime() - t0 < 4_000) Thread.sleep(100)
+        if (main { ui.typed } != text) { how = "accessibility-setText"; main { ui.typed = "" }; obj("input").text = text; Thread.sleep(400) }
+        assertEquals("typed text did not reach the input", text, main { ui.typed })
+        requireNotNull(dev.wait(Until.findObject(By.res("send").enabled(true)), 10_000)) { "Send not enabled" }.click()
+        return how
+    }
     private fun <A : android.app.Activity> frames(scenario: ActivityScenario<A>, ms: Long): JSONObject {
         val d = Collections.synchronizedList(ArrayList<Double>()); val th = HandlerThread("fm").also { it.start() }
         val l = Window.OnFrameMetricsAvailableListener { _, m, _ -> d += m.getMetric(FrameMetrics.TOTAL_DURATION) / 1e6 }
@@ -137,7 +147,7 @@ class V3CockpitTest {
             obj("input").click(); SystemClock.sleep(1_200); captures.put(shot("03-clavier")); dev.pressBack(); SystemClock.sleep(500)
             // Typed question: thinking, streaming, speaking, answer, error accent (emulator speaker), back to stable.
             val n0 = main { ui.session!!.exchanges.size }
-            type("Quelle est la capitale de la France ?")
+            r.put("inputMethod", type("Quelle est la capitale de la France ?"))
             val seen = HashSet<String>(); val t0 = SystemClock.elapsedRealtime()
             while (SystemClock.elapsedRealtime() - t0 < 420_000) {
                 val ph = phase(); val partial = main { ui.session!!.partial }
@@ -195,10 +205,11 @@ class V3CockpitTest {
             r.put("landscapeSameSession", main { ui.session != null && !ui.session!!.closed })
             dev.setOrientationNatural(); SystemClock.sleep(1_200); dev.unfreezeRotation(); main { ui.openCard = null }
             // Background: no frame is drawn while the app is not visible.
-            val f0 = V3Runtime.motion.drawnFrames; dev.pressHome(); SystemClock.sleep(3_000); val f1 = V3Runtime.motion.drawnFrames
+            dev.pressHome(); SystemClock.sleep(1_500)   // let the window transition finish, then count
+            val f0 = V3Runtime.motion.drawnFrames; SystemClock.sleep(3_000); val f1 = V3Runtime.motion.drawnFrames
             inst.targetContext.startActivity(Intent(inst.targetContext, CockpitActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)); SystemClock.sleep(2_500); val f2 = V3Runtime.motion.drawnFrames
             r.put("background", JSONObject().put("framesWhileHidden", f1 - f0).put("framesAfterReturn", f2 - f1))
-            assertTrue("animations must pause in background (${f1 - f0} frames)", f1 - f0 <= 3)
+            assertTrue("animations must pause in background (${f1 - f0} frames)", f1 - f0 <= 1)
         } } finally { write("v3-states.json", r) }
     }
 

@@ -11,6 +11,8 @@ adb shell cmd connectivity airplane-mode enable || adb shell settings put global
 adb shell settings get global airplane_mode_on | tee "$out/airplane.txt"; grep -qx 1 "$out/airplane.txt" || { echo "airplane mode not enabled" >&2; exit 1; }
 anim() { for k in window_animation_scale transition_animation_scale animator_duration_scale; do adb shell settings put global $k "$1"; done; }
 anim 1
+# Show the soft keyboard even though the emulator declares a hardware keyboard (keyboard state captures).
+adb shell settings put secure show_ime_with_hard_keyboard 1
 adb shell wm size | tee "$out/screen.txt"; adb shell wm density | tee -a "$out/screen.txt"
 adb install -r "$apk" || { echo "V3 APK install failed (without -t)" >&2; exit 1; }
 adb install -r -t "$tapk"

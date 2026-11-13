@@ -82,8 +82,8 @@ class V3ModelTest {
     @Test fun radialMenuHasFiveDestinationsAndRoomFor48dpTargets() {
         assertEquals(5, Destination.entries.size)
         assertEquals(listOf(Destination.DOCUMENTS, Destination.SERVICES), Destination.entries.filterNot { it.available })
-        val p = RadialGeometry.positions(5, 132f)
-        assertEquals(-132f, p.first().first, 0.01f); assertEquals(-132f, p.last().second, 0.01f)
-        assertTrue(RadialGeometry.minChordDp(5, 132f) >= 48f)
+        val p = RadialGeometry.positions(5, 172f)
+        assertEquals(-172f, p.first().first, 0.01f); assertEquals(-172f, p.last().second, 0.01f)
+        assertTrue(RadialGeometry.minChordDp(5, 172f) >= 64f) // 48 dp circle + label line, no overlap
     }
 }

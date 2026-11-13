@@ -74,11 +74,11 @@ fun RadialMenuOverlay(open: Boolean, anchor: Offset, accessibleList: Boolean, on
         Box(Modifier.fillMaxSize().alpha(progress).background(Color.Black.copy(alpha = 0.45f))
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClickLabel = "Fermer le menu", onClick = onDismiss)
             .testTag("radial-scrim"))
-        val positions = remember { RadialGeometry.positions(Destination.entries.size, 132f) }
+        val positions = remember { RadialGeometry.positions(Destination.entries.size, 172f) }
         Destination.entries.forEachIndexed { i, d ->
             val p = ((progress * 1.25f) - i * 0.06f).coerceIn(0f, 1.2f)
             val (dx, dy) = if (accessibleList) Pair(-8f, -(70f + 64f * (Destination.entries.size - 1 - i))) else positions[i]
-            val item = 72.dp
+            val item = 96.dp
             val ox = with(density) { anchor.x + (dx.dp.toPx() * p) - item.toPx() / 2 }
             val oy = with(density) { anchor.y + (dy.dp.toPx() * p) - item.toPx() / 2 }
             RadialItem(d, i, Modifier.offset { IntOffset(ox.roundToInt(), oy.roundToInt()) }.size(item).alpha(p.coerceIn(0f, 1f)).scale(0.6f + 0.4f * p.coerceIn(0f, 1f))) {
@@ -101,8 +101,13 @@ private fun RadialItem(d: Destination, index: Int, modifier: Modifier, onClick: 
             .background(Brush.radialGradient(listOf(Holo.cyan.copy(alpha = 0.10f + 0.45f * halo), Holo.surface.copy(alpha = 0.95f))))
             .border(1.dp, (if (d.available) Holo.cyan else Holo.muted).copy(alpha = 0.55f + 0.45f * halo), CircleShape),
             contentAlignment = Alignment.Center) {
-            Canvas(Modifier.size(24.dp).alpha(if (d.available) 1f else 0.45f)) { HoloIcons.destination(this, if (d.available) Holo.ice else Holo.muted, index) }
+            Canvas(Modifier.size(24.dp).alpha(if (d.available) 1f else 0.45f)) {
+                HoloIcons.destination(this, if (d.available) Holo.ice else Holo.muted, index)
+                // Unavailable destination: small amber badge (the card opened on tap explains why).
+                if (!d.available) drawCircle(Holo.amber, 3.5f * density, androidx.compose.ui.geometry.Offset(size.width * 0.92f, size.height * 0.08f))
+            }
         }
-        Text(if (d.available) d.label else "${d.label} ·  indispo.", style = Holo.small.copy(color = if (d.available) Holo.text else Holo.muted), maxLines = 1)
+        Text(d.label, style = Holo.small.copy(color = if (d.available) Holo.text else Holo.muted), maxLines = 1,
+            softWrap = false)
     }
 }
