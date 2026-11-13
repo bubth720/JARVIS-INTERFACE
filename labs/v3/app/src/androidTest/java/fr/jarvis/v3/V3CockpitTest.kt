@@ -91,8 +91,12 @@ class V3CockpitTest {
         val i = obj("input"); i.click(); Thread.sleep(400)
         inst.uiAutomation.executeShellCommand("input text " + text.replace(" ", "%s").replace("'", "")).close()
         val t0 = SystemClock.elapsedRealtime(); var how = "system-keys"
-        while (main { ui.typed } != text && SystemClock.elapsedRealtime() - t0 < 4_000) Thread.sleep(100)
-        if (main { ui.typed } != text) { how = "accessibility-setText"; main { ui.typed = "" }; obj("input").text = text; Thread.sleep(400) }
+        // The loaded emulator can need well over 4 s to deliver every key: wait for the whole text, then for it to be stable.
+        while (main { ui.typed } != text && SystemClock.elapsedRealtime() - t0 < 30_000) Thread.sleep(150)
+        if (main { ui.typed } != text) {
+            var last = ""; while (main { ui.typed } != last) { last = main { ui.typed }; Thread.sleep(1_000) }   // no key still in flight
+            how = "accessibility-setText"; main { ui.typed = "" }; obj("input").text = text; Thread.sleep(600)
+        }
         assertEquals("typed text did not reach the input", text, main { ui.typed })
         requireNotNull(dev.wait(Until.findObject(By.res("send").enabled(true)), 10_000)) { "Send not enabled" }.click()
         return how
