@@ -122,6 +122,7 @@ class ConvSession(
     init {
         resume?.entries?.forEach { e ->
             if (e.sources.isNotEmpty()) sources[exchanges.size] = e.sources
+            e.notice?.let { notices[exchanges.size] = it }
             exchanges += Exchange(e.user, e.answer, e.viaVoice)
             // Only exchanges the protected engine would accept go back into its context.
             if (e.answer.isNotBlank() && V1bPolicy.admissible(e.user) && V1bPolicy.admissible(e.answer)) history.record(e.user, e.answer)
@@ -261,15 +262,18 @@ class ConvSession(
             finish(if (interrupted) "Réponse interrompue" else "Erreur du modèle : ${llmError ?: "réponse vide"}", error = !interrupted); return
         }
         partial = answer
-        record(text, answer, viaVoice, cited)
         if (cited.isNotEmpty()) sources[exchanges.size] = cited
         // System notices: an unexecuted action presented as done, or an answer about the user's documents when none
         // matched (run 43616811194: the 0.6B invented "10 euros" although told that no document contains it).
         val docNotice = if (grounding != null && grounding.searched && KnowledgePlanner.asksDocuments(text) && cited.isEmpty())
             KnowledgePlanner.NO_DOCUMENT_NOTICE else null
         val notice = listOfNotNull(if (ActionGuard.claimsDone(text, answer)) ActionGuard.NOTICE else null, docNotice,
-            grounding?.contradiction, if (grounding?.injectionRemoved == true) KnowledgePlanner.INJECTION_NOTICE else null).joinToString(" ").ifBlank { null }
+            grounding?.contradiction, if (grounding?.injectionRemoved == true) KnowledgePlanner.INJECTION_NOTICE else null,
+            grounding?.let { KnowledgePlanner.unsupported(text, answer, it.excerpts) },
+            exchanges.lastOrNull { it.answer.isNotBlank() }?.takeIf { RepetitionGuard.repeats(it.user, it.answer, text, answer) }?.let { RepetitionGuard.NOTICE })
+            .joinToString(" ").ifBlank { null }
         if (notice != null) notices[exchanges.size] = notice
+        record(text, answer, viaVoice, cited, notice)   // the system notice is kept with the exchange (resume keeps the warning)
         why[exchanges.size] = Provenance.explain(factsUsed, memoriesUsed, cited, ActionGuard.requestedAction(text) != null, ActionGuard.claimsDone(text, answer),
             transport.lastMetrics.value?.historyPairsSent)
         val speech = tts?.takeIf { voiceOutputEnabled }
@@ -291,9 +295,9 @@ class ConvSession(
     }
 
     /** Appends the finished exchange to the local journal (the text the user saw; no audio, no instruction). */
-    private suspend fun record(user: String, answer: String, viaVoice: Boolean, cited: List<String>) {
+    private suspend fun record(user: String, answer: String, viaVoice: Boolean, cited: List<String>, notice: String?) {
         val j = journal ?: return
-        runCatching { withContext(Dispatchers.IO) { j.append(conversationId, ConversationJournal.Entry(user, answer, viaVoice, System.currentTimeMillis(), cited)) } }
+        runCatching { withContext(Dispatchers.IO) { j.append(conversationId, ConversationJournal.Entry(user, answer, viaVoice, System.currentTimeMillis(), cited, notice)) } }
             .onFailure { status = "Historique local non enregistré : ${it.message}" }
     }
 

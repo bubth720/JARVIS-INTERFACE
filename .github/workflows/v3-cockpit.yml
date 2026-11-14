@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 170
+    timeout-minutes: 300   # AUDIT-GLOBAL-01 campaigns T1-T3 run with the qualification on both API levels
     permissions:
       contents: write   # only to commit the downscaled review captures ([skip ci]) to this development branch
     env:

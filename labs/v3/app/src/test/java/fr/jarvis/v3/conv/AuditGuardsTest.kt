@@ -32,3 +32,46 @@ class AuditGuardsTest {
         for (t in listOf("Bonjour, je m'appelle Thomas.", "Quelle heure est-il ?", "Musique classique, tu aimes ?")) assertFalse(t, SpeechGuard.isNoSpeech(t))
     }
 }
+
+class DocumentFidelityTest {
+    private val club = KnowledgePlanner.Excerpt("Le club d'astronomie de Valmont se réunit le jeudi 12 mars à 19 heures. La cotisation annuelle est de 35 euros.", "club-astronomie.txt", null)
+
+    @Test fun answerFaithfulToItsExcerptsHasNoNotice() {
+        assertNull(KnowledgePlanner.unsupported("Quand se réunit le club ?", "Le club se réunit le jeudi 12 mars à 19 h (club-astronomie.txt).", listOf(club)))
+        assertNull(KnowledgePlanner.unsupported("Combien coûte la cotisation ?", "La cotisation est de 35 €.", listOf(club)))
+    }
+
+    @Test fun inventedValuesAndUnconsultedSourcesAreFlagged() {
+        val n = KnowledgePlanner.unsupported("Quand se réunit le club ?", "Le club se réunit le vendredi 14 mars à 20 heures (source : agenda.txt).", listOf(club))
+        assertNotNull(n); assertTrue(n!!, n.contains("vendredi") && n.contains("14") && n.contains("agenda.txt"))
+        assertTrue(KnowledgePlanner.unsupported("Combien coûte la cotisation ?", "Elle coûte 10 euros.", listOf(club))!!.contains("10€"))
+    }
+
+    @Test fun contradictionUnitsAreNormalised() {
+        val a = KnowledgePlanner.Excerpt("Rendez-vous à 19 heures.", "a.txt", null); val b = KnowledgePlanner.Excerpt("Rendez-vous à 19h.", "b.txt", null)
+        assertNull("19 heures and 19h are the same value", KnowledgePlanner.contradiction(listOf(a, b)))
+    }
+}
+
+class RepetitionAndResumeTest {
+    @Test fun a022_measuredRepetitionIsDetectedAndNormalFollowUpsAreNot() {
+        val prevQ = "Allume la télévision."; val prevA = "Je ne peux pas l'exécuter, mais je peux vous aider à choisir une émission. Veuillez préciser."
+        assertTrue(RepetitionGuard.repeats(prevQ, prevA, "Au fait, quel sport j'aime ?", prevA))
+        assertFalse(RepetitionGuard.repeats("Combien font 12 fois 12 ?", "12 fois 12 font 144.", "Et divisé par 4 ?", "144 divisé par 4 donne 36."))
+        assertFalse("same question asked again may get the same answer", RepetitionGuard.repeats("Quelle est la capitale du Japon ?", "Tokyo est la capitale du Japon.", "Quelle est la capitale du Japon ?", "Tokyo est la capitale du Japon."))
+    }
+
+    @Test fun resumedConversationKeepsSourcesAndSystemNotices() {
+        val dir = java.nio.file.Files.createTempDirectory("j2").toFile()
+        val j = ConversationJournal(dir) { 1L }; val id = j.newConversationId()
+        j.append(id, ConversationJournal.Entry("Allume la lumière.", "La lumière est allumée.", false, 1, emptyList(), ActionGuard.NOTICE))
+        j.append(id, ConversationJournal.Entry("Selon mes documents ?", "Jeudi.", false, 2, listOf("a.txt", "b.txt"), "Tes documents ne concordent pas."))
+        j.append(id, ConversationJournal.Entry("Bonjour", "Salut !", false, 3))
+        java.io.File(dir, "$id.jlog").appendText("v1\u001f4\u001f0\u001fold\u001fformat\n")          // pre-notice line still read
+        val e = j.read(id)!!.entries
+        assertEquals(ActionGuard.NOTICE, e[0].notice); assertEquals(emptyList<String>(), e[0].sources)
+        assertEquals(listOf("a.txt", "b.txt"), e[1].sources); assertEquals("Tes documents ne concordent pas.", e[1].notice)
+        assertNull(e[2].notice); assertEquals("old", e[3].user)
+        dir.deleteRecursively()
+    }
+}

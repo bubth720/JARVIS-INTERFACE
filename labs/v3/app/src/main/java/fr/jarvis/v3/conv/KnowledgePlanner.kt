@@ -40,24 +40,72 @@ object KnowledgePlanner {
     data class Excerpt(val text: String, val source: String, val page: Int?)
 
     const val INJECTION_NOTICE = "Un de tes documents contient des consignes adressées à JARVIS : elles ont été ignorées et ne sont pas présentées comme des faits."
-    /** Sentences of a document that give orders to the assistant (audit F4, run 43627862972). */
-    private val INJECTION = Regex("(?i)(ignore[rz]?\\s+(toutes\\s+|tous\\s+)?(tes|vos|les|ses)\\s+(règles|consignes|instructions)|pour l'assistant|à l'attention de (l'assistant|jarvis)|" +
-        "\\b(réponds|répondez|réponde|dis|dites)\\s+(que|qu')|souviens-toi|retiens que|oublie (tes|tout)|tu dois (désormais|maintenant|toujours)|nouvelles? (règles?|consignes?))")
-    private val SENTENCE = Regex("(?<=[.!?])\\s+")
+    /** Invisible / formatting characters that can hide text from a human reader (removed before anything else). */
+    private val INVISIBLE = Regex("[\\u00AD\\u200B-\\u200F\\u202A-\\u202E\\u2060-\\u2064\\uFEFF]")
+    private val HTML_COMMENT = Regex("<!--.*?-->", RegexOption.DOT_MATCHES_ALL)
+    private val SENTENCE = Regex("(?<=[.!?])\\s+|\\n+|(?=\\[inst\\])|(?<=\\[/inst\\])", RegexOption.IGNORE_CASE)
 
-    /** Removes sentences addressed to the assistant; returns the cleaned text and whether something was removed. */
-    fun sanitize(text: String): Pair<String, Boolean> {
-        val parts = text.split(SENTENCE); val kept = parts.filterNot { INJECTION.containsMatchIn(it) }
-        return kept.joinToString(" ").trim() to (kept.size != parts.size)
+    /** Matching form: accents folded, lower case, spaced-out letters re-joined ("i g n o r e" -> "ignore"). */
+    private fun fold(s: String): String {
+        var t = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}"), "").lowercase()
+        t = Regex("\\b(?:\\p{L} ){2,}\\p{L}\\b").replace(t) { it.value.replace(" ", "") }
+        return t
+    }
+    // Who is addressed: the assistant / a model / a system role (never "assistante sociale", never "système de chauffage").
+    private val ADDRESSEE = Regex("(\\bl'?ia\\b|\\bai\\b|intelligence artificielle|\\bassistant\\b(?! social)|\\bmodele\\b|chatbot|\\bbot\\b|\\bjarvis\\b|\\bllm\\b|\\b(systeme|system|assistant|user)\\s*:)")
+    private val DIRECTIVE = Regex("\\b(doit|doivent|devra|devez|dois|il est demande|merci de|veuillez|must|should|affirmer|dire|repondre|confirmer|annoncer|considerer|oublie[rz]?|ignore[rz]?|ne la remets pas|ne remets pas|consigne|mode)\\b")
+    private val ORDERS = listOf(
+        Regex("\\b(reponds?|repondez|reponde|dis|dites|affirme|affirmez|confirme|confirmez|annonce|annoncez|declare|declarez|pretends?)\\s+(que|qu')"),
+        Regex("\\b(ignore[rsz]?|oublie[rsz]?|disregard|forget)\\b.{0,40}\\b(regles?|consignes?|instructions?|rules?|previous|precedentes?|directives?)\\b"),
+        Regex("\\b(memorise|memorisez|retiens|retenez|souviens-toi|souvenez-vous|n'oublie pas|enregistre que)\\b"),
+        Regex("(mode administrateur|nouvelles? consignes?|nouvelles? regles?|tu es desormais|vous etes desormais|you are now|jailbreak|developer mode)"),
+        Regex("\\b(you must|ignore (all|previous|the above)|say (that|the)|tell the user|pretend)\\b"),
+        Regex("(\\[/?inst\\]|<\\|im_(start|end)\\|>|<<sys>>|/no_think)"),
+    )
+    private fun isOrder(sentence: String): Boolean {
+        val f = fold(sentence)
+        return ORDERS.any { it.containsMatchIn(f) } || (ADDRESSEE.containsMatchIn(f) && DIRECTIVE.containsMatchIn(f))
     }
 
-    private val MARKER = Regex("(?i)\\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|\\d+(?:[.,]\\d+)?\\s*(?:h|heures?|€|euros?|%)?)\\b")
+    /**
+     * Removes what a document says TO the assistant (owner priority 3, 14/11: direct, indirect and hidden phrasings),
+     * and invisible characters; returns the cleaned text and whether an order was removed. Reproducer:
+     * InjectionCorpusTest (16 attacks incl. third person, English, spaced letters, zero-width, HTML comment, chat tags).
+     */
+    fun sanitize(text: String): Pair<String, Boolean> {
+        var removed = false
+        val noComments = HTML_COMMENT.replace(text) { removed = true; " " }
+        val visible = INVISIBLE.replace(noComments, "")
+        val parts = visible.split(SENTENCE).map { it.trim() }.filter { it.isNotEmpty() }
+        val kept = parts.filterNot { isOrder(it).also { o -> if (o) removed = true } }
+        return kept.joinToString(" ").replace(Regex("\\s+"), " ").trim() to removed
+    }
+
+    private val MARKER = Regex("(?i)\\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|\\d+(?:[.,]\\d+)?\\s*(?:h|heures?|€|euros?|%)?)(?![\\p{L}\\p{N}])")
+    private fun markers(t: String) = MARKER.findAll(t).map { it.value.lowercase().replace(Regex("\\s+"), "").replace("heures", "h").replace("heure", "h").replace("euros", "€").replace("euro", "€") }.toSet()
+    private val CITED_FILE = Regex("(?i)([\\p{L}\\p{N}_.-]+\\.(txt|md|csv|tsv|docx|xml))")
+
+    /**
+     * Owner priority 4: a documentary answer may only state values present in the excerpts it was given.
+     * Returns a notice listing days/months/numbers/amounts of the answer found in NO excerpt (and not in the question),
+     * or cited file names that were not retrieved; null when the answer is consistent with its excerpts.
+     */
+    fun unsupported(question: String, answer: String, excerpts: List<Excerpt>): String? {
+        if (excerpts.isEmpty()) return null
+        val known = excerpts.flatMap { markers(it.text) }.toSet() + markers(question)
+        val extra = markers(answer) - known
+        val files = CITED_FILE.findAll(answer).map { it.value }.filter { f -> excerpts.none { it.source.equals(f, ignoreCase = true) } }.toSet()
+        if (extra.isEmpty() && files.isEmpty()) return null
+        return "Attention : " + listOfNotNull(extra.takeIf { it.isNotEmpty() }?.let { "« ${it.joinToString()} » n'apparaît dans aucun extrait cité" },
+            files.takeIf { it.isNotEmpty() }?.let { "la source « ${it.joinToString()} » n'a pas été consultée" }).joinToString(" ; ") + " : à vérifier."
+    }
+
     /**
      * Two excerpts from DIFFERENT documents that state different days, months, numbers or times about the same subject
      * (audit F2: "mardi" vs "jeudi" — the 0.6B cited one and hid the other). Returns a notice naming each version.
      */
     fun contradiction(excerpts: List<Excerpt>): String? {
-        val marked = excerpts.map { e -> e to MARKER.findAll(e.text).map { it.value.lowercase().replace(Regex("\\s+"), "") }.toSet() }.filter { it.second.isNotEmpty() }
+        val marked = excerpts.map { e -> e to markers(e.text) }.filter { it.second.isNotEmpty() }
         for (i in marked.indices) for (j in i + 1 until marked.size) {
             val (a, ma) = marked[i]; val (b, mb) = marked[j]
             if (a.source != b.source && ma != mb && !ma.containsAll(mb) && !mb.containsAll(ma))

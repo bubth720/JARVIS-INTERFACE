@@ -30,7 +30,8 @@ class LocalKnowledge(private val dir: File) : AutoCloseable {
         data class Unavailable(val reason: String) : State
     }
     data class Grounding(val block: String, val sources: List<String>, val searched: Boolean, val ms: Long,
-                         val injectionRemoved: Boolean = false, val contradiction: String? = null)
+                         val injectionRemoved: Boolean = false, val contradiction: String? = null,
+                         val excerpts: List<KnowledgePlanner.Excerpt> = emptyList())
 
     @Volatile var state: State = State.Unavailable("non ouvert"); private set
     /** Owner setting: use the imported documents in answers. */
@@ -113,7 +114,7 @@ class LocalKnowledge(private val dir: File) : AutoCloseable {
                     val (clean, injected) = KnowledgePlanner.sanitize(item.text); removed = removed || injected
                     KnowledgePlanner.Excerpt(clean, docs[c.documentId] ?: c.sourceUri.removePrefix("picked://"), c.page) }.filter { it.text.isNotBlank() }
                 return Grounding(KnowledgePlanner.render(ex, asked), ex.map { it.source + (it.page?.let { p -> " p.$p" } ?: "") }.distinct(), true,
-                    SystemClock.elapsedRealtime() - t0, removed, KnowledgePlanner.contradiction(ex))
+                    SystemClock.elapsedRealtime() - t0, removed, KnowledgePlanner.contradiction(ex), ex)
             }
         }
         return Grounding(KnowledgePlanner.render(emptyList(), asked), emptyList(), true, SystemClock.elapsedRealtime() - t0)
