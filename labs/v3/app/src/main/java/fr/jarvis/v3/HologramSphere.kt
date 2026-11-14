@@ -65,20 +65,18 @@ class SphereMotion {
 @Composable
 fun HologramSphere(
     state: HoloState, level: Float, pulseKey: Int, keywords: List<String>, detail: HoloDetail, animate: Boolean,
-    motion: SphereMotion, onVsync: (Float) -> Unit, onKeyword: (String) -> Unit, onCoreTap: () -> Unit, modifier: Modifier = Modifier,
+    motion: SphereMotion, onVsync: (Float) -> Unit, fpsCap: Int = detail.fps, modifier: Modifier = Modifier,
 ) {
     val geo = remember(detail) { HoloGeometry(detail) }
     var time by remember { mutableFloatStateOf(motion.sim) }
     val target by rememberUpdatedState(level)
-    val keywordTap by rememberUpdatedState(onKeyword)
-    val coreTap by rememberUpdatedState(onCoreTap)
     val color by animateColorAsState(Holo.stateColor(state), tween(Holo.Motion.MENU), label = "stateColor")
     val thinking by animateFloatAsState(if (state == HoloState.THINKING || state == HoloState.STREAMING) 1f else 0f, tween(Holo.Motion.MENU), label = "thinking")
-    val expansion by animateFloatAsState(if (state == HoloState.LISTENING) 1.06f else 1f, tween(Holo.Motion.NORMAL), label = "expansion")
+    val expansion = 1f   // V3-FIX-01: no size change while listening (the sphere stays still)
     val transcribing by animateFloatAsState(if (state == HoloState.TRANSCRIBING) 1f else 0f, tween(Holo.Motion.NORMAL), label = "transcribing")
 
     LaunchedEffect(pulseKey) { if (pulseKey > 0) motion.pulseAt = motion.sim }
-    LaunchedEffect(animate, detail.fps) {
+    LaunchedEffect(animate, fpsCap) {
         if (!animate) { time = motion.sim + 1e-4f; return@LaunchedEffect }
         var last = 0L; var acc = 0f
         while (isActive) withFrameNanos { now ->
@@ -86,16 +84,9 @@ fun HologramSphere(
                 val dtMs = (now - last) / 1e6f; val dt = min(dtMs / 1000f, 0.1f)
                 onVsync(dtMs)
                 motion.sim += dt; acc += dt
-                if (motion.recentering) {
-                    motion.yaw += (0.5f - motion.yaw) * min(1f, dt * 5f); motion.pitch += (-0.22f - motion.pitch) * min(1f, dt * 5f)
-                    if (abs(motion.yaw - 0.5f) < 0.01f && abs(motion.pitch + 0.22f) < 0.01f) motion.recentering = false
-                } else {
-                    motion.yaw += if (motion.vYaw != 0f) motion.vYaw * dt else 0.12f * dt   // slow continuous rotation at rest
-                    motion.pitch = (motion.pitch + motion.vPitch * dt).coerceIn(-1.1f, 1.1f)
-                    motion.vYaw = SphereModel.decay(motion.vYaw, dt); motion.vPitch = SphereModel.decay(motion.vPitch, dt)
-                }
+                motion.yaw += 0.18f * dt   // automatic, slow; only runs while JARVIS answers (V3-FIX-01)
                 motion.level = HoloGeometry.smoothLevel(motion.level, target, dt)
-                if (acc >= 1f / detail.fps - 0.002f) { time = motion.sim; acc = 0f }
+                if (acc >= 1f / fpsCap - 0.002f) { time = motion.sim; acc = 0f }
             }
             last = now
         }
@@ -108,22 +99,7 @@ fun HologramSphere(
     Canvas(
         modifier
             .testTag("sphere")
-            .semantics { contentDescription = "Sphère holographique de JARVIS. Glisser pour la tourner, toucher le noyau pour la recentrer."; stateDescription = state.label }
-            .pointerInput(Unit) {
-                detectTapGestures { p ->
-                    val hit = motion.labelRects.firstOrNull { it.second.contains(p) }
-                    if (hit != null) keywordTap(hit.first)
-                    else if (hypot(p.x - motion.core.x, p.y - motion.core.y) < max(motion.coreRadius * 1.6f, 28f * density)) { motion.recentering = true; coreTap() }
-                }
-            }
-            .pointerInput(Unit) {
-                detectDragGestures { change, drag ->
-                    change.consume(); motion.dragEvents++; motion.recentering = false
-                    val w = max(1f, size.width.toFloat())
-                    motion.yaw += drag.x / w * PI.toFloat(); motion.pitch = (motion.pitch - drag.y / w * PI.toFloat()).coerceIn(-1.1f, 1.1f)
-                    motion.vYaw = HoloGeometry.capVelocity(drag.x / w * PI.toFloat() * 30f); motion.vPitch = HoloGeometry.capVelocity(-drag.y / w * PI.toFloat() * 30f)
-                }
-            }
+            .semantics { contentDescription = "Sphère holographique de JARVIS (affichage, non interactive)"; stateDescription = state.label }
     ) {
         val t = time
         motion.drawnFrames++
@@ -227,7 +203,9 @@ fun HologramSphere(
 
         // 8. Conversation keywords anchored on nodes, front-facing only, linked to their node.
         motion.labelRects.clear()
+        val labelsFit = r >= 70f * density
         for ((i, layout) in labels.withIndex()) {
+            if (!labelsFit) break
             val p = proj[geo.anchors[i % geo.anchors.size]]
             if (p.depth < -0.15f) continue
             val a = ((p.depth + 0.15f) / 1.15f).coerceIn(0f, 1f)
@@ -235,12 +213,14 @@ fun HologramSphere(
             val ax = p.x + dx / d * 26f * density; val ay = p.y + dy / d * 26f * density
             val w = layout.size.width + 16f * density; val h = layout.size.height + 8f * density
             val left = (if (dx >= 0) ax else ax - w).coerceIn(2f, size.width - w - 2f); val top = (ay - h / 2).coerceIn(2f, size.height - h - 2f)
+            val box = Rect(left - 4f * density, top - 4f * density, left + w + 4f * density, top + h + 4f * density)
+            if (motion.labelRects.any { it.second.overlaps(box) } || hypot(left + w / 2 - cx, top + h / 2 - cy) < r * 0.55f) continue   // no overlap, never on the core
             drawLine(color.copy(alpha = 0.55f * a), Offset(p.x, p.y), Offset(ax, ay), strokeWidth = 1f * density)
             drawCircle(Holo.ice.copy(alpha = a), 2.4f * density, Offset(p.x, p.y))
             drawRoundRect(Holo.surface.copy(alpha = 0.88f * a), Offset(left, top), Size(w, h), CornerRadius(h / 2))
             drawRoundRect(color.copy(alpha = 0.70f * a), Offset(left, top), Size(w, h), CornerRadius(h / 2), style = Stroke(1f * density))
             drawText(layout, topLeft = Offset(left + 8f * density, top + 4f * density), alpha = a)
-            if (a > 0.35f) motion.labelRects += keywords[i] to Rect(left, top, left + w, top + h)
+            motion.labelRects += keywords[i] to box
         }
     }
 }

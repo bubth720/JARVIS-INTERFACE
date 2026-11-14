@@ -44,7 +44,7 @@ object Holo {
     /** Dominant light of each state; cyan at heart, amber only for errors, gold stays rare. */
     fun stateColor(s: HoloState): Color = when (s) {
         HoloState.IDLE -> cyan; HoloState.LISTENING -> ice; HoloState.TRANSCRIBING -> cyan
-        HoloState.THINKING -> violet; HoloState.STREAMING -> cyan; HoloState.SPEAKING -> ice; HoloState.ERROR -> amber
+        HoloState.THINKING -> violet; HoloState.STREAMING -> cyan; HoloState.SPEAKING -> ice; HoloState.RESPONDING -> cyan; HoloState.ERROR -> amber
     }
 
     /** Motion budget (§02): transitions 180–320 ms, card opening 250–450 ms. Targets to test, not measured results. */
@@ -140,6 +140,15 @@ fun DrawScope.hudBackdrop() {
     while (k * 12.dp.toPx() < size.width * 0.5f) { val px = size.width * 0.25f + k * 12.dp.toPx(); drawLine(t, Offset(px, m), Offset(px, m + (if (k % 5 == 0) 7 else 4).dp.toPx()), strokeWidth = 1f); k++ }
 }
 private data class Quad(val a: Float, val b: Float, val c: Float, val d: Float)
+
+/**
+ * Test-observable record of UI texts that do not fit (V3-FIX-01: no truncated label or button). Interface texts
+ * report here through onTextLayout; tests assert the set stays empty.
+ */
+object TextFit {
+    val overflowing: MutableSet<String> = java.util.Collections.synchronizedSet(LinkedHashSet())
+    fun report(tag: String, overflow: Boolean) { if (overflow) overflowing += tag else overflowing -= tag }
+}
 
 @Composable
 fun HoloBox(modifier: Modifier = Modifier, content: @Composable () -> Unit) = Box(modifier) { content() }

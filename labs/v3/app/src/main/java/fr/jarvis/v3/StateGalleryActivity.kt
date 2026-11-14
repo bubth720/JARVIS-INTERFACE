@@ -62,8 +62,10 @@ class StateGalleryActivity : ComponentActivity() {
                     } else {
                         val motion = remember { SphereMotion() }
                         HologramSphere(state, exampleLevel, if (state == HoloState.STREAMING) (t * 2).toInt() else 0,
-                            if (bench) emptyList() else listOf("Exemple", "Démonstration"), HoloDetail.of(mode), animate = true, motion = motion,
-                            onVsync = {}, onKeyword = {}, onCoreTap = {}, modifier = Modifier.fillMaxSize())
+                            if (bench) emptyList() else listOf("Exemple", "Démonstration"), HoloDetail.of(mode),
+                            // Prototype follows the V3-FIX-01 rule; the bench animates to measure the cost of an answer.
+                            animate = bench || fr.jarvis.v3.model.SphereStateAdapter.animates(state), motion = motion,
+                            onVsync = {}, fpsCap = fr.jarvis.v3.model.SphereStateAdapter.fpsCap(state, HoloDetail.of(mode).fps), modifier = Modifier.fillMaxSize())
                     }
                 }
                 if (!bench) {
@@ -83,6 +85,7 @@ class StateGalleryActivity : ComponentActivity() {
     companion object {
         fun toCockpit(s: HoloState) = when (s) {
             HoloState.IDLE -> CockpitState.IDLE; HoloState.LISTENING -> CockpitState.LISTENING; HoloState.SPEAKING -> CockpitState.SPEAKING
+            HoloState.RESPONDING -> CockpitState.SPEAKING
             HoloState.ERROR -> CockpitState.ERROR; else -> CockpitState.THINKING
         }
     }

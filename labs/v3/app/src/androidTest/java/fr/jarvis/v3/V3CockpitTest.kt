@@ -78,6 +78,10 @@ class V3CockpitTest {
         val out = android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd).bufferedReader().use { it.readText() }
         return out.contains("mInputShown=true") || out.contains("isInputViewShown=true")
     }
+    /** Frames actually drawn by the sphere during [ms] (V3-FIX-01: 0–1 when the sphere must be still). */
+    private fun drawnDuring(ms: Long): Long { val f0 = V3Runtime.motion.drawnFrames; SystemClock.sleep(ms); return V3Runtime.motion.drawnFrames - f0 }
+    /** V3-FIX-01: no interface text overflows (labels, buttons, chips, meta lines). */
+    private fun assertTextsFit(where: String) { SystemClock.sleep(300); assertTrue("truncated texts $where: ${TextFit.overflowing}", TextFit.overflowing.isEmpty()) }
     private fun write(name: String, o: JSONObject) = File(inst.targetContext.filesDir, name).writeText(o.toString(2))
 
     private fun start(): Long {
@@ -148,11 +152,15 @@ class V3CockpitTest {
         try { ActivityScenario.launch(CockpitActivity::class.java).use { sc ->
             r.put("loadMs", start()); SystemClock.sleep(2_000); captures.put(shot("02-repos"))
             r.put("idleFrames", frames(sc, 5_000)).put("governor", JSONObject(main { V3Runtime.governor!!.stats.summary() }).put("mode", main { V3Runtime.governor!!.effectiveMode.name }))
-            // Sphere gesture: real system swipe, inertial rotation.
+            // V3-FIX-01: still at rest (animations ON) and NOT manipulable: a real swipe changes nothing.
+            val restFrames = drawnDuring(2_000); r.put("restFrames2s", restFrames)
+            assertTrue("sphere must be still at rest ($restFrames frames)", restFrames <= 1)
             val sphere = obj("sphere").visibleBounds; val yaw0 = V3Runtime.motion.yaw
             dev.swipe(sphere.left + sphere.width() * 3 / 4, sphere.centerY(), sphere.left + sphere.width() / 4, sphere.centerY(), 20)
             SystemClock.sleep(600); r.put("swipe", JSONObject().put("dragEvents", V3Runtime.motion.dragEvents).put("yawDelta", V3Runtime.motion.yaw - yaw0))
-            assertTrue("sphere received no drag", V3Runtime.motion.dragEvents > 0)
+            assertEquals("the sphere must not react to gestures", 0, V3Runtime.motion.dragEvents)
+            assertEquals(yaw0, V3Runtime.motion.yaw, 0f)
+            assertTextsFit("at rest")
             // Keyboard shown.
             obj("input").click()
             val kt = SystemClock.elapsedRealtime(); while (!imeShown() && SystemClock.elapsedRealtime() - kt < 4_000) SystemClock.sleep(200)
@@ -165,9 +173,12 @@ class V3CockpitTest {
             val seen = HashSet<String>(); val t0 = SystemClock.elapsedRealtime()
             while (SystemClock.elapsedRealtime() - t0 < 420_000) {
                 val ph = phase(); val partial = main { ui.session!!.partial }
-                if (ph == Phase.THINKING && partial.isBlank() && "think" !in seen && SystemClock.elapsedRealtime() - t0 > 1_500) { seen += "think"; captures.put(shot("04-reflexion")) }
+                if (ph == Phase.THINKING && partial.isBlank() && "think" !in seen && SystemClock.elapsedRealtime() - t0 > 1_500) { seen += "think"; captures.put(shot("04-reflexion"))
+                    val f = drawnDuring(1_500); if (phase() == Phase.THINKING && main { ui.session!!.partial }.isBlank()) { r.put("thinkingFrames1500ms", f)
+                        assertTrue("sphere must be still while thinking ($f frames)", f <= 1) } }
                 if (ph == Phase.THINKING && partial.isNotBlank() && "stream" !in seen) { seen += "stream"; captures.put(shot("05-diffusion-texte")) }
-                if (ph == Phase.SPEAKING && "speak" !in seen) { seen += "speak"; SystemClock.sleep(700); captures.put(shot("06-parole")) }
+                if (ph == Phase.SPEAKING && "speak" !in seen) { seen += "speak"; SystemClock.sleep(700); captures.put(shot("06-parole"))
+                    val f = drawnDuring(1_500); r.put("speakingFrames1500ms", f); assertTrue("sphere must animate while JARVIS speaks ($f frames)", f >= 4) }
                 if (ph == Phase.READY && main { ui.session!!.exchanges.size } > n0) break
                 Thread.sleep(40)
             }
@@ -182,13 +193,21 @@ class V3CockpitTest {
             assertEquals("visual state back to stable after the temporary error accent", HoloState.IDLE,
                 main { fr.jarvis.v3.model.SphereStateAdapter.resolve(ui.session?.phase?.name, false, ui.errorSince?.let { SystemClock.elapsedRealtime() - it }) })
             captures.put(shot("07-reponse"))
+            val after = drawnDuring(2_000); r.put("afterAnswerFrames2s", after)
+            assertTrue("sphere must stop after the answer ($after frames)", after <= 1)
             // Card from a conversation keyword (only real words of the exchange).
             val chip = dev.wait(Until.findObject(By.res("keyword-0")), 5_000)
             if (chip != null) { val kw = chip.text; chip.click(); SystemClock.sleep(900); obj("card"); captures.put(shot("09-fiche-sujet")); r.put("keywordCard", kw)
-                obj("card-expand").click(); SystemClock.sleep(700); captures.put(shot("10-fiche-agrandie")); obj("card-close").click(); SystemClock.sleep(600) }
+                obj("card-expand").click(); SystemClock.sleep(700); captures.put(shot("10-fiche-agrandie")); assertTextsFit("expanded card")
+                obj("card-close").click(); SystemClock.sleep(600) }
             else { obj("card-open-latest").click(); SystemClock.sleep(900); obj("card"); captures.put(shot("09-fiche-reponse")); obj("card-close").click(); SystemClock.sleep(600); r.put("keywordCard", JSONObject.NULL) }
             // Radial menu, unavailable module, settings.
-            obj("radial").click(); SystemClock.sleep(900); captures.put(shot("11-menu-radial"))
+            obj("radial").click(); SystemClock.sleep(900); captures.put(shot("11-menu-radial")); assertTextsFit("radial menu")
+            val inputBox = obj("input").visibleBounds
+            for (d in listOf("cockpit", "knowledge", "documents", "services", "settings")) {
+                val b = obj("dest-$d").visibleBounds
+                assertFalse("radial item '$d' $b covers the input field $inputBox", android.graphics.Rect.intersects(b, inputBox))
+            }
             obj("dest-documents").click(); SystemClock.sleep(900)
             assertTrue(obj("card-provenance").text.contains("non connecté")); captures.put(shot("12-module-indisponible"))
             dev.pressBack(); SystemClock.sleep(600); assertNull("Android back must close the card", dev.findObject(By.res("card")))
@@ -208,6 +227,12 @@ class V3CockpitTest {
                 val job = main { ui.session!!.voiceTurn(RealtimeWav(File(wav))) }; assertNotNull(job)
                 waitUntil(10_000, "listening") { ui.session!!.phase == Phase.LISTENING }; SystemClock.sleep(900); captures.put(shot("15-ecoute"))
                 r.put("listeningLevel", main { ui.session!!.cockpit.level })
+                // V3-FIX-01: after the previous voice error, the previous answer is shown ONCE (history), never again as "in progress".
+                val shownTimes = dev.findObjects(By.text(e.answer)).size
+                r.put("previousAnswerShownWhileListening", shownTimes).put("liveNodeWhileListening", dev.findObject(By.res("partial")) != null)
+                assertEquals("previous answer duplicated after a voice error", 1, shownTimes)
+                assertNull("stale partial shown while listening", dev.findObject(By.res("partial")))
+                val lf = drawnDuring(800); r.put("listeningFrames800ms", lf); assertTrue("sphere must be still while listening ($lf frames)", lf <= 1)
                 waitUntil(30_000, "transcribing") { ui.session!!.phase == Phase.TRANSCRIBING }; SystemClock.sleep(1_500); captures.put(shot("16-transcription"))
                 runBlocking { kotlinx.coroutines.withTimeout(420_000) { job!!.join() } }
                 val v = main { ui.session!!.exchanges.last() }
@@ -215,7 +240,7 @@ class V3CockpitTest {
             }
             // Landscape: same session, three regions, card in the right column.
             obj("card-open-latest").click(); SystemClock.sleep(700)
-            dev.setOrientationLeft(); SystemClock.sleep(2_000); captures.put(shot("17-paysage"))
+            dev.setOrientationLeft(); SystemClock.sleep(2_000); captures.put(shot("17-paysage")); assertTextsFit("landscape")
             r.put("landscapeSameSession", main { ui.session != null && !ui.session!!.closed })
             dev.setOrientationNatural(); SystemClock.sleep(1_200); dev.unfreezeRotation(); main { ui.openCard = null }
             // Background: no frame is drawn while the app is not visible.

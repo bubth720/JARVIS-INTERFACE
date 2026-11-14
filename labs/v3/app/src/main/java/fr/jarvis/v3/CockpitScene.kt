@@ -60,11 +60,12 @@ class V3UiState {
     val notes = mutableStateListOf<SystemNote>()
     var panel by mutableStateOf(Panel.NONE)
     var menuOpen by mutableStateOf(false)
-    var statusBubble by mutableStateOf(false)
     var typed by mutableStateOf("")
     var pending by mutableStateOf<String?>(null)
     var message by mutableStateOf("")
     var errorSince by mutableStateOf<Long?>(null)
+    /** When the last written answer appeared without speech (drives the short answer animation). */
+    var answeredAt by mutableStateOf<Long?>(null)
     var anchor by mutableStateOf(Offset.Zero)
     private var seq = 0
     fun nextId() = "c${++seq}"
@@ -96,9 +97,12 @@ fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
     LaunchedEffect(cockpitState) { if (cockpitState == CockpitState.ERROR) ui.errorSince = SystemClock.elapsedRealtime() else if (cockpitState != null) ui.errorSince = null }
     var clockTick by remember { mutableIntStateOf(0) }
     LaunchedEffect(ui.errorSince) { if (ui.errorSince != null) { delay(SphereStateAdapter.ERROR_ACCENT_MS + 50); clockTick++ } }
+    LaunchedEffect(ui.answeredAt) { if (ui.answeredAt != null) { delay(SphereStateAdapter.REVEAL_MS + 50); clockTick++ } }
     clockTick.let { }
-    val errorAge = ui.errorSince?.let { SystemClock.elapsedRealtime() - it }
-    val holo = SphereStateAdapter.resolve(s?.phase?.name, s != null && s.busy && s.partial.isNotBlank(), errorAge)
+    val now = SystemClock.elapsedRealtime()
+    val errorAge = ui.errorSince?.let { now - it }
+    val holo = SphereStateAdapter.resolve(s?.phase?.name, s != null && s.phase == Phase.THINKING && s.partial.isNotBlank(), errorAge,
+        ui.answeredAt?.let { now - it })
     val level = if (holo == HoloState.LISTENING || holo == HoloState.SPEAKING) (s?.cockpit?.level ?: 0f) else 0f
     var pulse by remember { mutableIntStateOf(0) }
     LaunchedEffect(s?.partial) { if (!s?.partial.isNullOrBlank()) pulse++ }
@@ -108,7 +112,9 @@ fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
     // A spoken device question: the model is not a measurement, so the real measure is added as a card.
     val exchangeCount = s?.exchanges?.size ?: 0
     LaunchedEffect(exchangeCount) {
+        ui.pending = null                                   // the finished turn is now in the history: never shown twice
         val e = s?.exchanges?.lastOrNull() ?: return@LaunchedEffect
+        if (e.ttsSamples == 0L && e.answer.isNotBlank()) ui.answeredAt = SystemClock.elapsedRealtime()   // written answer: brief animation
         val topic = if (e.viaVoice) Intents.systemTopic(e.user) else null
         if (topic != null) {
             val card = CardFactory.system(ui.nextId(), topic, PerformanceGovernor.measure(app))
@@ -146,11 +152,11 @@ fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
 
     val keyboard = LocalSoftwareKeyboardController.current
     val detail = gov.detail
-    val animate = gov.animate(resumed)
+    // V3-FIX-01: still at rest / listening / thinking; animated only while JARVIS answers; never manipulable.
+    val animate = gov.animate(resumed) && SphereStateAdapter.animates(holo)
     val sphere: @Composable (Modifier) -> Unit = { m ->
         HologramSphere(holo, level, pulse, keywords, detail, animate, V3Runtime.motion, gov::onVsync,
-            onKeyword = { k -> ui.show(CardFactory.concept(ui.nextId(), k, s?.exchanges?.map { it.answer } ?: emptyList())) },
-            onCoreTap = { ui.statusBubble = !ui.statusBubble }, modifier = m)
+            fpsCap = SphereStateAdapter.fpsCap(holo, detail.fps), modifier = m)
     }
     val dock: @Composable (Modifier) -> Unit = { m ->
         ConversationDock(ui.typed, { ui.typed = it }, { keyboard?.hide(); send() }, sendEnabled = ui.typed.isNotBlank() && s?.phase == Phase.READY,
@@ -176,7 +182,6 @@ fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
             if (!landscape) {
                 Box(Modifier.fillMaxWidth().height(heroHeight)) {
                     sphere(Modifier.fillMaxSize())
-                    StatusBubble(ui.statusBubble, holo, gov, Modifier.align(Alignment.TopCenter))
                 }
                 KeywordChips(keywords) { k -> ui.show(CardFactory.concept(ui.nextId(), k, s.exchanges.map { it.answer })) }
                 Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -188,7 +193,7 @@ fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
                 Row(Modifier.weight(1f)) {
                     Spacer(Modifier.weight(0.16f)) // free region reserved for a future extension (no avatar in V3)
                     Column(Modifier.weight(0.48f).fillMaxHeight()) {
-                        Box(Modifier.weight(0.55f).fillMaxWidth()) { sphere(Modifier.fillMaxSize()); StatusBubble(ui.statusBubble, holo, gov, Modifier.align(Alignment.TopCenter)) }
+                        Box(Modifier.weight(0.55f).fillMaxWidth()) { sphere(Modifier.fillMaxSize()) }
                         KeywordChips(keywords) { k -> ui.show(CardFactory.concept(ui.nextId(), k, s.exchanges.map { it.answer })) }
                         Conversation(s, ui, Modifier.weight(0.45f).fillMaxWidth())
                         dock(Modifier.padding(top = 4.dp))
@@ -216,15 +221,8 @@ private fun Header(holo: HoloState, gov: PerformanceGovernor, s: V1Session?) {
         Text("J A R V I S", style = Holo.label.copy(color = Holo.ice), modifier = Modifier.weight(1f))
         Box(Modifier.size(8.dp).clip(CircleShape).background(Holo.stateColor(holo)))
         Spacer(Modifier.width(6.dp))
-        Text(if (s == null) "LOCAL · HORS LIGNE" else "${holo.label.uppercase()} · LOCAL", style = Holo.label, modifier = Modifier.testTag("state-chip"))
-    }
-}
-
-@Composable
-private fun StatusBubble(visible: Boolean, holo: HoloState, gov: PerformanceGovernor, modifier: Modifier) {
-    AnimatedVisibility(visible, modifier, enter = fadeIn(tween(Holo.Motion.FAST)), exit = fadeOut(tween(Holo.Motion.FAST))) {
-        Text("État : ${holo.label} · profil ${modeLabel(gov.effectiveMode)} · hors ligne · Qwen3-0.6B local",
-            style = Holo.small.copy(color = Holo.text), modifier = Modifier.glass(active = false, corner = 12.dp).padding(horizontal = 12.dp, vertical = 6.dp).testTag("status-bubble"))
+        Text(if (s == null) "LOCAL · HORS LIGNE" else "${holo.label.uppercase()} · LOCAL", style = Holo.label, modifier = Modifier.testTag("state-chip"),
+            onTextLayout = { TextFit.report("state-chip", it.hasVisualOverflow) })
     }
 }
 
@@ -261,10 +259,13 @@ private fun Conversation(s: V1Session, ui: V3UiState, modifier: Modifier) {
             }
         }
         if (s.busy) item {
+            // Only the RUNNING turn: the typed question (cleared once in the history) and text streamed in THIS turn.
+            // After a voice error V1 keeps the previous `partial`: it is never shown again (V3-FIX-01).
+            val live = s.phase == Phase.THINKING && s.partial.isNotBlank()
             Column(Modifier.padding(vertical = 6.dp)) {
-                ui.pending?.let { Text(it, style = Holo.small.copy(color = Holo.muted)) }
-                Text(if (s.partial.isNotBlank()) s.partial else s.status, style = Holo.body.copy(color = if (s.partial.isNotBlank()) Holo.text else Holo.muted),
-                    modifier = Modifier.testTag("partial"))
+                ui.pending?.let { Text(it, style = Holo.small.copy(color = Holo.muted), modifier = Modifier.testTag("pending")) }
+                Text(if (live) s.partial else s.status, style = Holo.body.copy(color = if (live) Holo.text else Holo.muted),
+                    modifier = Modifier.testTag(if (live) "partial" else "busy-status"))
             }
         }
         if (items.isEmpty() && !s.busy) item { Text(s.status, style = Holo.small, modifier = Modifier.testTag("status")) }
@@ -274,10 +275,11 @@ private fun Conversation(s: V1Session, ui: V3UiState, modifier: Modifier) {
 @Composable
 private fun Message(question: String, answer: String, meta: String, latest: Boolean, cardLabel: String, onCard: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-        Text(question, style = Holo.small.copy(color = Holo.muted), maxLines = 3, overflow = TextOverflow.Ellipsis)
+        Text(question, style = Holo.small.copy(color = Holo.muted))
         Text(answer, style = Holo.body, modifier = if (latest) Modifier.testTag("answer") else Modifier)
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(meta, style = Holo.tabular.copy(color = Holo.muted), modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(meta, style = Holo.tabular.copy(color = Holo.muted), modifier = Modifier.weight(1f),
+                onTextLayout = { TextFit.report("meta", it.hasVisualOverflow) })
             Pill(cardLabel, if (latest) "card-open-latest" else "card-open") { onCard() }
         }
     }

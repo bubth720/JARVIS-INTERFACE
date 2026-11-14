@@ -14,6 +14,10 @@ enum class Destination(val label: String, val available: Boolean, val unavailabl
 }
 
 object RadialGeometry {
+    const val RADIUS_DP = 165f
+    /** The arc centre is lifted above the dock anchor: the lowest item stays above the input field. */
+    const val LIFT_DP = 72f
+
     /**
      * Item centres (dp offsets from the anchor button centre) on an arc opening up-left from a
      * bottom-right anchor: from 180° (left) to 270° (up), evenly spread.

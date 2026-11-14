@@ -74,7 +74,8 @@ fun RadialMenuOverlay(open: Boolean, anchor: Offset, accessibleList: Boolean, on
         Box(Modifier.fillMaxSize().alpha(progress).background(Color.Black.copy(alpha = 0.45f))
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClickLabel = "Fermer le menu", onClick = onDismiss)
             .testTag("radial-scrim"))
-        val positions = remember { RadialGeometry.positions(Destination.entries.size, 172f) }
+        // Arc centred ABOVE the anchor so no item can cover the input field (V3-FIX-01).
+        val positions = remember { RadialGeometry.positions(Destination.entries.size, RadialGeometry.RADIUS_DP).map { (x, y) -> x to y - RadialGeometry.LIFT_DP } }
         Destination.entries.forEachIndexed { i, d ->
             val p = ((progress * 1.25f) - i * 0.06f).coerceIn(0f, 1.2f)
             val (dx, dy) = if (accessibleList) Pair(-8f, -(70f + 64f * (Destination.entries.size - 1 - i))) else positions[i]
@@ -108,6 +109,6 @@ private fun RadialItem(d: Destination, index: Int, modifier: Modifier, onClick: 
             }
         }
         Text(d.label, style = Holo.small.copy(color = if (d.available) Holo.text else Holo.muted), maxLines = 1,
-            softWrap = false)
+            softWrap = false, onTextLayout = { TextFit.report("dest:${d.name}", it.hasVisualOverflow) })
     }
 }

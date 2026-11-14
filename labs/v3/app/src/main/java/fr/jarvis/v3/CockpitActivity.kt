@@ -39,7 +39,7 @@ class CockpitActivity : ComponentActivity(), SceneActions {
 
     override fun onResume() { super.onResume(); V3Runtime.governor?.refresh() }
 
-    private fun talk() { val s = ui.session ?: return; if (s.busy) s.interrupt(); s.voiceTurn() }
+    private fun talk() { val s = ui.session ?: return; if (s.busy) s.interrupt(); ui.pending = null; s.voiceTurn() }
 
     override fun requestMicThenTalk() {
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) talk()

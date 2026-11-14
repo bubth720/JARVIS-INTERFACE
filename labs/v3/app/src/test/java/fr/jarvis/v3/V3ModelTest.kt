@@ -39,6 +39,26 @@ class V3ModelTest {
         assertFalse(HoloState.entries.map(SphereStateAdapter::status).any { it.contains('%') })
     }
 
+    /** V3-FIX-01: still at rest, listening, transcribing, thinking and on error; animated only while answering. */
+    @Test fun sphereAnimatesOnlyWhileJarvisAnswers() {
+        val still = listOf(HoloState.IDLE, HoloState.LISTENING, HoloState.TRANSCRIBING, HoloState.THINKING, HoloState.ERROR)
+        assertTrue(still.none(SphereStateAdapter::animates))
+        assertTrue(listOf(HoloState.STREAMING, HoloState.SPEAKING, HoloState.RESPONDING).all(SphereStateAdapter::animates))
+        assertEquals(HoloState.RESPONDING, SphereStateAdapter.resolve("READY", false, null, 1_000))
+        assertEquals(HoloState.IDLE, SphereStateAdapter.resolve("READY", false, null, 3_000))    // stops after the answer
+        assertEquals(HoloState.ERROR, SphereStateAdapter.resolve("READY", false, 500, 500))       // error accent wins, still
+        assertEquals(HoloState.THINKING, SphereStateAdapter.resolve("THINKING", false, null, 100))
+        assertEquals(12, SphereStateAdapter.fpsCap(HoloState.STREAMING, 30))                       // light while the LLM writes
+        assertEquals(30, SphereStateAdapter.fpsCap(HoloState.SPEAKING, 30))
+    }
+
+    /** V3-FIX-01: the lowest radial item and its label stay above the dock (anchor centre − 30 dp). */
+    @Test fun radialMenuNeverCoversTheInputField() {
+        val ys = RadialGeometry.positions(5, RadialGeometry.RADIUS_DP).map { it.second - RadialGeometry.LIFT_DP }
+        assertTrue(ys.max() + 16f <= -30f)
+        assertTrue(RadialGeometry.minChordDp(5, RadialGeometry.RADIUS_DP) >= 64f)
+    }
+
     @Test fun cardsDeclareProvenanceAndNeverInventContent() {
         val c = CardFactory.fromExchange("1", "Quelle est la capitale de la France ?", "La capitale de la France est Paris.", 15_400, false)
         assertEquals(CardFactory.MODEL_PROVENANCE, c.provenance); assertTrue(c.summary.contains("Paris"))

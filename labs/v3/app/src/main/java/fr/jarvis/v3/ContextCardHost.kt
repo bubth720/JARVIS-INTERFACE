@@ -52,7 +52,8 @@ fun Pill(text: String, tag: String, enabled: Boolean = true, active: Boolean = f
         .border(1.dp, Holo.cyan.copy(alpha = if (!enabled) 0.15f else if (active) 0.8f else 0.4f), RoundedCornerShape(20.dp))
         .clickable(enabled = enabled, role = Role.Button, onClick = onClick).testTag(tag).padding(horizontal = 14.dp, vertical = 9.dp),
         contentAlignment = Alignment.Center) {
-        Text(text, style = Holo.small.copy(color = if (enabled) Holo.text else Holo.muted.copy(alpha = 0.6f)))
+        Text(text, style = Holo.small.copy(color = if (enabled) Holo.text else Holo.muted.copy(alpha = 0.6f)),
+            onTextLayout = { TextFit.report("pill:$tag", it.hasVisualOverflow) })
     }
 }
 
@@ -77,6 +78,7 @@ private fun SubstituteIllustration(kind: CardKind, modifier: Modifier) {
  * Card anatomy (§05): header (category, local provenance, pin, expand, close), visual, 2–4 line summary,
  * structured details, actions. Disabled actions say why. Empty states never invent content.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ContextCardView(card: ContextCard, expanded: Boolean, pinned: Boolean, onAction: (String) -> Unit, onPin: () -> Unit,
                     onExpand: () -> Unit, onClose: () -> Unit, modifier: Modifier = Modifier) {
@@ -98,7 +100,7 @@ fun ContextCardView(card: ContextCard, expanded: Boolean, pinned: Boolean, onAct
                 }
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(card.title, style = Holo.title, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("card-title"))
+                    Text(card.title, style = Holo.title, modifier = Modifier.testTag("card-title"))
                     Text(card.provenance, style = Holo.small.copy(color = if (card.kind == CardKind.UNAVAILABLE) Holo.amber else Holo.ice), modifier = Modifier.testTag("card-provenance"))
                 }
             }
@@ -117,7 +119,8 @@ fun ContextCardView(card: ContextCard, expanded: Boolean, pinned: Boolean, onAct
                     modifier = Modifier.padding(top = 8.dp).testTag("card-citation"))
             }
             Spacer(Modifier.height(10.dp))
-            Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Actions wrap on several lines: never clipped at the edge (V3-FIX-01).
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 for (a in card.actions) {
                     Pill(if (a.enabled) a.label else "${a.label} — ${a.reason ?: "indisponible"}", "card-action-${a.id}", enabled = a.enabled,
                         active = a.id == "cite" && cite) { if (a.id == "cite") cite = !cite else onAction(a.id) }
