@@ -72,6 +72,10 @@ class V3CockpitTest {
         return SystemClock.elapsedRealtime() - t0
     }
     private fun obj(res: String, ms: Long = 20_000): UiObject2 = requireNotNull(dev.wait(Until.findObject(By.res(res)), ms)) { "element '$res' not shown" }
+    /** Click that survives a recomposition between lookup and click (StaleObjectException, API 35 run 43616811194). */
+    private fun tap(res: String) {
+        repeat(3) { attempt -> try { obj(res).click(); return } catch (e: androidx.test.uiautomator.StaleObjectException) { if (attempt == 2) throw e; SystemClock.sleep(300) } }
+    }
     /** True when the soft keyboard is really on screen (InputMethodManagerService state). */
     private fun imeShown(): Boolean {
         val pfd = inst.uiAutomation.executeShellCommand("dumpsys input_method")
@@ -213,7 +217,8 @@ class V3CockpitTest {
             }
             // Command Center V2: real AI CORE data, and an unconnected module shown "à connecter" (never simulated).
             obj("dest-command").click(); SystemClock.sleep(900)
-            assertTrue(obj("cc-model").text.startsWith("Qwen3-0.6B")); assertTrue(obj("cc-internet").text.startsWith("aucun"))
+            assertTrue(obj("cc-model").text.startsWith("Qwen3-0.6B"))
+            tap("cc-tab-security"); SystemClock.sleep(500); assertTrue(obj("cc-internet").text.startsWith("aucun"))
             captures.put(shot("12-command-center")); assertTextsFit("command center")
             obj("cc-tab-missions").click(); SystemClock.sleep(500)
             assertEquals("MISSIONS · À CONNECTER", obj("cc-module-status").text); obj("cc-to-connect"); captures.put(shot("12b-module-a-connecter"))
@@ -414,6 +419,8 @@ class V3CockpitTest {
             val absent = ask("Selon mes documents, quel est le prix du vélo électrique ?")
             assertEquals(0, absent.getJSONArray("sources").length())
             assertTrue("absence must be declared to the model", main { s0.model.lastInstruction }.orEmpty().contains("Aucun document local"))
+            assertEquals("an answer about the documents with no matching document carries the system notice",
+                fr.jarvis.v3.conv.KnowledgePlanner.NO_DOCUMENT_NOTICE, main { s0.notices[s0.exchanges.size - 1] })
             absent.put("qualityNoInventedPrice", !Regex("\\d+ ?(€|euros)").containsMatchIn(absent.getString("a"))); r.put("absent", absent)
             assertEquals(listOf("club-astronomie.txt"), app.journal.read(s0.conversationId)!!.entries.first { it.sources.isNotEmpty() }.sources)
             main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
@@ -442,10 +449,10 @@ class V3CockpitTest {
                 assertTrue("nothing stored before consent", app.memory.list().isEmpty())
                 assertEquals("a memory request is not sent to the model", n0, main { ui.session!!.exchanges.size })
                 shot("c-mem-01-proposition")
-                obj("memory-reject").click(); SystemClock.sleep(500)
+                tap("memory-reject"); SystemClock.sleep(500)
                 assertTrue("refusal stores nothing", app.memory.list().isEmpty())
                 assertNotNull(main { ui.session!!.textTurn("Retiens que je préfère le thé au café.") })
-                obj("memory-proposal"); obj("memory-accept").click(); SystemClock.sleep(500)
+                obj("memory-proposal"); tap("memory-accept"); SystemClock.sleep(500)
                 assertEquals(listOf("Je préfère le thé au café."), app.memory.list().map { it.content })
                 r.put("outcome", obj("memory-outcome").text); shot("c-mem-02-confirme")
                 main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }

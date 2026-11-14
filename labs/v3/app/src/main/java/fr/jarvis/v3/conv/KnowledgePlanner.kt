@@ -20,6 +20,8 @@ object KnowledgePlanner {
     private val DOC_INTENT = Regex("(?i)\\b(document|documents|fichier|fichiers|notes?|selon|d'après|dans mes|importé)")
     private val WORD = Regex("[\\p{L}\\p{N}]+(?:-[\\p{L}\\p{N}]+)*")
 
+    const val NO_DOCUMENT_NOTICE = "Aucun de tes documents locaux ne contient cette information : cette réponse ne vient pas de tes documents."
+
     /** True when the user explicitly refers to his documents (then "nothing found" must be said, never invented). */
     fun asksDocuments(question: String) = DOC_INTENT.containsMatchIn(question)
 

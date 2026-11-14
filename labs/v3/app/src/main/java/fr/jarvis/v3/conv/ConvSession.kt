@@ -252,9 +252,13 @@ class ConvSession(
         partial = answer
         record(text, answer, viaVoice, cited)
         if (cited.isNotEmpty()) sources[exchanges.size] = cited
-        val notice = if (ActionGuard.claimsDone(text, answer)) ActionGuard.NOTICE else null
+        // System notices: an unexecuted action presented as done, or an answer about the user's documents when none
+        // matched (run 43616811194: the 0.6B invented "10 euros" although told that no document contains it).
+        val docNotice = if (grounding != null && grounding.searched && KnowledgePlanner.asksDocuments(text) && cited.isEmpty())
+            KnowledgePlanner.NO_DOCUMENT_NOTICE else null
+        val notice = listOfNotNull(if (ActionGuard.claimsDone(text, answer)) ActionGuard.NOTICE else null, docNotice).joinToString(" ").ifBlank { null }
         if (notice != null) notices[exchanges.size] = notice
-        why[exchanges.size] = Provenance.explain(factsUsed, memoriesUsed, cited, ActionGuard.requestedAction(text) != null, notice != null,
+        why[exchanges.size] = Provenance.explain(factsUsed, memoriesUsed, cited, ActionGuard.requestedAction(text) != null, ActionGuard.claimsDone(text, answer),
             transport.lastMetrics.value?.historyPairsSent)
         val speech = tts?.takeIf { voiceOutputEnabled }
         if (speech == null) {
