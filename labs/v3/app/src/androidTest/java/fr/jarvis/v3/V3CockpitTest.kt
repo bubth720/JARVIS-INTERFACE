@@ -463,6 +463,47 @@ class V3CockpitTest {
         } finally { write("v3-memory.json", r) }
     }
 
+    /**
+     * Long conversation (owner request 14/11: natural, coherent, able to hold long conversations): 16 real turns
+     * mixing topics. Hard: no engine error, bounded instruction and engine window (3 exchanges re-read), JARVIS never
+     * calls itself Athéna. Measured (not asserted): name recalled after 15 turns, tutoiement kept, latency trend.
+     */
+    @Test fun i_longConversationStaysCoherentAndBounded() {
+        assumeTrue(args.getString("afterImport") != null)
+        Configurator.getInstance().setWaitForIdleTimeout(0)
+        val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT); val turns = JSONArray(); r.put("turns", turns)
+        try {
+            main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
+            main { app.applyPersona(fr.jarvis.v3.conv.PersonaSettings.ATHENA) }
+            val s0 = main { app.startSession().also { ui.session = it; it.voiceOutputEnabled = false } }
+            waitUntil(360_000, "ready") { ui.session?.phase == Phase.READY || ui.session?.phase == Phase.ERROR }
+            val script = listOf("Je m'appelle Camille.", "J'aime beaucoup la randonnée en montagne.", "Quelle est la capitale du Japon ?",
+                "Et combien font 9 fois 7 ?", "Donne-moi une idée de dessert simple.", "Mon chat s'appelle Moka.", "Quelle est la plus haute montagne d'Europe ?",
+                "Raconte-moi une blague courte.", "Combien de jours y a-t-il en février une année bissextile ?", "Je pars en voyage à Lisbonne.",
+                "Que pourrais-je visiter là-bas ?", "Comment dit-on merci en portugais ?", "Quel est le contraire de rapide ?",
+                "Allume la télévision.", "Au fait, quel sport j'aime ?", "Comment je m'appelle ?")
+            for (q in script) {
+                val n = main { s0.exchanges.size }
+                assertNotNull("turn refused: ${main { s0.status }}", main { s0.textTurn(q) })
+                waitUntil(420_000, "answer to '$q'") { s0.phase == Phase.READY && s0.exchanges.size > n }
+                val e = main { s0.exchanges.last() }; val instr = main { s0.model.lastInstruction }.orEmpty()
+                assertNull("engine error on '$q': ${e.error}", e.error); assertTrue(e.answer.isNotBlank())
+                assertTrue("instruction must stay far below the 8 KiB engine limit (${instr.toByteArray().size} B)", instr.toByteArray().size < 4_000)
+                val m = main { s0.transport.lastMetrics.value }
+                assertTrue("the protected engine re-reads at most 3 exchanges", (m?.historyPairsSent ?: 0) <= 3)
+                turns.put(JSONObject().put("q", q).put("a", e.answer).put("llmMs", e.llmMs).put("promptTokens", m?.promptTokens ?: -1).put("instructionBytes", instr.toByteArray().size))
+            }
+            val answers = main { s0.exchanges.map { it.answer } }
+            assertTrue("JARVIS must never call itself Athéna", answers.none { Regex("(?i)je (suis|m'appelle) ath[ée]na").containsMatchIn(it) })
+            assertTrue("the user's name must still reach the instruction after 15 turns", main { s0.model.lastInstruction }.orEmpty().contains("l'utilisateur s'appelle Camille"))
+            r.put("qualityNameAfter15", answers.last().contains("Camille")).put("qualitySportRecalled", Regex("(?i)randonn").containsMatchIn(answers[14]))
+                .put("answersWithVous", answers.count { Regex("(?i)\\b(vous|votre|vos)\\b").containsMatchIn(it) })
+                .put("firstHalfMedianMs", answers.indices.take(8).map { turns.getJSONObject(it).getLong("llmMs") }.sorted()[4])
+                .put("secondHalfMedianMs", answers.indices.drop(8).map { turns.getJSONObject(it).getLong("llmMs") }.sorted()[4])
+            main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
+        } finally { write("v3-long.json", r) }
+    }
+
     /** Prototype captures of every state (labelled EXEMPLE) and before/after rendering cost, same box and state. */
     @Test fun e_galleryCapturesAndBeforeAfterBench() {
         val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("note", "Emulator x86_64, software GPU (swiftshader): NOT representative of a phone GPU")
