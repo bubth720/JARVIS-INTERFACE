@@ -44,6 +44,14 @@ audit() { local name="$1"; shift
 for t in b3_ambiguousMemoriesAreNotInjectedWithoutChoice c3_unknownQuestionsAreNotInvented c8_generalAnswerIsNeverPresentedAsDocumentary \
          d2_voiceErrorsLeaveTheSessionUsableWithoutDuplicates d3_interruptionAtEachStage f2f3f4_documentsContradictoryCorruptAndInjected \
          f6_deletionIsVerifiedOnDisk g6_modelOrDocumentCannotCreateAMemory; do audit "$t" -e afterImport 1; done
+audit2() { local name="$1"; shift
+  adb shell am instrument -w -r -e class "fr.jarvis.v3.AuditCampaignT2Test#$name" "$@" "$R" > "$out/audit-$name.txt" 2>&1
+  if grep -q '^OK (1 test)' "$out/audit-$name.txt"; then echo "PASS $name" >> "$out/audit-results.txt"
+  else { echo "FAIL $name"; grep -m3 -E "AssertionError|Exception|Timeout" "$out/audit-$name.txt"; } >> "$out/audit-results.txt"; fi
+  for f in $(adb shell run-as fr.jarvis.v3 ls files 2>/dev/null | tr -d '\r' | grep '^audit-'); do adb exec-out run-as fr.jarvis.v3 cat "files/$f" > "$out/$f"; done; }
+for t in a3_knowledgeImportFormatsAndLimits a4_corruptFutureAndSymlinkDatabasesRefusedAndKept a5_memoryConsentMismatchAndExpiry \
+         e2e3e6e7_layoutStressAccessibilityAvatar g1_microphoneRevokedTextStillWorks g2_thermalSevereRefusesTurn h4_loadUnloadCyclesDoNotLeak; do audit2 "$t" -e afterImport 1; done
+adb shell pm grant fr.jarvis.v3 android.permission.RECORD_AUDIO || true
 anim 0; run d_reducedMotionStaticSphereAndFirstText -e afterImport 1; pull v3-reduced.json; anim 1
 run e_galleryCapturesAndBeforeAfterBench; pull v3-bench.json
 for f in $(adb shell run-as fr.jarvis.v3 ls files/v3shots 2>/dev/null | tr -d '\r'); do adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" > "$out/shots/api$api-$f"; done

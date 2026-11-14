@@ -29,6 +29,7 @@ fun AvatarView(state: HoloState, voiceLevel: Float, size: Dp, modifier: Modifier
     val expression = AvatarExpression.of(state)
     val mouth = if (expression == "parle") (0.15f + 0.85f * voiceLevel.coerceIn(0f, 1f)) else 0f
     Canvas(modifier.size(size).testTag("avatar").semantics { contentDescription = "Avatar d'Athéna, expression $expression" }) {
+        AvatarStats.draws++          // consumption measurement (audit E7): 0 redraws expected at rest
         drawPortrait(expression, mouth)
     }
 }
@@ -71,3 +72,6 @@ private fun DrawScope.drawPortrait(expression: String, mouth: Float) {
 
 /** Shared colour for the avatar zone frame. */
 val AvatarFrame: Color get() = Holo.cyan.copy(alpha = 0.4f)
+
+/** Avatar redraw counter (audit E7, consumption): incremented on every draw. */
+object AvatarStats { @Volatile var draws = 0L }
