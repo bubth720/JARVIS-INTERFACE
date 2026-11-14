@@ -62,6 +62,8 @@ class ConvSession(
     val exchanges = mutableStateListOf<Exchange>()
     /** Cited local sources per exchange index (provenance shown under the answer). */
     val sources = androidx.compose.runtime.mutableStateMapOf<Int, List<String>>()
+    /** System notices per exchange index (ActionGuard: an answer claimed an action that was not executed). */
+    val notices = androidx.compose.runtime.mutableStateMapOf<Int, String>()
     /** Last documentary search: searched?, duration, sources (diagnostics shown on the NEXUS screen). */
     var lastGrounding by mutableStateOf<LocalKnowledge.Grounding?>(null); private set
     /** Exchanges restored from the journal (shown first, marked as earlier). */
@@ -219,6 +221,8 @@ class ConvSession(
         partial = answer
         record(text, answer, viaVoice, cited)
         if (cited.isNotEmpty()) sources[exchanges.size] = cited
+        val notice = if (ActionGuard.claimsDone(text, answer)) ActionGuard.NOTICE else null
+        if (notice != null) notices[exchanges.size] = notice
         val speech = tts?.takeIf { voiceOutputEnabled }
         if (speech == null) {
             exchanges += Exchange(text, answer, viaVoice, captureMs, sttMs, llmMs, firstText)
@@ -227,7 +231,7 @@ class ConvSession(
         phase = Phase.SPEAKING; status = "JARVIS parle… (touche Interrompre)"; event(CockpitState.SPEAKING, EventSource.VOICE)
         val speakAt = SystemClock.elapsedRealtime()
         val spoken = try {
-            withContext(ttsDispatcher) { speech.speak(answer) { lvl -> scope.launch { if (phase == Phase.SPEAKING) event(CockpitState.SPEAKING, EventSource.VOICE, lvl) } } }
+            withContext(ttsDispatcher) { speech.speak(if (notice != null) "$answer Note du système : $notice" else answer) { lvl -> scope.launch { if (phase == Phase.SPEAKING) event(CockpitState.SPEAKING, EventSource.VOICE, lvl) } } }
         } catch (e: Exception) {
             exchanges += Exchange(text, answer, viaVoice, captureMs, sttMs, llmMs, firstText, error = "TTS : ${e.message}")
             finish("Synthèse vocale : ${e.message}", error = true); return

@@ -268,7 +268,8 @@ private fun Conversation(s: ConvSession, ui: V3UiState, modifier: Modifier) {
                     Message(e.user + if (e.viaVoice) "  🎤" else "", e.answer.ifBlank { e.error ?: "(interrompu)" },
                         (if (restored) "JARVIS · échange précédent (historique local)" else
                         "JARVIS · LLM ${"%.1f".format(e.llmMs / 1000.0)} s" + (e.error?.let { " · $it" } ?: "")) +
-                        (if (cited.isNotEmpty()) "\nSources locales : " + cited.joinToString(" · ") else ""), idx == items.lastIndex && !s.busy, "Fiche") {
+                        (if (cited.isNotEmpty()) "\nSources locales : " + cited.joinToString(" · ") else "") +
+                        (s.notices[i]?.let { "\n⚠ SYSTÈME : $it" } ?: ""), idx == items.lastIndex && !s.busy, "Fiche") {
                         ui.show(CardFactory.fromExchange(ui.nextId(), e.user, e.answer, e.llmMs, e.viaVoice)) } }
             }
         }

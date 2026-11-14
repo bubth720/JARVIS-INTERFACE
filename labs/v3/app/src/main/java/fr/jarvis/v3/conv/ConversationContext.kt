@@ -26,5 +26,6 @@ class ConversationContext(
     /** Subordinate instruction for this turn (persona routing + facts + confirmed memories + local documents). */
     fun instructionFor(history: List<ConversationHistory.Turn>, question: String): String =
         PersonaRenderer.instruction(persona, question, facts(history, question).render(),
-            listOf(confirmedMemories(question), grounding?.takeIf { it.first == question }?.second.orEmpty()).filter { it.isNotBlank() }.joinToString(" "))
+            listOf(confirmedMemories(question), grounding?.takeIf { it.first == question }?.second.orEmpty(), ActionGuard.instruction(question))
+                .filter { it.isNotBlank() }.joinToString(" "))
 }

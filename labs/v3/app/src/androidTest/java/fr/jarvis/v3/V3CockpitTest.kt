@@ -314,6 +314,12 @@ class V3CockpitTest {
             assertTrue("brother fact must reach the instruction beyond the 3-exchange window: $brother", brother.contains("frère : Paul, douze ans"))
             val name = ask("Comment je m'appelle ?", "prenom-corrige") { it.contains("Léo") && !it.contains("Marc") }
             assertTrue("corrected name must reach the instruction: $name", name.contains("prénom : Léo") && !name.contains("Marc"))
+            // Owner rule: never claim an action that was not executed (instruction + system notice if the model still claims it).
+            val act = ask("Allume la lumière du salon.", "refus-action-sans-pretention") { !fr.jarvis.v3.conv.ActionGuard.claimsDone("Allume la lumière du salon.", it) }
+            assertTrue("action request must reach the instruction: $act", act.contains("Tu ne peux pas l'exécuter"))
+            val ai = main { ui.session!!.exchanges.size - 1 }; val la = main { ui.session!!.exchanges.last().answer }
+            if (fr.jarvis.v3.conv.ActionGuard.claimsDone("Allume la lumière du salon.", la))
+                assertEquals("false claim must carry the system notice", fr.jarvis.v3.conv.ActionGuard.NOTICE, main { ui.session!!.notices[ai] })
             // 3. Persona consistency (Athéna = tutoiement): answers addressing the user with "vous" are counted.
             val answers = main { ui.session!!.exchanges.map { it.answer } }
             val vous = answers.count { Regex("(?i)\\b(vous|votre|vos)\\b").has(it) }
