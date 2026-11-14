@@ -306,6 +306,15 @@ private fun Conversation(s: ConvSession, ui: V3UiState, modifier: Modifier) {
         }
         if (items.isEmpty() && !s.busy && s.memoryProposal == null) item { Text(s.status, style = Holo.small, modifier = Modifier.testTag("status")) }
         s.memoryProposal?.let { (_, shown) -> item { MemoryProposalCard(shown, { s.decideMemory(true) }, { s.decideMemory(false) }) } }
+        s.memoryChoice?.let { (_, items) -> item {
+            // A-010: an ambiguous recall injects nothing; the user chooses (CORE NEEDS_CONFIRMATION).
+            Column(Modifier.fillMaxWidth().padding(vertical = 6.dp).glass(active = true, corner = 12.dp).padding(10.dp).testTag("memory-choice")) {
+                Text("PLUSIEURS SOUVENIRS CORRESPONDENT : AUCUN N'A ÉTÉ UTILISÉ", style = Holo.label)
+                Text("Choisis celui qui s'applique, je reposerai la question avec lui seul.", style = Holo.small)
+                items.forEachIndexed { k, m -> Pill("« ${m.content} »", "memory-choice-$k") { s.chooseMemory(k) } }
+                Pill("Ignorer", "memory-choice-dismiss") { s.dismissMemoryChoice() }
+            }
+        } }
         s.memoryOutcome?.let { o -> item { Text(o, style = Holo.small.copy(color = Holo.ice), modifier = Modifier.testTag("memory-outcome")) } }
     }
 }

@@ -72,6 +72,15 @@ class ConvSession(
     var lastGrounding by mutableStateOf<LocalKnowledge.Grounding?>(null); private set
     /** Memory proposal awaiting the user's decision: the candidate and the EXACT text displayed. */
     var memoryProposal by mutableStateOf<Pair<com.stark.jarvislocal.memory.PendingMemoryCandidate, String>?>(null); private set
+    /** Ambiguous recall (A-010): the question and the memories the user may choose between; nothing was injected. */
+    var memoryChoice by mutableStateOf<Pair<String, List<com.stark.jarvislocal.memory.RecalledMemory>>?>(null); private set
+    /** The user picks one memory for that exact question; the question is asked again with only that memory. */
+    fun chooseMemory(index: Int): Job? {
+        val (q, items) = memoryChoice ?: return null
+        memory?.chooseFor(q, items[index].reference); memoryChoice = null
+        return textTurn(q)
+    }
+    fun dismissMemoryChoice() { memoryChoice = null }
     /** Outcome of the last memory decision (shown to the user). */
     var memoryOutcome by mutableStateOf<String?>(null); private set
 
@@ -226,6 +235,8 @@ class ConvSession(
         context.groundNext(text, grounding?.block.orEmpty())
         val cited = grounding?.sources.orEmpty()
         val factsUsed = context.facts(history.snapshot(), text).facts()
+        memoryChoice = memory?.let { m -> runCatching { withContext(Dispatchers.IO) { m.ambiguity(text) } }.getOrDefault(emptyList()) }
+            ?.takeIf { it.size > 1 }?.let { text to it }
         val memoriesUsed = memory?.let { m -> runCatching { withContext(Dispatchers.IO) { m.recallBlock(text) } }.getOrDefault("") }
             ?.let { b -> if (b.isBlank()) 0 else Regex("« ").findAll(b).count() } ?: 0
         val l0 = SystemClock.elapsedRealtime()
