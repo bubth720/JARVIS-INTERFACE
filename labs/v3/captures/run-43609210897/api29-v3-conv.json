@@ -1,0 +1,118 @@
+{
+  "sdk": 29,
+  "platform": "Android emulator x86_64 (NOT a phone), airplane mode",
+  "turns": [
+    {
+      "q": "Je m'appelle Marc.",
+      "a": "Tu t'appelles Marc.",
+      "llmMs": 23209,
+      "firstTextMs": -1,
+      "instructionChars": 508
+    },
+    {
+      "q": "Non pardon, je me suis trompé : je m'appelle Léo.",
+      "a": "Tu t'appelles Léo.",
+      "llmMs": 26534,
+      "firstTextMs": -1,
+      "instructionChars": 538
+    },
+    {
+      "q": "Mon frère s'appelle Paul et il a douze ans.",
+      "a": "Tu t'appelles Léo.",
+      "llmMs": 35813,
+      "firstTextMs": -1,
+      "instructionChars": 726
+    },
+    {
+      "q": "Quelle est la capitale de l'Italie ?",
+      "a": "La capitale de l'Italie est Rome.",
+      "llmMs": 32529,
+      "firstTextMs": 32004,
+      "instructionChars": 495,
+      "check": "capitale-italie",
+      "pass": true
+    },
+    {
+      "q": "Combien font 12 fois 12 ?",
+      "a": "12 fois 12 est 144.",
+      "llmMs": 33696,
+      "firstTextMs": -1,
+      "instructionChars": 495,
+      "check": "calcul-144",
+      "pass": true
+    },
+    {
+      "q": "Et si on divise ce résultat par 4 ?",
+      "a": "144 divise par 4 est 36.",
+      "llmMs": 34054,
+      "firstTextMs": 33894,
+      "instructionChars": 495,
+      "check": "reference-resultat-36",
+      "pass": true
+    },
+    {
+      "q": "Revenons à mon frère : quel âge a-t-il ?",
+      "a": "Mon frère a 12 ans.",
+      "llmMs": 34127,
+      "firstTextMs": -1,
+      "instructionChars": 495,
+      "check": "retour-sujet-age-frere",
+      "pass": true
+    },
+    {
+      "q": "Comment je m'appelle ?",
+      "a": "Tu t'appelles Léo.",
+      "llmMs": 29842,
+      "firstTextMs": -1,
+      "instructionChars": 401,
+      "check": "prenom-corrige",
+      "pass": true
+    },
+    {
+      "q": "Allume la lumière du salon.",
+      "a": "Je ne peux pas l'exécuter, mais je peux te dire que 144 divise par 4 est 36.",
+      "llmMs": 42644,
+      "firstTextMs": 38668,
+      "instructionChars": 710,
+      "check": "refus-action-sans-pretention",
+      "pass": true
+    },
+    {
+      "q": "Tu te souviens de mon prénom ?",
+      "a": "Tu t'appelles Léo.",
+      "llmMs": 30660,
+      "firstTextMs": -1,
+      "instructionChars": 401,
+      "check": "reprise-prenom",
+      "pass": true
+    },
+    {
+      "q": "Quelle est la capitale de l'Espagne ?",
+      "a": "La capitale de l'Espagne est Madrid.",
+      "llmMs": 32550,
+      "firstTextMs": 31867,
+      "instructionChars": 462,
+      "check": "neutre-vouvoiement-madrid",
+      "pass": true
+    }
+  ],
+  "quality": {
+    "capitale-italie": true,
+    "calcul-144": true,
+    "reference-resultat-36": true,
+    "retour-sujet-age-frere": true,
+    "prenom-corrige": true,
+    "refus-action-sans-pretention": true,
+    "reprise-prenom": true,
+    "neutre-vouvoiement-madrid": true
+  },
+  "conversationId": "cmwgk7jzm-7454",
+  "personaAthena": {
+    "answers": 9,
+    "withVous": 0,
+    "introducesAsJarvisNotAthena": true
+  },
+  "uiResume": true,
+  "qualityPassed": 8,
+  "qualityTotal": 8
+}
