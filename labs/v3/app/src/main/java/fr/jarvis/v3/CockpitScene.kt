@@ -117,8 +117,8 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
     val errorAge = ui.errorSince?.let { now - it }
     val holo = SphereStateAdapter.resolve(s?.phase?.name, s != null && s.phase == Phase.THINKING && s.partial.isNotBlank(), errorAge,
         ui.answeredAt?.let { now - it })
-    // Owner rule (14/11): the sphere is still while listening; the microphone level only drives the dock visualiser.
-    val micLevel = if (holo == HoloState.LISTENING) (s?.cockpit?.level ?: 0f) else 0f
+    // Owner rule (14/11): the sphere is still while listening. The microphone level is read ONLY inside the dock
+    // (deferred read): reading it here recomposed the whole scene, sphere included, 10 times per second (run 43609210897).
     val level = if (holo == HoloState.SPEAKING) (s?.cockpit?.level ?: 0f) else 0f
     var pulse by remember { mutableIntStateOf(0) }
     LaunchedEffect(s?.partial) { if (!s?.partial.isNullOrBlank()) pulse++ }
@@ -171,15 +171,16 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
     val detail = gov.detail
     // V3-FIX-01: still at rest / listening / thinking; animated only while JARVIS answers; never manipulable.
     val animate = gov.animate(resumed) && SphereStateAdapter.animates(holo)
+    val onVsync = remember(gov) { gov::onVsync }   // stable reference: no sphere recomposition from a new lambda
     val sphere: @Composable (Modifier) -> Unit = { m ->
-        HologramSphere(holo, level, pulse, keywords, detail, animate, V3Runtime.motion, gov::onVsync,
+        HologramSphere(holo, level, pulse, keywords, detail, animate, V3Runtime.motion, onVsync,
             fpsCap = SphereStateAdapter.fpsCap(holo, detail.fps), modifier = m)
     }
     val dock: @Composable (Modifier) -> Unit = { m ->
         ConversationDock(ui.typed, { ui.typed = it }, { keyboard?.hide(); send() }, sendEnabled = ui.typed.isNotBlank() && s?.phase == Phase.READY,
             micEnabled = s != null && s.voiceInputAvailable && (s.phase == Phase.READY || s.phase == Phase.SPEAKING), listening = s?.phase == Phase.LISTENING,
             onMic = { if (s != null && s.phase == Phase.LISTENING) s.interrupt() else actions.requestMicThenTalk() }, busy = s?.busy == true, onStop = { s?.interrupt() },
-            level = if (holo == HoloState.LISTENING) micLevel else level, menuOpen = ui.menuOpen, onMenu = { ui.menuOpen = !ui.menuOpen }, onAnchor = { ui.anchor = it }, modifier = m)
+            level = if (holo == HoloState.LISTENING) (s?.cockpit?.level ?: 0f) else level, menuOpen = ui.menuOpen, onMenu = { ui.menuOpen = !ui.menuOpen }, onAnchor = { ui.anchor = it }, modifier = m)
     }
     val openCard = ui.card(ui.openCard)
     val cardView: @Composable (Modifier) -> Unit = { m ->
