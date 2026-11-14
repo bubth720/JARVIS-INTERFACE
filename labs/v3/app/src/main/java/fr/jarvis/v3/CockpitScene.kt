@@ -263,10 +263,12 @@ private fun Conversation(s: ConvSession, ui: V3UiState, modifier: Modifier) {
         itemsIndexed(items) { idx, it ->
             when (it) {
                 is SystemNote -> Message(it.question, it.answer, "MESURE ANDROID", idx == items.lastIndex, "Fiche") { ui.openCard = it.cardId; ui.expanded = false }
-                is Pair<*, *> -> { val e = it.second as Exchange; val restored = (it.first as Int) < s.restoredCount
+                is Pair<*, *> -> { val e = it.second as Exchange; val i = it.first as Int; val restored = i < s.restoredCount
+                    val cited = s.sources[i].orEmpty()
                     Message(e.user + if (e.viaVoice) "  🎤" else "", e.answer.ifBlank { e.error ?: "(interrompu)" },
-                        if (restored) "JARVIS · échange précédent (historique local)" else
-                        "JARVIS · LLM ${"%.1f".format(e.llmMs / 1000.0)} s" + (e.error?.let { " · $it" } ?: ""), idx == items.lastIndex && !s.busy, "Fiche") {
+                        (if (restored) "JARVIS · échange précédent (historique local)" else
+                        "JARVIS · LLM ${"%.1f".format(e.llmMs / 1000.0)} s" + (e.error?.let { " · $it" } ?: "")) +
+                        (if (cited.isNotEmpty()) "\nSources locales : " + cited.joinToString(" · ") else ""), idx == items.lastIndex && !s.busy, "Fiche") {
                         ui.show(CardFactory.fromExchange(ui.nextId(), e.user, e.answer, e.llmMs, e.viaVoice)) } }
             }
         }

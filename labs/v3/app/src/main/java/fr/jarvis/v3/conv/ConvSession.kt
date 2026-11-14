@@ -48,6 +48,8 @@ class ConvSession(
     private val thermal: () -> Int,
     private val lowMemory: () -> Boolean,
     resume: ConversationJournal.Conversation? = null,
+    /** Local documents (NEXUS); null = not available in this build. */
+    val knowledge: LocalKnowledge? = null,
     /** Disabled in the instrumented tests that measure the raw answer path. */
     var quickReactionEnabled: Boolean = true,
 ) {
@@ -58,6 +60,10 @@ class ConvSession(
     val transport = V1bCoreTransport(scope, model, history = history)
     val client = CoreConversationClientAdapter(transport, scope)
     val exchanges = mutableStateListOf<Exchange>()
+    /** Cited local sources per exchange index (provenance shown under the answer). */
+    val sources = androidx.compose.runtime.mutableStateMapOf<Int, List<String>>()
+    /** Last documentary search: searched?, duration, sources (diagnostics shown on the NEXUS screen). */
+    var lastGrounding by mutableStateOf<LocalKnowledge.Grounding?>(null); private set
     /** Exchanges restored from the journal (shown first, marked as earlier). */
     var restoredCount by mutableStateOf(0); private set
     val conversationId: String = resume?.id ?: journal?.newConversationId() ?: "local"
@@ -85,6 +91,7 @@ class ConvSession(
 
     init {
         resume?.entries?.forEach { e ->
+            if (e.sources.isNotEmpty()) sources[exchanges.size] = e.sources
             exchanges += Exchange(e.user, e.answer, e.viaVoice)
             // Only exchanges the protected engine would accept go back into its context.
             if (e.answer.isNotBlank() && V1bPolicy.admissible(e.user) && V1bPolicy.admissible(e.answer)) history.record(e.user, e.answer)
@@ -183,6 +190,11 @@ class ConvSession(
     private suspend fun converse(text: String, viaVoice: Boolean, captureMs: Long = 0, sttMs: Long = 0, requestEndAt: Long) {
         phase = Phase.THINKING; status = "Réflexion locale…"; partial = ""; reaction = null; lastFirstSoundMs = -1
         event(CockpitState.THINKING, EventSource.CORE)
+        // Local documents first (bounded, off the main thread): cited excerpts or an explicit "nothing found".
+        val grounding = knowledge?.let { k -> runCatching { withContext(Dispatchers.IO) { k.ground(text) } }.getOrNull() }
+        lastGrounding = grounding
+        context.groundNext(text, grounding?.block.orEmpty())
+        val cited = grounding?.sources.orEmpty()
         val l0 = SystemClock.elapsedRealtime()
         if (!client.submit(text)) { finish("CORE a refusé la demande (occupé ou fermé)", error = true); return }
         val waiting = scheduleReaction(viaVoice, requestEndAt) { client.state.value.text.isNotEmpty() }
@@ -205,7 +217,8 @@ class ConvSession(
             finish(if (interrupted) "Réponse interrompue" else "Erreur du modèle : ${llmError ?: "réponse vide"}", error = !interrupted); return
         }
         partial = answer
-        record(text, answer, viaVoice)
+        record(text, answer, viaVoice, cited)
+        if (cited.isNotEmpty()) sources[exchanges.size] = cited
         val speech = tts?.takeIf { voiceOutputEnabled }
         if (speech == null) {
             exchanges += Exchange(text, answer, viaVoice, captureMs, sttMs, llmMs, firstText)
@@ -225,9 +238,9 @@ class ConvSession(
     }
 
     /** Appends the finished exchange to the local journal (the text the user saw; no audio, no instruction). */
-    private suspend fun record(user: String, answer: String, viaVoice: Boolean) {
+    private suspend fun record(user: String, answer: String, viaVoice: Boolean, cited: List<String>) {
         val j = journal ?: return
-        runCatching { withContext(Dispatchers.IO) { j.append(conversationId, ConversationJournal.Entry(user, answer, viaVoice, System.currentTimeMillis())) } }
+        runCatching { withContext(Dispatchers.IO) { j.append(conversationId, ConversationJournal.Entry(user, answer, viaVoice, System.currentTimeMillis(), cited)) } }
             .onFailure { status = "Historique local non enregistré : ${it.message}" }
     }
 

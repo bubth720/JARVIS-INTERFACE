@@ -38,6 +38,8 @@ class ConvLanguageModel(
     override val outputCeiling: Int = V1bPolicy.DEFAULT_OUTPUT,
     private val nanos: () -> Long = { SystemClock.elapsedRealtimeNanos() },
     private val instruction: (List<ConversationHistory.Turn>, String) -> String = V1bPolicy::systemFor,
+    /** Protected engine profile: true = Qwen3 0.6B (production); false = the engine's own 1.7B profile (study test APK only). */
+    private val small: Boolean = true,
 ) : ConversationalLanguageModel {
     init { require(outputCeiling in 1..V1bPolicy.HARD_CEILING) { "A02_OUTPUT_POLICY_REFUSED" } }
     private val executor = Executors.newSingleThreadExecutor { Thread(it, "jarvis-a02-engine") }
@@ -66,7 +68,7 @@ class ConvLanguageModel(
         val context = contextFor(settings)
         model.sourceFd().use { source ->
             lastTrace = String(native.loadSealedFd(handle, source.fd, model.sizeBytes, model.sha256.toByteArray(Charsets.US_ASCII),
-                memoryBudgetBytes(), context, V1bPolicy.THREADS, true), Charsets.UTF_8)
+                memoryBudgetBytes(), context, V1bPolicy.THREADS, small), Charsets.UTF_8)
         }
         // Every protected load resets the ceiling to 96: opt in to the V1-B ceiling, or fail closed.
         val admitted = runCatching { native.setOutputCeiling(handle, outputCeiling) }

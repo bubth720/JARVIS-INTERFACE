@@ -1,0 +1,100 @@
+name: CONVERSATION-01 Android model study (emulator only; 0.6B vs owner-authorized 1.7B; no production change)
+on:
+  push:
+    branches: ['ccr-5cf17ed2-phgk00']
+    paths: ['.github/workflows/conv-01-android-study.yml', 'labs/v3/app/src/androidTest/java/fr/jarvis/v3/ModelStudyTest.kt', 'labs/v3/tools/run_model_study.sh']
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: conv-01-android-study-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  study:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    permissions:
+      contents: write   # only to commit the study results (JSON + score, marked to skip CI) to this development branch
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: interface, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JAVIS-Local-v2, ref: 5da98383ed12cb5a54e896fbe57560bacc432fb5, path: core, fetch-depth: 0, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-LLM, ref: 2e011776d9e0f675bcae49b739f12a3a6dbf4de4, path: llm, persist-credentials: false}
+      # Published bench, scorer and authorization manifests of the CONVERSATION-01 study (data only, not built).
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-LLM, ref: 3e2560e22c12483c35d6407e4327546ffe45abb1, path: study, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-NEXUS, ref: 06ccf98a7709364bf09cc1ecea1c35663d5787cf, path: nexus, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-VOICE, ref: 92d07453260553466c92196454b56929b7494b2f, path: voice, persist-credentials: false}
+      - name: Guards and exact sources
+        run: |
+          git -C interface config user.email ci@invalid && git -C interface config user.name ci
+          python3 interface/labs/v3/tools/check_scope.py --interface interface
+          python3 interface/labs/v1/tools/prepare_sources.py --core core --interface interface --llm llm --output "$RUNNER_TEMP/v1-sources"
+          llm/tools/prepare-native.sh
+          interface/labs/v1/tools/prepare_whisper.sh
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.13'}
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          cmdline-tools-version: '11076708'
+          log-accepted-android-sdk-licenses: false
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0 ndk;28.1.13356709 cmake;3.22.1'
+      - name: Build app + test APK (x86_64 for the emulator)
+        run: |
+          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" -PnexusRoot="$GITHUB_WORKSPACE/nexus" \
+            -PwhisperSource="$GITHUB_WORKSPACE/interface/labs/v1/.deps/whisper.cpp" -Pv1Abis=x86_64 \
+            :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --max-workers=2 --console=plain
+      - name: Models from their official sources, size + SHA-256 checked against the authorization manifests
+        run: |
+          r="$RUNNER_TEMP/study-res"; mkdir -p "$r"
+          for m in qwen3-0.6b-q4km qwen3-1.7b-q4km; do
+            read -r url bytes sha < <(python3 -c "import json,sys;s=json.load(open('study/a02/models/$m.json'))['source'];print(s['url'],s['bytes'],s['sha256'])")
+            curl --fail --location --retry 2 "$url" -o "$r/$m.gguf"; test "$(stat -c %s "$r/$m.gguf")" = "$bytes"; echo "$sha  $r/$m.gguf" | sha256sum -c -
+            echo "$m $sha" >> "$r/models.txt"
+          done
+          cp study/a02/tests/bench/fr-bench-30.json study/a02/tests/bench/fr-conv-01.json "$r/"
+          echo "M06=qwen3-0.6b-q4km.gguf" >> "$GITHUB_ENV"; echo "S06=$(awk '/0.6b/{print $2}' "$r/models.txt")" >> "$GITHUB_ENV"
+          echo "M17=qwen3-1.7b-q4km.gguf" >> "$GITHUB_ENV"; echo "S17=$(awk '/1.7b/{print $2}' "$r/models.txt")" >> "$GITHUB_ENV"
+      - name: Enable emulator acceleration
+        run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
+      - name: API35 emulator — 0.6B then 1.7B, same protected engine and app instruction (airplane mode)
+        id: api35
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 6144M
+          cores: 4
+          disable-animations: true
+          emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim -noaudio
+          script: bash interface/labs/v3/tools/run_model_study.sh "$RUNNER_TEMP/study-res" "$RUNNER_TEMP/study"
+      - name: Score with the published JARVIS-LLM scorer
+        if: always()
+        run: |
+          ls "$RUNNER_TEMP"/study/study-*.json && python3 study/a02/tests/bench_score.py "$RUNNER_TEMP"/study/study-*.json | tee "$RUNNER_TEMP/study/score.md" || echo "NO_RESULT"
+      - name: Commit the study results to this development branch (commit marked to skip CI)
+        if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          dst="interface/labs/v3/captures/study-${{ github.run_id }}"; mkdir -p "$dst"
+          cp "$RUNNER_TEMP"/study/{results.txt,score.md,device.txt,study-*.json} "$dst/" 2>/dev/null || true
+          cd interface; git add "labs/v3/captures/study-${{ github.run_id }}" || exit 0
+          git diff --cached --quiet && exit 0
+          git -c user.name="jarvis-ci" -c user.email="ci@invalid" commit -q -m "ci(v3): CONVERSATION-01 Android model study results of run ${{ github.run_id }} [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase "https://x-access-token:$TOKEN@github.com/${{ github.repository }}" "${{ github.ref_name }}" && \
+            git push -q "https://x-access-token:$TOKEN@github.com/${{ github.repository }}" "HEAD:${{ github.ref_name }}" && break; sleep 5; done
+      - name: Verdict (both models must complete the bench and unload)
+        run: test "${{ steps.api35.outcome }}" = success

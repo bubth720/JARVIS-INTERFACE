@@ -26,6 +26,11 @@ android {
     kotlinOptions { jvmTarget = "17" }
     sourceSets.getByName("main").java.srcDir(providers.gradleProperty("labSources").get())
     sourceSets.getByName("main").java.srcDir(rootProject.file("../v1/app/src/main/java"))
+    // NEXUS local knowledge (CONVERSATION-01 §6), compiled unchanged from JARVIS-NEXUS FUSION-02 06ccf98 (pinned in CI).
+    providers.gradleProperty("nexusRoot").orNull?.let { n ->
+        sourceSets.getByName("main").java.srcDir("$n/nexus-core/src/main/kotlin")
+        sourceSets.getByName("main").java.srcDir("$n/nexus-android-store/src/main/kotlin")
+    }
     testOptions { unitTests.isReturnDefaultValues = true }
     packaging { jniLibs { useLegacyPackaging = false }; resources { excludes += setOf("META-INF/*.md", "META-INF/LICENSE*", "META-INF/NOTICE*") } }
     lint { abortOnError = true; disable += setOf("MissingTranslation") }

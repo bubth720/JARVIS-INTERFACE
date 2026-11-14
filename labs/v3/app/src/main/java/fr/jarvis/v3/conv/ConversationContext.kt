@@ -19,7 +19,12 @@ class ConversationContext(
     fun facts(history: List<ConversationHistory.Turn>, question: String): WorkingMemory =
         WorkingMemory(maxFacts).also { m -> history.forEach { m.observe(it.user) }; m.observe(question) }
 
-    /** Subordinate instruction for this turn (persona routing + facts + confirmed memories). */
+    @Volatile private var grounding: Pair<String, String>? = null
+    /** Documentary block (cited local excerpts, or "nothing found") for the NEXT turn asking exactly [question]. */
+    fun groundNext(question: String, block: String) { grounding = if (block.isBlank()) null else question to block }
+
+    /** Subordinate instruction for this turn (persona routing + facts + confirmed memories + local documents). */
     fun instructionFor(history: List<ConversationHistory.Turn>, question: String): String =
-        PersonaRenderer.instruction(persona, question, facts(history, question).render(), confirmedMemories(question))
+        PersonaRenderer.instruction(persona, question, facts(history, question).render(),
+            listOf(confirmedMemories(question), grounding?.takeIf { it.first == question }?.second.orEmpty()).filter { it.isNotBlank() }.joinToString(" "))
 }

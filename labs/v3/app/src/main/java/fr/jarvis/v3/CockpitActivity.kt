@@ -63,10 +63,22 @@ class CockpitActivity : ComponentActivity(), SceneActions {
         app.scope.launch {
             ui.message = withContext(Dispatchers.IO) {
                 uris.map { u -> val name = displayName(u)
-                    runCatching { app.assets.importAny(name) { requireNotNull(contentResolver.openInputStream(u)) { "Document inaccessible" } } }
+                    if (app.isDocument(name)) runCatching {
+                        // A document the user picked goes to the local knowledge base (≤ 2 Mio, read once, never re-opened by URI).
+                        app.knowledge.open()
+                        val bytes = requireNotNull(contentResolver.openInputStream(u)) { "Document inaccessible" }.use { it.readNBytesCompat(2 * 1024 * 1024 + 1) }
+                        if (bytes.size > 2 * 1024 * 1024) "$name : trop volumineux (2 Mio au plus)" else app.knowledge.import(name, bytes)
+                    }.getOrElse { "$name : ${it.message}" }
+                    else runCatching { app.assets.importAny(name) { requireNotNull(contentResolver.openInputStream(u)) { "Document inaccessible" } } }
                         .fold({ "$name : $it" }, { "$name : ${it.message}" }) }
             }.joinToString("\n")
         }
+    }
+
+    private fun java.io.InputStream.readNBytesCompat(max: Int): ByteArray {
+        val out = java.io.ByteArrayOutputStream(); val buf = ByteArray(16 * 1024); var total = 0
+        while (total < max) { val n = read(buf, 0, minOf(buf.size, max - total)); if (n < 0) break; out.write(buf, 0, n); total += n }
+        return out.toByteArray()
     }
 
     /** Used by tests only to know whether the engine is idle. */

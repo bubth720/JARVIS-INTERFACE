@@ -28,6 +28,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {repository: bubth720/JARVIS-LLM, ref: 2e011776d9e0f675bcae49b739f12a3a6dbf4de4, path: llm, persist-credentials: false}
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: bubth720/JARVIS-NEXUS, ref: 06ccf98a7709364bf09cc1ecea1c35663d5787cf, path: nexus, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {repository: bubth720/JARVIS-VOICE, ref: 92d07453260553466c92196454b56929b7494b2f, path: voice, persist-credentials: false}
       - name: Guards (V1 delivery frozen byte-identical, V1 chain, reused files, exact sources)
         run: |
@@ -51,7 +53,7 @@ jobs:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0 ndk;28.1.13356709 cmake;3.22.1'
       - name: Build V3 APK + test APK, unit tests, Lint
         run: |
-          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" \
+          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" -PnexusRoot="$GITHUB_WORKSPACE/nexus" \
             -PwhisperSource="$GITHUB_WORKSPACE/interface/labs/v1/.deps/whisper.cpp" -Pv1Abis=arm64-v8a,x86_64 \
             :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug --no-daemon --max-workers=2 --console=plain
       - name: Inspect the APK (one permission, no INTERNET, engines present, nothing bundled)
@@ -134,7 +136,7 @@ jobs:
           python3 -m pip install -q pillow
           dst="interface/labs/v3/captures/run-${{ github.run_id }}"
           for api in 29 35; do [ -d "$RUNNER_TEMP/v3/api$api/shots" ] && python3 interface/labs/v3/tools/shrink.py "$RUNNER_TEMP/v3/api$api/shots" "$dst"; done
-          for api in 29 35; do for f in results.txt v3-states.json v3-conv.json v3-reduced.json v3-bench.json v3-first-launch.json; do
+          for api in 29 35; do for f in results.txt v3-states.json v3-conv.json v3-knowledge.json v3-reduced.json v3-bench.json v3-first-launch.json; do
             [ -f "$RUNNER_TEMP/v3/api$api/$f" ] && cp "$RUNNER_TEMP/v3/api$api/$f" "$dst/api$api-$f"; done; done
           cp "$RUNNER_TEMP/v3/apk-sha256.txt" "$dst/" 2>/dev/null || true
           cd interface; git add "labs/v3/captures/run-${{ github.run_id }}" || exit 0

@@ -9,7 +9,7 @@ import java.io.File
  * removes the file. Durable MEMORIES are a different thing (CORE consent workflow), never this journal.
  */
 class ConversationJournal(private val dir: File, private val clock: () -> Long = System::currentTimeMillis) {
-    data class Entry(val user: String, val answer: String, val viaVoice: Boolean, val atMs: Long)
+    data class Entry(val user: String, val answer: String, val viaVoice: Boolean, val atMs: Long, val sources: List<String> = emptyList())
     data class Conversation(val id: String, val entries: List<Entry>, val updatedMs: Long)
 
     init { dir.mkdirs() }
@@ -54,12 +54,14 @@ class ConversationJournal(private val dir: File, private val clock: () -> Long =
             }
             return b.toString()
         }
-        fun encode(e: Entry) = listOf("v1", e.atMs.toString(), if (e.viaVoice) "1" else "0", esc(e.user), esc(e.answer)).joinToString(SEP.toString())
+        /** v1 line; an optional 6th field lists the cited local sources (separated by \u001e). */
+        fun encode(e: Entry) = (listOf("v1", e.atMs.toString(), if (e.viaVoice) "1" else "0", esc(e.user), esc(e.answer)) +
+            (if (e.sources.isEmpty()) emptyList() else listOf(e.sources.joinToString("\u001e") { esc(it).replace("\u001e", " ") }))).joinToString(SEP.toString())
         fun decode(line: String): Entry? {
             val p = line.split(SEP)
-            if (p.size != 5 || p[0] != "v1") return null
+            if (p.size !in 5..6 || p[0] != "v1") return null
             val at = p[1].toLongOrNull() ?: return null
-            return Entry(unesc(p[3]), unesc(p[4]), p[2] == "1", at)
+            return Entry(unesc(p[3]), unesc(p[4]), p[2] == "1", at, if (p.size == 6) p[5].split('\u001e').map(::unesc).filter { it.isNotBlank() } else emptyList())
         }
     }
 }

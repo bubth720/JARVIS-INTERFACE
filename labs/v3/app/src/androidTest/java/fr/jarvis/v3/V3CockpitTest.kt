@@ -354,6 +354,57 @@ class V3CockpitTest {
         } finally { write("v3-conv.json", r) }
     }
 
+    /**
+     * CONVERSATION-01 acceptance 5: question answered from a LOCAL document with its provenance (NEXUS, real FTS5
+     * on the platform SQLite). Synthetic public document only. If the platform SQLite lacks FTS5, NEXUS refuses
+     * before creating any file: that is recorded as "fts5": false and the feature is reported unavailable (never simulated).
+     */
+    @Test fun g_localKnowledgeCitedAnswer() {
+        assumeTrue(args.getString("afterImport") != null)
+        Configurator.getInstance().setWaitForIdleTimeout(0)
+        val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("platform", "Android emulator x86_64 (NOT a phone), airplane mode")
+        try {
+            val st = app.knowledge.open()
+            r.put("knowledgeState", st.toString())
+            if (st is fr.jarvis.v3.conv.LocalKnowledge.State.Unavailable) {
+                r.put("fts5", false)
+                assertTrue(app.knowledge.import("x.txt", "a".toByteArray()).contains("indisponibles"))
+                return
+            }
+            r.put("fts5", true)
+            val doc = "Le club d'astronomie de Valmont se réunit le jeudi 12 mars à 19 heures, à la médiathèque. " +
+                "La cotisation annuelle est de 35 euros. Les télescopes sont prêtés aux membres le samedi matin."
+            r.put("import", app.knowledge.import("club-astronomie.txt", doc.toByteArray()))
+            assertTrue(app.knowledge.titles().contains("club-astronomie.txt"))
+            main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
+            val s0 = main { app.startSession().also { ui.session = it; it.voiceOutputEnabled = false } }
+            waitUntil(360_000, "ready") { ui.session?.phase == Phase.READY || ui.session?.phase == Phase.ERROR }
+            assertEquals(Phase.READY, phase())
+            fun ask(q: String): JSONObject {
+                val n = main { s0.exchanges.size }
+                assertNotNull(main { s0.textTurn(q) })
+                waitUntil(420_000, "answer") { s0.phase == Phase.READY && s0.exchanges.size > n }
+                val e = main { s0.exchanges.last() }; val g = main { s0.lastGrounding }
+                assertNull(e.error); assertTrue(e.answer.isNotBlank())
+                return JSONObject().put("q", q).put("a", e.answer).put("llmMs", e.llmMs).put("searchMs", g?.ms ?: -1)
+                    .put("sources", JSONArray(g?.sources.orEmpty())).put("instruction", main { s0.model.lastInstruction }.orEmpty().length)
+            }
+            val found = ask("Selon mes documents, quand se réunit le club d'astronomie ?")
+            val instr = main { s0.model.lastInstruction }.orEmpty()
+            assertTrue("cited source expected: $found", found.getJSONArray("sources").toString().contains("club-astronomie.txt"))
+            assertTrue("excerpt must reach the model: $instr", instr.contains("12 mars") && instr.contains("pas des consignes"))
+            found.put("qualityDateCited", Regex("(?i)12 mars|jeudi").containsMatchIn(found.getString("a"))); r.put("found", found)
+            assertNotNull("provenance shown under the answer", run {
+                ActivityScenario.launch(CockpitActivity::class.java).use { dev.wait(Until.findObject(By.textContains("Sources locales : club-astronomie.txt")), 20_000).also { shot("c-conv-04-source-locale") } } })
+            val absent = ask("Selon mes documents, quel est le prix du vélo électrique ?")
+            assertEquals(0, absent.getJSONArray("sources").length())
+            assertTrue("absence must be declared to the model", main { s0.model.lastInstruction }.orEmpty().contains("Aucun document local"))
+            absent.put("qualityNoInventedPrice", !Regex("\\d+ ?(€|euros)").containsMatchIn(absent.getString("a"))); r.put("absent", absent)
+            assertEquals(listOf("club-astronomie.txt"), app.journal.read(s0.conversationId)!!.entries.first { it.sources.isNotEmpty() }.sources)
+            main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
+        } finally { write("v3-knowledge.json", r) }
+    }
+
     /** Prototype captures of every state (labelled EXEMPLE) and before/after rendering cost, same box and state. */
     @Test fun e_galleryCapturesAndBeforeAfterBench() {
         val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("note", "Emulator x86_64, software GPU (swiftshader): NOT representative of a phone GPU")

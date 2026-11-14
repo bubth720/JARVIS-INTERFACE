@@ -24,6 +24,10 @@ class ConvApp : Application() {
     /** App-private conversation history (never exported; excluded from backup: allowBackup=false). */
     val journal by lazy { ConversationJournal(File(filesDir, "conversations")) }
     val personas by lazy { PersonaStore(getSharedPreferences("persona", Context.MODE_PRIVATE)) }
+    /** Local documents (NEXUS), app-private; opened off the main thread on first use. */
+    val knowledge by lazy { LocalKnowledge(File(filesDir, "nexus")) }
+    /** Extensions routed to the knowledge base on import (the model / voice files keep their verified importer). */
+    fun isDocument(name: String) = name.substringAfterLast('.', "").lowercase() in setOf("txt", "md", "csv", "tsv", "docx", "xml")
     var session: ConvSession? = null; private set
     @Volatile var previousReleased = true; private set
 
@@ -56,8 +60,8 @@ class ConvApp : Application() {
             object : SourceDescriptor { override val fd = pfd.fd; override fun close() = pfd.close() }
         }, entry.sizeBytes, entry.sha256), ::memoryBudgetBytes, instruction = context::instructionFor)
         val resume = resumeId?.let { runCatching { journal.read(it) }.getOrNull() }
-        return ConvSession(scope, model, context, journal, assets.sttFile(), assets.ttsDir().takeIf { assets.ttsPresent() }, ::thermal, ::lowMemory, resume)
-            .also { session = it; it.start() }
+        return ConvSession(scope, model, context, journal, assets.sttFile(), assets.ttsDir().takeIf { assets.ttsPresent() }, ::thermal, ::lowMemory, resume,
+            knowledge = knowledge).also { session = it; scope.launch(Dispatchers.IO) { runCatching { knowledge.open() } }; it.start() }
     }
 
     fun closeSession() {
