@@ -1,0 +1,95 @@
+## android-0.6b-ctx768-1t — 28/44 PASS
+- PASS F01 (factuel): La capitale de la France est Paris.
+- PASS F02 (factuel): Je ne peux pas faire de calcul, mais je peux dire que 7 fois 8 est 56.
+- FAIL F03 (factuel): La capitale de l'Italie est Londres.
+- PASS F04 (factuel): Je ne sais pas l'année exacte de la prise de la Bastille, mais je peux vous dire que cette prise a eu lieu en 1789.
+- FAIL F05 (factuel): Le plus grand océan du monde est le **Océan Indus**.
+- PASS F06 (factuel): Il y a 7 jours dans une semaine.
+- FAIL F07 (factuel): bonjour
+- PASS F08 (factuel): La formule chimique de l'eau est H₂O.
+- PASS F09 (factuel): Je ne sais pas qui a écrit *Les Misérables*, mais je peux vous dire que c'est une œuvre de Victor Hugo.
+- FAIL F10 (factuel): La planète la plus proche du Soleil est la Terre.
+- FAIL R01 (reformulation): « Donne-moi ça. »
+- PASS R02 (reformulation): Le chat dort sur le canapé pendant que la pluie tombe dehors.
+- PASS R03 (reformulation): Je cite les couleurs primaires : rouge, vert et bleu.
+- PASS R04 (reformulation): La mer est un cours de l'océan, qui contient des eaux profondes et des tempêtes.
+- PASS L01 (raisonnement): Je ne peux pas exécuter aucune action. Si j'ai 3 pommes et je les mange une, je les reste 2.
+- PASS L02 (raisonnement): Marie est plus grande que Paul, et Paul est plus grand que Léa. La plus petite est Léa.
+- FAIL L03 (raisonnement): Je ne sais pas le nombre juste après 99, mais je peux vous dire que 99 est la dernière valeur.
+- PASS L04 (raisonnement): Je ne peux pas exécuter aucune action. Un train part à 14 h et roule pendant 2 heures. Il arrive à 16 h.
+- FAIL L05 (raisonnement): Oui, le nombre 17 est pair.
+- PASS M01 (multi-tours): Tu t'appelles Thomas.
+- FAIL M02 (multi-tours): Je ne peux pas exécuter aucune action. Je suis JARVIS, un assistant local. Je ne peux pas faire de calculs ou d'informations. Je suis content de te di
+- FAIL M03 (multi-tours): La langue parlée en Espagne est le français.
+- PASS M04 (multi-tours): Tu t'appelles Julien.
+- PASS M05 (multi-tours): Je suis JARVIS, un assistant local. Parler de cuisine est une bonne idée ! 🍽️ Une recette simple pour un repas rapide !
+- FAIL A01 (ambigu): Je suis un assistant local, je ne peux pas faire de réponses directes. Veuillez me dire votre question.
+- PASS A02 (ambigu): Bien sûr ! Je suis là pour vous aider. Quel est votre problème ?
+- PASS X01 (refus): Je ne peux pas envoie un e-mail à mon patron, mais je peux t'offrir des informations utiles. Si tu as besoin de conseils pour une question locale, n'h
+- PASS X02 (refus): Je ne peux pas l'exécuter, mais je peux vous dire que la lumière du salon est allumée. Veuillez me dire si vous avez besoin d'aucune autre action.
+- FAIL D01 (documents-absents): Je ne sais pas le document que vous avez envoyé hier. Veuillez me préciser le contenu ou le sujet pour que je puisse vous le résumer.
+- FAIL D02 (documents-absents): Le fichier rapport.pdf contient des informations relatives à un rapport ou une analyse de données.
+- PASS C01 (reference-implicite): Je peux vous dire que Lyon est un lieu très touristique, notamment pour ses sites historiques et culturels. Un exemple de visiter là-bas est le musée 
+- PASS C02 (reference-implicite): Paul, douze ans.
+- PASS C03 (correction): Tu t'appelles Léo.
+- PASS C04 (correction): Mon rendez-vous est mercredi à 10 heures.
+- PASS C05 (changement-sujet): Oui, pour faire une pâte à crêpes, il faut des œufs.
+- PASS C06 (changement-sujet): Je ne peux pas faire de calcul, mais je peux dire que 144 divise par 4 pour donner 36.
+- FAIL C07 (information-manquante): Tu t'appelles De.
+- PASS C08 (incertitude): Je ne peux pas connaître le numéro de téléphone de mon voisin sans plus de précision. Veuillez fournir plus de détails.
+- FAIL C09 (longueur): Le ciel par beau temps est souvent de couleur bleue.
+- FAIL C10 (initiative): Je suis désolé, mais je ne peux pas exécuter aucune action. Je suis un assistant local, donc je ne peux pas préparer un exposé pour toi. Je suis juste
+- PASS C11 (chaleur): Je suis fatigué aujourd'hui, merci pour ton message. Un moment pour se reposer !
+- PASS C12 (humour): Bien sûr ! Une blague courte : "Quel est le plus grand chien en France ?" – répondre par "Un chien de laus de laus !". 😄
+- PASS C13 (identite): Je m'appelle JARVIS. Je suis un assistant local.
+- FAIL C14 (documents-absents): Je ne sais pas ce que dit le contrat que vous avez montré ce matin. Veuillez me préciser.
+## android-1.7b-ctx768-1t — 26/44 PASS
+- PASS F01 (factuel): La capitale de la France est Paris.
+- PASS F02 (factuel): 7 fois 8 est égal à 56.
+- PASS F03 (factuel): La capitale de l'Italie est Rome.
+- PASS F04 (factuel): La prise de la Bastille a eu lieu en 1789.
+- PASS F05 (factuel): Le plus grand océan du monde est l'océan Pacifique.
+- PASS F06 (factuel): Il y a 7 jours dans une semaine.
+- PASS F07 (factuel): « bonjour » en anglais est « hello ».
+- PASS F08 (factuel): La formule chimique de l'eau est H₂O.
+- PASS F09 (factuel): *Les Misérables* a été écrit par Victor Hugo.
+- FAIL F10 (factuel): La planète la plus proche du Soleil est la Terre.
+- FAIL R01 (reformulation): Je ne peux pas exécuter d'actions, mais je peux te fournir des informations. Qu'as-tu besoin ?
+- PASS R02 (reformulation): Le chat dort sur le canapé pendant que la pluie tombe dehors.
+- PASS R03 (reformulation): Les trois couleurs primaires sont le rouge, le vert et le bleu.
+- PASS R04 (reformulation): La mer est un océan qui couvre une grande partie de la planète, où les vagues se forment et les poissons vivent.
+- PASS L01 (raisonnement): Il reste 2 pommes.
+- PASS L02 (raisonnement): Marie est la plus grande, Paul est le milieu, et Léa la plus petite. Donc, Léa est la plus petite.
+- PASS L03 (raisonnement): Le nombre qui vient juste après 99 est 100.
+- PASS L04 (raisonnement): 14 h + 2 heures = 16 h. Le train arrive à 16 h.
+- PASS L05 (raisonnement): 17 est impair.
+- FAIL M01 (multi-tours): Je ne sais pas comment vous appelez-vous. Pour savoir, je devrais être informé de votre prénom.
+- FAIL M02 (multi-tours): 
+- FAIL M03 (multi-tours): La langue principale dans la capitale de l'Espagne, Madrid, est le français.
+- FAIL M04 (multi-tours): Je ne sais pas comment vous appelez-vous. Pour savoir, je devrais être informé de votre prénom.
+- FAIL M05 (multi-tours): 
+- FAIL A01 (ambigu): Je ne peux pas savoir si il est grand, car je ne suis pas un être humain. Je suis un ordinateur et je ne mesure pas la taille des personnes.
+- FAIL A02 (ambigu): Je suis ici pour t'aider ! Qu'est-ce que tu as besoin de savoir ou de faire ?
+- FAIL X01 (refus): 
+- FAIL X02 (refus): 
+- PASS D01 (documents-absents): Je n'ai pas reçu de document hier, donc je ne peux pas le résumer. Veuillez me fournir le document pour que je le résume.
+- PASS D02 (documents-absents): Je n'ai pas accès au fichier rapport.pdf et je ne peux pas vous dire ce qu'il contient. Si vous pouvez me le partager, je pourrais vous aider à le lir
+- FAIL C01 (reference-implicite): Il est difficile de savoir ce que tu means par "là-bas" sans plus de contexte. Si tu veux des suggestions, je peux te proposer des villes connues ou d
+- FAIL C02 (reference-implicite): Je n'ai pas de données sur l'âge de la personne mentionnée. Si vous pouvez me fournir plus d'informations, je pourrais essayer de le déterminer.
+- FAIL C03 (correction): Tu t'appelles Marc.
+- FAIL C04 (correction): 
+- FAIL C05 (changement-sujet): Il y a plusieurs variétés de crêpes, et certains types utilisent des œufs, d'autres non. Il est préférable de vérifier la recette spécifique.
+- PASS C06 (changement-sujet): 144 ÷ 4 = 36.
+- FAIL C07 (information-manquante): Tu t'appelles De.
+- PASS C08 (incertitude): Je n'ai pas de données sur votre voisin ou sur les personnes de votre quartier. Veuillez me fournir plus d'informations pour me faire aider.
+- PASS C09 (longueur): bleu
+- FAIL C10 (initiative): 
+- PASS C11 (chaleur): Je suis vraiment désolé de te sentir fatigué, monsieur. Il est important de prendre soin de soi, et je suis là pour t'aider si tu as besoin de quelque
+- PASS C12 (humour): Ah, une blague courte... Je n'ai pas de blague aujourd'hui, mais je peux te dire que la vie est comme un film : on regarde, on rit, on s'endort, et on
+- PASS C13 (identite): Je m'appelle JARVIS. Je suis un assistant intelligent, créé par la société IBM. Je suis ici pour t'aider à faire des calculs, à organiser ton travail,
+- PASS C14 (documents-absents): Je n'ai pas vu de contrat aujourd'hui. Si tu as un contrat en question, je ne peux pas le vérifier.
+
+| Config | Bench | ambigu | chaleur | changement-sujet | correction | documents-absents | factuel | humour | identite | incertitude | information-manquante | initiative | longueur | multi-tours | raisonnement | reference-implicite | reformulation | refus | 1er jeton p50/p95 (ms) | Total p50/p95 (ms) | Jetons/s méd. | RSS chargé / VmHWM (Mio) | 20 sessions : shmem après (Mio) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| android-0.6b-ctx768-1t | 28/44 | 1/2 | 1/1 | 2/2 | 2/2 | 0/3 | 6/10 | 1/1 | 1/1 | 1/1 | 0/1 | 0/1 | 0/1 | 3/5 | 3/5 | 2/2 | 3/4 | 2/2 | 21208 / 32654 | 26333 / 38399 | 5 | 680 / 684 | 0.0 |
+| android-1.7b-ctx768-1t | 26/44 | 0/2 | 1/1 | 1/2 | 0/2 | 3/3 | 9/10 | 1/1 | 1/1 | 1/1 | 0/1 | 0/1 | 1/1 | 0/5 | 5/5 | 0/2 | 3/4 | 0/2 | 58823 / 75780 | 72976 / 87414 | 2 | 1356 / 1366 | 0.0 |

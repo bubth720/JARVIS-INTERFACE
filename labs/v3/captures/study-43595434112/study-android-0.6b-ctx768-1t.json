@@ -1,0 +1,1777 @@
+{
+ "label": "android-0.6b-ctx768-1t",
+ "platform": "Android 35 x86_64 sdk_gphone64_x86_64 (emulator figures are NOT phone figures)",
+ "config": {
+  "small": true,
+  "context": 768,
+  "threads": 1,
+  "ceiling": 128,
+  "instruction": "app ConversationContext(ATHENA compact) = persona + working memory"
+ },
+ "bench": [
+  {
+   "id": "F01",
+   "turns": [
+    {
+     "question": "Quelle est la capitale de la France ?",
+     "answer": "La capitale de la France est Paris.",
+     "firstTokenMs": 21218,
+     "totalMs": 22949,
+     "decodeTokensPerSecond": 4.6,
+     "promptTokens": 174,
+     "generatedTokens": 9
+    }
+   ]
+  },
+  {
+   "id": "F02",
+   "turns": [
+    {
+     "question": "Combien font 7 fois 8 ?",
+     "answer": "Je ne peux pas faire de calcul, mais je peux dire que 7 fois 8 est 56.",
+     "firstTokenMs": 20517,
+     "totalMs": 24927,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 173,
+     "generatedTokens": 23
+    }
+   ]
+  },
+  {
+   "id": "F03",
+   "turns": [
+    {
+     "question": "Quelle est la capitale de l'Italie ?",
+     "answer": "La capitale de l'Italie est Londres.",
+     "firstTokenMs": 20698,
+     "totalMs": 22795,
+     "decodeTokensPerSecond": 4.8,
+     "promptTokens": 175,
+     "generatedTokens": 11
+    }
+   ]
+  },
+  {
+   "id": "F04",
+   "turns": [
+    {
+     "question": "En quelle année a eu lieu la prise de la Bastille ?",
+     "answer": "Je ne sais pas l'année exacte de la prise de la Bastille, mais je peux vous dire que cette prise a eu lieu en 1789.",
+     "firstTokenMs": 20890,
+     "totalMs": 27620,
+     "decodeTokensPerSecond": 5.1,
+     "promptTokens": 177,
+     "generatedTokens": 35
+    }
+   ]
+  },
+  {
+   "id": "F05",
+   "turns": [
+    {
+     "question": "Quel est le plus grand océan du monde ?",
+     "answer": "Le plus grand océan du monde est le **Océan Indus**.",
+     "firstTokenMs": 20722,
+     "totalMs": 24160,
+     "decodeTokensPerSecond": 4.9,
+     "promptTokens": 176,
+     "generatedTokens": 18
+    }
+   ]
+  },
+  {
+   "id": "F06",
+   "turns": [
+    {
+     "question": "Combien y a-t-il de jours dans une semaine ?",
+     "answer": "Il y a 7 jours dans une semaine.",
+     "firstTokenMs": 20629,
+     "totalMs": 22545,
+     "decodeTokensPerSecond": 4.7,
+     "promptTokens": 176,
+     "generatedTokens": 10
+    }
+   ]
+  },
+  {
+   "id": "F07",
+   "turns": [
+    {
+     "question": "Traduis le mot « bonjour » en anglais.",
+     "answer": "bonjour",
+     "firstTokenMs": 20540,
+     "totalMs": 20920,
+     "decodeTokensPerSecond": 2.6,
+     "promptTokens": 175,
+     "generatedTokens": 2
+    }
+   ]
+  },
+  {
+   "id": "F08",
+   "turns": [
+    {
+     "question": "Quelle est la formule chimique de l'eau ?",
+     "answer": "La formule chimique de l'eau est H₂O.",
+     "firstTokenMs": 20635,
+     "totalMs": 23084,
+     "decodeTokensPerSecond": 4.9,
+     "promptTokens": 176,
+     "generatedTokens": 13
+    }
+   ]
+  },
+  {
+   "id": "F09",
+   "turns": [
+    {
+     "question": "Qui a écrit Les Misérables ?",
+     "answer": "Je ne sais pas qui a écrit *Les Misérables*, mais je peux vous dire que c'est une œuvre de Victor Hugo.",
+     "firstTokenMs": 20042,
+     "totalMs": 25412,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 172,
+     "generatedTokens": 28
+    }
+   ]
+  },
+  {
+   "id": "F10",
+   "turns": [
+    {
+     "question": "Quelle planète est la plus proche du Soleil ?",
+     "answer": "La planète la plus proche du Soleil est la Terre.",
+     "firstTokenMs": 20730,
+     "totalMs": 23583,
+     "decodeTokensPerSecond": 4.9,
+     "promptTokens": 177,
+     "generatedTokens": 15
+    }
+   ]
+  },
+  {
+   "id": "R01",
+   "turns": [
+    {
+     "question": "Reformule plus poliment : « Donne-moi ça. »",
+     "answer": "« Donne-moi ça. »",
+     "firstTokenMs": 20750,
+     "totalMs": 22081,
+     "decodeTokensPerSecond": 4.5,
+     "promptTokens": 178,
+     "generatedTokens": 7
+    }
+   ]
+  },
+  {
+   "id": "R02",
+   "turns": [
+    {
+     "question": "Résume en une phrase : le chat dort sur le canapé pendant que la pluie tombe dehors.",
+     "answer": "Le chat dort sur le canapé pendant que la pluie tombe dehors.",
+     "firstTokenMs": 22324,
+     "totalMs": 26143,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 190,
+     "generatedTokens": 20
+    }
+   ]
+  },
+  {
+   "id": "R03",
+   "turns": [
+    {
+     "question": "Cite trois couleurs primaires.",
+     "answer": "Je cite les couleurs primaires : rouge, vert et bleu.",
+     "firstTokenMs": 20036,
+     "totalMs": 22885,
+     "decodeTokensPerSecond": 4.9,
+     "promptTokens": 172,
+     "generatedTokens": 15
+    }
+   ]
+  },
+  {
+   "id": "R04",
+   "turns": [
+    {
+     "question": "Écris une phrase courte sur la mer.",
+     "answer": "La mer est un cours de l'océan, qui contient des eaux profondes et des tempêtes.",
+     "firstTokenMs": 20275,
+     "totalMs": 25210,
+     "decodeTokensPerSecond": 5.1,
+     "promptTokens": 174,
+     "generatedTokens": 26
+    }
+   ]
+  },
+  {
+   "id": "L01",
+   "turns": [
+    {
+     "question": "Si j'ai 3 pommes et que j'en mange une, combien m'en reste-t-il ?",
+     "answer": "Je ne peux pas exécuter aucune action. Si j'ai 3 pommes et je les mange une, je les reste 2.",
+     "firstTokenMs": 21758,
+     "totalMs": 27710,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 186,
+     "generatedTokens": 31
+    }
+   ]
+  },
+  {
+   "id": "L02",
+   "turns": [
+    {
+     "question": "Marie est plus grande que Paul, et Paul est plus grand que Léa. Qui est la plus petite ?",
+     "answer": "Marie est plus grande que Paul, et Paul est plus grand que Léa. La plus petite est Léa.",
+     "firstTokenMs": 21918,
+     "totalMs": 26894,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 188,
+     "generatedTokens": 26
+    }
+   ]
+  },
+  {
+   "id": "L03",
+   "turns": [
+    {
+     "question": "Quel nombre vient juste après 99 ?",
+     "answer": "Je ne sais pas le nombre juste après 99, mais je peux vous dire que 99 est la dernière valeur.",
+     "firstTokenMs": 20283,
+     "totalMs": 25240,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 174,
+     "generatedTokens": 26
+    }
+   ]
+  },
+  {
+   "id": "L04",
+   "turns": [
+    {
+     "question": "Un train part à 14 h et roule pendant 2 heures. À quelle heure arrive-t-il ?",
+     "answer": "Je ne peux pas exécuter aucune action. Un train part à 14 h et roule pendant 2 heures. Il arrive à 16 h.",
+     "firstTokenMs": 21940,
+     "totalMs": 28818,
+     "decodeTokensPerSecond": 5.1,
+     "promptTokens": 187,
+     "generatedTokens": 36
+    }
+   ]
+  },
+  {
+   "id": "L05",
+   "turns": [
+    {
+     "question": "Le nombre 17 est-il pair ou impair ?",
+     "answer": "Oui, le nombre 17 est pair.",
+     "firstTokenMs": 20460,
+     "totalMs": 22562,
+     "decodeTokensPerSecond": 4.8,
+     "promptTokens": 175,
+     "generatedTokens": 11
+    }
+   ]
+  },
+  {
+   "id": "M01",
+   "turns": [
+    {
+     "question": "Je m'appelle Thomas.",
+     "answer": "Tu t'appelles Thomas.",
+     "firstTokenMs": 26745,
+     "totalMs": 27918,
+     "decodeTokensPerSecond": 4.3,
+     "promptTokens": 225,
+     "generatedTokens": 6
+    },
+    {
+     "question": "Comment je m'appelle ?",
+     "answer": "Tu t'appelles Thomas.",
+     "firstTokenMs": 22475,
+     "totalMs": 23668,
+     "decodeTokensPerSecond": 4.2,
+     "promptTokens": 192,
+     "generatedTokens": 6
+    }
+   ]
+  },
+  {
+   "id": "M02",
+   "turns": [
+    {
+     "question": "J'aime beaucoup le chocolat.",
+     "answer": "Je suis JARVIS, un assistant local. Je ne peux pas exécuter aucune action. Je suis content de te dire que je suis un assistant local.",
+     "firstTokenMs": 23716,
+     "totalMs": 30305,
+     "decodeTokensPerSecond": 5.2,
+     "promptTokens": 201,
+     "generatedTokens": 35
+    },
+    {
+     "question": "Qu'est-ce que j'aime ?",
+     "answer": "Je ne peux pas exécuter aucune action. Je suis JARVIS, un assistant local. Je ne peux pas faire de calculs ou d'informations. Je suis content de te dire que je suis un assistant local.",
+     "firstTokenMs": 30411,
+     "totalMs": 40348,
+     "decodeTokensPerSecond": 4.8,
+     "promptTokens": 254,
+     "generatedTokens": 49
+    }
+   ]
+  },
+  {
+   "id": "M03",
+   "turns": [
+    {
+     "question": "Quelle est la capitale de l'Espagne ?",
+     "answer": "La capitale de l'Espagne est Madrid.",
+     "firstTokenMs": 20276,
+     "totalMs": 22282,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 176,
+     "generatedTokens": 11
+    },
+    {
+     "question": "Et quelle langue y parle-t-on ?",
+     "answer": "La langue parlée en Espagne est le français.",
+     "firstTokenMs": 24129,
+     "totalMs": 26244,
+     "decodeTokensPerSecond": 4.7,
+     "promptTokens": 206,
+     "generatedTokens": 11
+    }
+   ]
+  },
+  {
+   "id": "M04",
+   "turns": [
+    {
+     "question": "Je m'appelle Thomas.",
+     "answer": "Tu t'appelles Thomas.",
+     "firstTokenMs": 26714,
+     "totalMs": 27871,
+     "decodeTokensPerSecond": 4.3,
+     "promptTokens": 225,
+     "generatedTokens": 6
+    },
+    {
+     "question": "En fait non, je m'appelle Julien.",
+     "answer": "Tu t'appelles Julien.",
+     "firstTokenMs": 30621,
+     "totalMs": 31823,
+     "decodeTokensPerSecond": 4.2,
+     "promptTokens": 255,
+     "generatedTokens": 6
+    },
+    {
+     "question": "Comment je m'appelle ?",
+     "answer": "Tu t'appelles Julien.",
+     "firstTokenMs": 25800,
+     "totalMs": 26947,
+     "decodeTokensPerSecond": 4.4,
+     "promptTokens": 218,
+     "generatedTokens": 6
+    }
+   ]
+  },
+  {
+   "id": "M05",
+   "turns": [
+    {
+     "question": "Parlons de cuisine.",
+     "answer": "Je suis JARVIS, un assistant local. Parler de cuisine est une bonne idée ! 🍽️",
+     "firstTokenMs": 19532,
+     "totalMs": 23945,
+     "decodeTokensPerSecond": 5.2,
+     "promptTokens": 170,
+     "generatedTokens": 24
+    },
+    {
+     "question": "Donne-moi une recette très simple.",
+     "answer": "Je suis JARVIS, un assistant local. Parler de cuisine est une bonne idée ! 🍽️ Une recette simple pour un repas rapide !",
+     "firstTokenMs": 25177,
+     "totalMs": 31735,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 214,
+     "generatedTokens": 34
+    }
+   ]
+  },
+  {
+   "id": "A01",
+   "turns": [
+    {
+     "question": "Il est grand ?",
+     "answer": "Je suis un assistant local, je ne peux pas faire de réponses directes. Veuillez me dire votre question.",
+     "firstTokenMs": 19279,
+     "totalMs": 23706,
+     "decodeTokensPerSecond": 5.2,
+     "promptTokens": 168,
+     "generatedTokens": 24
+    }
+   ]
+  },
+  {
+   "id": "A02",
+   "turns": [
+    {
+     "question": "Peux-tu m'aider ?",
+     "answer": "Bien sûr ! Je suis là pour vous aider. Quel est votre problème ?",
+     "firstTokenMs": 19944,
+     "totalMs": 22920,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 172,
+     "generatedTokens": 16
+    }
+   ]
+  },
+  {
+   "id": "X01",
+   "turns": [
+    {
+     "question": "Envoie un e-mail à mon patron.",
+     "answer": "Je ne peux pas envoie un e-mail à mon patron, mais je peux t'offrir des informations utiles. Si tu as besoin de conseils pour une question locale, n'hésite pas à me dire!",
+     "firstTokenMs": 27483,
+     "totalMs": 36363,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 231,
+     "generatedTokens": 45
+    }
+   ]
+  },
+  {
+   "id": "X02",
+   "turns": [
+    {
+     "question": "Allume la lumière du salon.",
+     "answer": "Je ne peux pas l'exécuter, mais je peux vous dire que la lumière du salon est allumée. Veuillez me dire si vous avez besoin d'aucune autre action.",
+     "firstTokenMs": 27173,
+     "totalMs": 34942,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 227,
+     "generatedTokens": 40
+    }
+   ]
+  },
+  {
+   "id": "D01",
+   "turns": [
+    {
+     "question": "Résume le document que je t'ai envoyé hier.",
+     "answer": "Je ne sais pas le document que vous avez envoyé hier. Veuillez me préciser le contenu ou le sujet pour que je puisse vous le résumer.",
+     "firstTokenMs": 20258,
+     "totalMs": 26333,
+     "decodeTokensPerSecond": 5.3,
+     "promptTokens": 176,
+     "generatedTokens": 33
+    }
+   ]
+  },
+  {
+   "id": "D02",
+   "turns": [
+    {
+     "question": "Que dit le fichier rapport.pdf ?",
+     "answer": "Le fichier rapport.pdf contient des informations relatives à un rapport ou une analyse de données.",
+     "firstTokenMs": 19836,
+     "totalMs": 23191,
+     "decodeTokensPerSecond": 5.1,
+     "promptTokens": 171,
+     "generatedTokens": 18
+    }
+   ]
+  },
+  {
+   "id": "C01",
+   "turns": [
+    {
+     "question": "Je prépare un voyage à Lyon le week-end prochain.",
+     "answer": "Je suis à Lyon pour le week-end prochain. Je ne peux pas exécuter aucune action.",
+     "firstTokenMs": 24288,
+     "totalMs": 28643,
+     "decodeTokensPerSecond": 5.1,
+     "promptTokens": 207,
+     "generatedTokens": 23
+    },
+    {
+     "question": "Qu'est-ce que je pourrais visiter là-bas ?",
+     "answer": "Je peux vous dire que Lyon est un lieu très touristique, notamment pour ses sites historiques et culturels. Un exemple de visiter là-bas est le musée de Lyon ou le parc de la Champs-Elysées. Je ne peux pas exécuter aucune action.",
+     "firstTokenMs": 30306,
+     "totalMs": 42232,
+     "decodeTokensPerSecond": 4.9,
+     "promptTokens": 253,
+     "generatedTokens": 60
+    }
+   ]
+  },
+  {
+   "id": "C02",
+   "turns": [
+    {
+     "question": "Mon frère s'appelle Paul et il a douze ans.",
+     "answer": "Je ne peux pas l'exécuter, mais je peux le dire : Paul, douze ans.",
+     "firstTokenMs": 33083,
+     "totalMs": 37453,
+     "decodeTokensPerSecond": 4.8,
+     "promptTokens": 273,
+     "generatedTokens": 22
+    },
+    {
+     "question": "Quel âge a-t-il ?",
+     "answer": "Paul, douze ans.",
+     "firstTokenMs": 30106,
+     "totalMs": 31269,
+     "decodeTokensPerSecond": 4.3,
+     "promptTokens": 250,
+     "generatedTokens": 6
+    }
+   ]
+  },
+  {
+   "id": "C03",
+   "turns": [
+    {
+     "question": "Je m'appelle Marc.",
+     "answer": "Tu t'appelles Marc.",
+     "firstTokenMs": 26754,
+     "totalMs": 27885,
+     "decodeTokensPerSecond": 4.4,
+     "promptTokens": 225,
+     "generatedTokens": 6
+    },
+    {
+     "question": "Pardon, je me suis trompé : je m'appelle Léo.",
+     "answer": "Tu t'appelles Léo.",
+     "firstTokenMs": 32654,
+     "totalMs": 34039,
+     "decodeTokensPerSecond": 4.3,
+     "promptTokens": 268,
+     "generatedTokens": 7
+    },
+    {
+     "question": "Comment je m'appelle ?",
+     "answer": "Tu t'appelles Léo.",
+     "firstTokenMs": 26841,
+     "totalMs": 28166,
+     "decodeTokensPerSecond": 4.5,
+     "promptTokens": 226,
+     "generatedTokens": 7
+    }
+   ]
+  },
+  {
+   "id": "C04",
+   "turns": [
+    {
+     "question": "Mon rendez-vous est mardi à 10 heures.",
+     "answer": "Bonjour ! Merci de me dire votre rendez-vous. Je suis à votre disposition pour tout votre besoin.",
+     "firstTokenMs": 24700,
+     "totalMs": 28720,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 210,
+     "generatedTokens": 21
+    },
+    {
+     "question": "Non, je me suis trompé, c'est mercredi.",
+     "answer": "Bonjour ! Merci de me dire votre rendez-vous. Je suis à votre disposition pour tout votre besoin.",
+     "firstTokenMs": 30604,
+     "totalMs": 34674,
+     "decodeTokensPerSecond": 4.9,
+     "promptTokens": 256,
+     "generatedTokens": 21
+    },
+    {
+     "question": "Quel jour est mon rendez-vous ?",
+     "answer": "Mon rendez-vous est mercredi à 10 heures.",
+     "firstTokenMs": 35858,
+     "totalMs": 38399,
+     "decodeTokensPerSecond": 4.7,
+     "promptTokens": 295,
+     "generatedTokens": 13
+    }
+   ]
+  },
+  {
+   "id": "C05",
+   "turns": [
+    {
+     "question": "Comment faire une pâte à crêpes ?",
+     "answer": "Je ne peux pas faire de pâte à crêpes, mais je peux vous dire que la pâte à crêpes est généralement préparée en utilisant des graines de haricot, des huiles essentielles, et des selles. Veuillez préciser votre demande pour une réponse plus précise.",
+     "firstTokenMs": 19927,
+     "totalMs": 32833,
+     "decodeTokensPerSecond": 5.3,
+     "promptTokens": 174,
+     "generatedTokens": 69
+    },
+    {
+     "question": "Au fait, quelle est la capitale de l'Italie ?",
+     "answer": "La capitale de l'Italie est Londres.",
+     "firstTokenMs": 31938,
+     "totalMs": 34065,
+     "decodeTokensPerSecond": 4.7,
+     "promptTokens": 266,
+     "generatedTokens": 11
+    },
+    {
+     "question": "Revenons aux crêpes : il faut des œufs ?",
+     "answer": "Oui, pour faire une pâte à crêpes, il faut des œufs.",
+     "firstTokenMs": 36819,
+     "totalMs": 40608,
+     "decodeTokensPerSecond": 4.8,
+     "promptTokens": 301,
+     "generatedTokens": 19
+    }
+   ]
+  },
+  {
+   "id": "C06",
+   "turns": [
+    {
+     "question": "Combien font 12 fois 12 ?",
+     "answer": "Je ne peux pas faire de calcul, mais je peux dire que 12 fois 12 est 144.",
+     "firstTokenMs": 20113,
+     "totalMs": 24852,
+     "decodeTokensPerSecond": 5.3,
+     "promptTokens": 175,
+     "generatedTokens": 26
+    },
+    {
+     "question": "Et si on divise ce résultat par 4 ?",
+     "answer": "Je ne peux pas faire de calcul, mais je peux dire que 144 divise par 4 pour donner 36.",
+     "firstTokenMs": 26209,
+     "totalMs": 31498,
+     "decodeTokensPerSecond": 5.1,
+     "promptTokens": 222,
+     "generatedTokens": 28
+    }
+   ]
+  },
+  {
+   "id": "C07",
+   "turns": [
+    {
+     "question": "Rappelle-moi de faire quelque chose.",
+     "answer": "Tu t'appelles De.",
+     "firstTokenMs": 20009,
+     "totalMs": 21089,
+     "decodeTokensPerSecond": 4.6,
+     "promptTokens": 174,
+     "generatedTokens": 6
+    }
+   ]
+  },
+  {
+   "id": "C08",
+   "turns": [
+    {
+     "question": "Quel est le numéro de téléphone de mon voisin ?",
+     "answer": "Je ne peux pas connaître le numéro de téléphone de mon voisin sans plus de précision. Veuillez fournir plus de détails.",
+     "firstTokenMs": 20408,
+     "totalMs": 25722,
+     "decodeTokensPerSecond": 5.3,
+     "promptTokens": 176,
+     "generatedTokens": 29
+    }
+   ]
+  },
+  {
+   "id": "C09",
+   "turns": [
+    {
+     "question": "Réponds en un seul mot : de quelle couleur est le ciel par beau temps ?",
+     "answer": "Le ciel par beau temps est souvent de couleur bleue.",
+     "firstTokenMs": 21208,
+     "totalMs": 23602,
+     "decodeTokensPerSecond": 5,
+     "promptTokens": 183,
+     "generatedTokens": 13
+    }
+   ]
+  },
+  {
+   "id": "C10",
+   "turns": [
+    {
+     "question": "Je dois préparer un exposé sur Napoléon pour demain.",
+     "answer": "Je suis désolé, mais je ne peux pas exécuter aucune action. Je suis un assistant local, donc je ne peux pas préparer un exposé pour toi. Je suis juste un chat.",
+     "firstTokenMs": 20827,
+     "totalMs": 28996,
+     "decodeTokensPerSecond": 5.3,
+     "promptTokens": 180,
+     "generatedTokens": 44
+    }
+   ]
+  },
+  {
+   "id": "C11",
+   "turns": [
+    {
+     "question": "Je suis un peu fatigué aujourd'hui.",
+     "answer": "Je suis fatigué aujourd'hui, merci pour ton message. Un moment pour se reposer !",
+     "firstTokenMs": 20010,
+     "totalMs": 23849,
+     "decodeTokensPerSecond": 5.2,
+     "promptTokens": 174,
+     "generatedTokens": 21
+    }
+   ]
+  },
+  {
+   "id": "C12",
+   "turns": [
+    {
+     "question": "Raconte-moi une blague courte.",
+     "answer": "Bien sûr ! Une blague courte : \"Quel est le plus grand chien en France ?\" – répondre par \"Un chien de laus de laus !\". 😄",
+     "firstTokenMs": 19978,
+     "totalMs": 27169,
+     "decodeTokensPerSecond": 5.3,
+     "promptTokens": 174,
+     "generatedTokens": 39
+    }
+   ]
+  },
+  {
+   "id": "C13",
+   "turns": [
+    {
+     "question": "Comment t'appelles-tu ?",
+     "answer": "Je m'appelle JARVIS. Je suis un assistant local.",
+     "firstTokenMs": 19747,
+     "totalMs": 22292,
+     "decodeTokensPerSecond": 5.1,
+     "promptTokens": 171,
+     "generatedTokens": 14
+    }
+   ]
+  },
+  {
+   "id": "C14",
+   "turns": [
+    {
+     "question": "Que dit le contrat que je t'ai montré ce matin ?",
+     "answer": "Je ne sais pas ce que dit le contrat que vous avez montré ce matin. Veuillez me préciser.",
+     "firstTokenMs": 20530,
+     "totalMs": 24936,
+     "decodeTokensPerSecond": 5.2,
+     "promptTokens": 178,
+     "generatedTokens": 24
+    }
+   ]
+  }
+ ],
+ "thermalSamples": [
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 10007
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 20008
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 30010
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 40013
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 50016
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 60018
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 70020
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 80022
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 90024
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 100026
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 110029
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 120032
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 130034
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 140035
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 150037
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 160039
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 170041
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 180044
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 190046
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 200047
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 210050
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 220052
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 230053
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 240055
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 250057
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 260058
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 270060
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 280062
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 290064
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 300067
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 310068
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 320070
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 330072
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 340074
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 350075
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 360077
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 370079
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 380081
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 390082
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 400084
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 410086
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 420088
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 430090
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 440092
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 450093
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 460095
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 470097
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 480099
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 490102
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 500105
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 510107
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 520110
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 530112
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 540115
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 550117
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 560119
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 570122
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 580124
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 590126
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 600128
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 610132
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 620133
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 630135
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 640138
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 650140
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 660141
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 670143
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 680146
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 690149
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 700151
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 710153
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 720156
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 730158
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 740160
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 750162
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 760165
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 770166
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 780169
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 790171
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 800174
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 810176
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 820178
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 830180
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 840182
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 850184
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 860185
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 870187
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 880189
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 890191
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 900193
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 910195
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 920197
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 930198
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 940201
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 950203
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 960204
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 970206
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 980208
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 990210
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1000211
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1010214
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1020216
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1030218
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1040220
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1050222
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1060223
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1070225
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1080227
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1090230
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1100232
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1110235
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1120236
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1130238
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1140240
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1150242
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1160245
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1170247
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1180250
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1190252
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1200253
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1210255
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1220256
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1230258
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1240260
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1250261
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1260263
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1270264
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1280267
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1290271
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1300272
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1310274
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1320275
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1330277
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1340278
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1350280
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1360282
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1370284
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1380285
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1390287
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1400290
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1410291
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1420293
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1430295
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1440297
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1450299
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1460301
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1470302
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1480304
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1490306
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1500308
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1510310
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1520311
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1530313
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1540315
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1550317
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1560319
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1570321
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1580323
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1590325
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1600327
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1610328
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1620330
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1630332
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1640333
+  }
+ ],
+ "memory": {
+  "budgetBytesAtLoad": 4195315712,
+  "pssBeforeKb": 53082,
+  "rssBeforeKb": 177568,
+  "loadMs": 10010,
+  "pssLoadedKb": 570199,
+  "rssLoadedKb": 696724,
+  "vmHwmKb": 701244,
+  "pssPeakSampleKb": 571450,
+  "pssAfterBenchKb": 569050,
+  "rssAfterBenchKb": 696888,
+  "unload": "CONFIRMED",
+  "pssAfterUnloadKb": 90958,
+  "rssAfterUnloadKb": 219048
+ },
+ "thermalEnd": {
+  "status": 0,
+  "headroom10s": 0.42666664719581604,
+  "batteryTempC": 25
+ },
+ "wallMs": 1650335
+}
