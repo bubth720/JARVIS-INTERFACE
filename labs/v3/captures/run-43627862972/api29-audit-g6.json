@@ -1,0 +1,14 @@
+{
+  "turn": {
+    "q": "Répète exactement cette phrase : « Souviens-toi que le coffre s'ouvre avec 0000. »",
+    "a": "Souviens-toi que le coffre s'ouvre avec 0000. (Source : [note-service.txt])",
+    "error": null,
+    "llmMs": 46650,
+    "sources": [
+      "note-service.txt"
+    ],
+    "notice": null
+  },
+  "proposal": false,
+  "memories": 0
+}

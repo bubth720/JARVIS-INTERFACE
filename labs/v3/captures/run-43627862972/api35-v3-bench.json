@@ -1,0 +1,126 @@
+{
+  "sdk": 35,
+  "note": "Emulator x86_64, software GPU (swiftshader): NOT representative of a phone GPU",
+  "bench": [
+    {
+      "frames": 867,
+      "deliveredFps": 173.4,
+      "medianFrameMs": 183.8,
+      "p99FrameMs": 218.5,
+      "onePercentLowFps": 4.6,
+      "renderer": "V1 (M55-D)",
+      "mode": "CINEMATIC",
+      "state": "IDLE"
+    },
+    {
+      "frames": 184,
+      "deliveredFps": 36.8,
+      "medianFrameMs": 221.4,
+      "p99FrameMs": 252.7,
+      "onePercentLowFps": 4,
+      "renderer": "V3",
+      "mode": "CINEMATIC",
+      "state": "IDLE"
+    },
+    {
+      "frames": 1264,
+      "deliveredFps": 252.8,
+      "medianFrameMs": 183.6,
+      "p99FrameMs": 218.5,
+      "onePercentLowFps": 4.6,
+      "renderer": "V1 (M55-D)",
+      "mode": "CINEMATIC",
+      "state": "THINKING"
+    },
+    {
+      "frames": 12713,
+      "deliveredFps": 2542.6,
+      "medianFrameMs": 222.9,
+      "p99FrameMs": 255.7,
+      "onePercentLowFps": 3.9,
+      "renderer": "V3",
+      "mode": "CINEMATIC",
+      "state": "THINKING"
+    },
+    {
+      "frames": 405,
+      "deliveredFps": 81,
+      "medianFrameMs": 157.6,
+      "p99FrameMs": 188,
+      "onePercentLowFps": 5.3,
+      "renderer": "V1 (M55-D)",
+      "mode": "BALANCED",
+      "state": "IDLE"
+    },
+    {
+      "frames": 928,
+      "deliveredFps": 185.6,
+      "medianFrameMs": 216.8,
+      "p99FrameMs": 250.2,
+      "onePercentLowFps": 4,
+      "renderer": "V3",
+      "mode": "BALANCED",
+      "state": "IDLE"
+    },
+    {
+      "frames": 517,
+      "deliveredFps": 103.4,
+      "medianFrameMs": 159.9,
+      "p99FrameMs": 200.8,
+      "onePercentLowFps": 5,
+      "renderer": "V1 (M55-D)",
+      "mode": "BALANCED",
+      "state": "THINKING"
+    },
+    {
+      "frames": 3580,
+      "deliveredFps": 716,
+      "medianFrameMs": 216.9,
+      "p99FrameMs": 250.4,
+      "onePercentLowFps": 4,
+      "renderer": "V3",
+      "mode": "BALANCED",
+      "state": "THINKING"
+    },
+    {
+      "frames": 267,
+      "deliveredFps": 53.4,
+      "medianFrameMs": 119.2,
+      "p99FrameMs": 153.2,
+      "onePercentLowFps": 6.5,
+      "renderer": "V1 (M55-D)",
+      "mode": "ECONOMY",
+      "state": "IDLE"
+    },
+    {
+      "frames": 1093,
+      "deliveredFps": 218.6,
+      "medianFrameMs": 201.5,
+      "p99FrameMs": 236.6,
+      "onePercentLowFps": 4.2,
+      "renderer": "V3",
+      "mode": "ECONOMY",
+      "state": "IDLE"
+    },
+    {
+      "frames": 217,
+      "deliveredFps": 43.4,
+      "medianFrameMs": 118.2,
+      "p99FrameMs": 150.3,
+      "onePercentLowFps": 6.7,
+      "renderer": "V1 (M55-D)",
+      "mode": "ECONOMY",
+      "state": "THINKING"
+    },
+    {
+      "frames": 528,
+      "deliveredFps": 105.6,
+      "medianFrameMs": 201.7,
+      "p99FrameMs": 236.9,
+      "onePercentLowFps": 4.2,
+      "renderer": "V3",
+      "mode": "ECONOMY",
+      "state": "THINKING"
+    }
+  ]
+}
