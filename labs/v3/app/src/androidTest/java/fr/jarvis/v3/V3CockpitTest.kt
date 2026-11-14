@@ -271,6 +271,89 @@ class V3CockpitTest {
         } } finally { write("v3-reduced.json", r) }
     }
 
+    /**
+     * CONVERSATION-01 acceptance 1–4 on the REAL engine (emulator, airplane mode): multi-turn context beyond the
+     * protected 3-exchange window, topic change and return, persona consistency, close then resume, persona switch,
+     * deletion. Hard assertions = deterministic properties (instruction content, journal, restored context, no
+     * error). Answer QUALITY of the 0.6B is measured and recorded (never asserted as if it were guaranteed).
+     */
+    @Test fun f_conversationContextPersonaResume() {
+        assumeTrue(args.getString("afterImport") != null)
+        Configurator.getInstance().setWaitForIdleTimeout(0)
+        val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("platform", "Android emulator x86_64 (NOT a phone), airplane mode")
+        val turns = JSONArray(); r.put("turns", turns)
+        val quality = JSONObject(); r.put("quality", quality)
+        fun ready() = waitUntil(360_000, "session ready") { ui.session?.phase == Phase.READY || ui.session?.phase == Phase.ERROR }.also {
+            assertEquals("load: ${main { ui.session?.status }}", Phase.READY, phase()) }
+        fun released() = waitUntil(60_000, "engine released") { app.previousReleased }
+        fun ask(q: String, check: String? = null, ok: (String) -> Boolean = { true }): String {
+            val n = main { ui.session!!.exchanges.size }
+            assertNotNull("turn refused: ${main { ui.session!!.status }}", main { ui.session!!.textTurn(q) })
+            waitUntil(420_000, "answer to '$q'") { ui.session!!.phase == Phase.READY && ui.session!!.exchanges.size > n }
+            val e = main { ui.session!!.exchanges.last() }
+            assertNull("engine error on '$q': ${e.error}", e.error); assertTrue("empty answer to '$q'", e.answer.isNotBlank())
+            val instr = main { ui.session!!.model.lastInstruction }.orEmpty()
+            val o = JSONObject().put("q", q).put("a", e.answer).put("llmMs", e.llmMs).put("firstTextMs", e.firstTextMs).put("instructionChars", instr.length)
+            if (check != null) { val pass = ok(e.answer); o.put("check", check).put("pass", pass); quality.put(check, pass) }
+            turns.put(o); return instr
+        }
+        fun Regex.has(s: String) = containsMatchIn(s)
+        try {
+            main { app.closeSession(); ui.session = null }; released()
+            main { app.applyPersona(fr.jarvis.v3.conv.PersonaSettings.ATHENA) }
+            val s0 = main { app.startSession().also { ui.session = it; it.voiceOutputEnabled = false } }; ready()
+            val id = s0.conversationId; r.put("conversationId", id)
+            // 1. Multi-turn context + correction; 2. topic change then return (older than the 3 exchanges the engine re-reads).
+            ask("Je m'appelle Marc.")
+            ask("Non pardon, je me suis trompé : je m'appelle Léo.")
+            ask("Mon frère s'appelle Paul et il a douze ans.")
+            ask("Quelle est la capitale de l'Italie ?", "capitale-italie") { Regex("(?i)rome").has(it) }
+            ask("Combien font 12 fois 12 ?", "calcul-144") { it.contains("144") }
+            ask("Et si on divise ce résultat par 4 ?", "reference-resultat-36") { it.contains("36") }
+            val brother = ask("Revenons à mon frère : quel âge a-t-il ?", "retour-sujet-age-frere") { Regex("(?i)douze|12").has(it) }
+            assertTrue("brother fact must reach the instruction beyond the 3-exchange window: $brother", brother.contains("frère : Paul, douze ans"))
+            val name = ask("Comment je m'appelle ?", "prenom-corrige") { it.contains("Léo") && !it.contains("Marc") }
+            assertTrue("corrected name must reach the instruction: $name", name.contains("prénom : Léo") && !name.contains("Marc"))
+            // 3. Persona consistency (Athéna = tutoiement): answers addressing the user with "vous" are counted.
+            val answers = main { ui.session!!.exchanges.map { it.answer } }
+            val vous = answers.count { Regex("(?i)\\b(vous|votre|vos)\\b").has(it) }
+            r.put("personaAthena", JSONObject().put("answers", answers.size).put("withVous", vous).put("introducesAsJarvisNotAthena", answers.none { it.contains("Athéna") }))
+            assertTrue("JARVIS must never call itself Athéna", answers.none { Regex("(?i)je (suis|m'appelle) ath[ée]na").has(it) })
+            main { shot("c-conv-01-contexte") }
+            // 4. Close, release, resume: exchanges and engine context come back.
+            val before = main { ui.session!!.exchanges.size }
+            main { app.closeSession(); ui.session = null }; released()
+            assertEquals(before, app.journal.read(id)!!.entries.size)
+            val s1 = main { app.startSession(id).also { ui.session = it; it.voiceOutputEnabled = false } }; ready()
+            assertEquals(before, main { s1.restoredCount }); assertEquals(id, s1.conversationId)
+            val resumed = ask("Tu te souviens de mon prénom ?", "reprise-prenom") { it.contains("Léo") }
+            assertTrue("resumed context must contain the stated facts: $resumed", resumed.contains("prénom : Léo"))
+            // Persona switch from the next turn (owner setting, persisted).
+            main { app.applyPersona(fr.jarvis.v3.conv.PersonaSettings.NEUTRAL.copy(tutoiement = false)) }
+            val neutral = ask("Quelle est la capitale de l'Espagne ?", "neutre-vouvoiement-madrid") { Regex("(?i)madrid").has(it) }
+            assertTrue("persona switch must apply to the next turn: $neutral", neutral.startsWith("Vouvoie"))
+            assertEquals("Neutre", app.personas.load().profileName)
+            main { app.applyPersona(fr.jarvis.v3.conv.PersonaSettings.ATHENA) }
+            // Resume from the cockpit itself (UI path).
+            main { app.closeSession(); ui.session = null }; released()
+            ActivityScenario.launch(CockpitActivity::class.java).use {
+                obj("resume", 30_000).click(); ready()
+                assertNotNull("restored exchanges shown", dev.wait(Until.findObject(By.textContains("échange précédent")), 20_000))
+                r.put("uiResume", main { ui.session!!.conversationId == id && ui.session!!.restoredCount > 0 })
+                assertTrue(r.getBoolean("uiResume")); shot("c-conv-02-reprise")
+                obj("radial").click(); SystemClock.sleep(700); obj("dest-settings").click(); SystemClock.sleep(900)
+                dev.findObject(By.res("panel-settings"))?.scroll(androidx.test.uiautomator.Direction.DOWN, 1f); SystemClock.sleep(500)
+                shot("c-conv-03-personnalite-historique"); assertTextsFit("settings: persona and history")
+                obj("panel-settings-close").click(); SystemClock.sleep(500)
+                main { app.closeSession(); ui.session = null }; released()
+            }
+            // Deletion removes the conversation (file) and its facts.
+            assertTrue(app.journal.delete(id)); assertNull(app.journal.read(id))
+            assertTrue(app.journal.list().none { it.id == id })
+            r.put("qualityPassed", quality.keys().asSequence().count { quality.getBoolean(it) }).put("qualityTotal", quality.length())
+        } finally { write("v3-conv.json", r) }
+    }
+
     /** Prototype captures of every state (labelled EXEMPLE) and before/after rendering cost, same box and state. */
     @Test fun e_galleryCapturesAndBeforeAfterBench() {
         val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("note", "Emulator x86_64, software GPU (swiftshader): NOT representative of a phone GPU")

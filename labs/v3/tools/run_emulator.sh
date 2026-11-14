@@ -31,6 +31,7 @@ pull() { adb exec-out run-as fr.jarvis.v3 cat "files/$1" > "$out/$1" 2>/dev/null
 run a_manifestSinglePermissionNoNetworkInstallable
 run b_firstLaunchThenVerifiedImport -e llmPath /data/local/tmp/v3-llm.gguf -e sttPath /data/local/tmp/v3-stt.bin -e ttsZip /data/local/tmp/v3-tts.zip; pull v3-first-launch.json
 run c_realEngineStatesCardsMenuLandscapeBackground -e afterImport 1 -e wav1 /data/local/tmp/v3-utt1.wav; pull v3-states.json
+run f_conversationContextPersonaResume -e afterImport 1; pull v3-conv.json
 anim 0; run d_reducedMotionStaticSphereAndFirstText -e afterImport 1; pull v3-reduced.json; anim 1
 run e_galleryCapturesAndBeforeAfterBench; pull v3-bench.json
 for f in $(adb shell run-as fr.jarvis.v3 ls files/v3shots 2>/dev/null | tr -d '\r'); do adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" > "$out/shots/api$api-$f"; done

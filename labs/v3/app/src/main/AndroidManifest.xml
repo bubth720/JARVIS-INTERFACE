@@ -2,7 +2,7 @@
     <!-- JARVIS V3 demonstration build (installable). Same single permission as V1: the microphone,
          requested at first use. No INTERNET. Separate package (fr.jarvis.v3): V1 stays installable side by side. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <application android:name="fr.jarvis.v1.V1App" android:label="JARVIS V3"
+    <application android:name="fr.jarvis.v3.conv.ConvApp" android:label="JARVIS V3"
         android:allowBackup="false" android:usesCleartextTraffic="false" android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity android:name="fr.jarvis.v3.CockpitActivity" android:exported="true"

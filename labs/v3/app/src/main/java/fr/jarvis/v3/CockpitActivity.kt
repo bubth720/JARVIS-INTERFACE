@@ -11,17 +11,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import fr.jarvis.v1.Phase
-import fr.jarvis.v1.V1App
+import fr.jarvis.v3.conv.ConvApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * JARVIS V3 holographic cockpit. The engine is the qualified V1 session (CORE → A02 LLM, whisper.cpp STT,
- * Pocket TTS) reused unchanged through [V1App]; this activity only adds the V3 presentation layer.
+ * JARVIS V3 holographic cockpit. The engine is the qualified V1 chain (CORE → A02 LLM, whisper.cpp STT,
+ * Pocket TTS) reused unchanged, driven by the CONVERSATION-01 session ([ConvApp], [fr.jarvis.v3.conv.ConvSession]).
  */
 class CockpitActivity : ComponentActivity(), SceneActions {
-    private val app get() = application as V1App
+    private val app get() = application as ConvApp
     private val ui get() = V3Runtime.ui
 
     private val picker = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris -> importUris(uris) }

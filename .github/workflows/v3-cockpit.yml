@@ -134,7 +134,7 @@ jobs:
           python3 -m pip install -q pillow
           dst="interface/labs/v3/captures/run-${{ github.run_id }}"
           for api in 29 35; do [ -d "$RUNNER_TEMP/v3/api$api/shots" ] && python3 interface/labs/v3/tools/shrink.py "$RUNNER_TEMP/v3/api$api/shots" "$dst"; done
-          for api in 29 35; do for f in results.txt v3-states.json v3-reduced.json v3-bench.json v3-first-launch.json; do
+          for api in 29 35; do for f in results.txt v3-states.json v3-conv.json v3-reduced.json v3-bench.json v3-first-launch.json; do
             [ -f "$RUNNER_TEMP/v3/api$api/$f" ] && cp "$RUNNER_TEMP/v3/api$api/$f" "$dst/api$api-$f"; done; done
           cp "$RUNNER_TEMP/v3/apk-sha256.txt" "$dst/" 2>/dev/null || true
           cd interface; git add "labs/v3/captures/run-${{ github.run_id }}" || exit 0

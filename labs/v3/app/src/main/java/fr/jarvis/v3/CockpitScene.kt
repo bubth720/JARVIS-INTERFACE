@@ -40,8 +40,9 @@ import fr.jarvis.m55d.CockpitState
 import fr.jarvis.m55d.RenderMode
 import fr.jarvis.v1.Exchange
 import fr.jarvis.v1.Phase
-import fr.jarvis.v1.V1App
-import fr.jarvis.v1.V1Session
+import fr.jarvis.v3.conv.ConvApp
+import fr.jarvis.v3.conv.ConvSession
+import fr.jarvis.v3.conv.PersonaSettings
 import fr.jarvis.v3.model.*
 import kotlinx.coroutines.delay
 
@@ -52,7 +53,7 @@ enum class Panel { NONE, KNOWLEDGE, SETTINGS }
 
 /** Process-scoped UI state: survives rotation and activity recreation (§03 "orientation changée"). */
 class V3UiState {
-    var session by mutableStateOf<V1Session?>(null)
+    var session by mutableStateOf<ConvSession?>(null)
     val cards = mutableStateListOf<ContextCard>()
     var openCard by mutableStateOf<String?>(null)
     var expanded by mutableStateOf(false)
@@ -67,6 +68,8 @@ class V3UiState {
     /** When the last written answer appeared without speech (drives the short answer animation). */
     var answeredAt by mutableStateOf<Long?>(null)
     var anchor by mutableStateOf(Offset.Zero)
+    /** Conversation to resume once the previous native engine is released (one engine per process). */
+    var resumeRequest by mutableStateOf<String?>(null)
     private var seq = 0
     fun nextId() = "c${++seq}"
     fun card(id: String?) = cards.firstOrNull { it.id == id }
@@ -85,12 +88,19 @@ interface SceneActions {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
+fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) {
     val ui = V3Runtime.ui
     val lifecycle by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
     val resumed = lifecycle.isAtLeast(Lifecycle.State.RESUMED)
     LaunchedEffect(resumed) { if (resumed) gov.refresh() }
     val s = ui.session?.takeIf { !it.closed }
+    LaunchedEffect(ui.resumeRequest) {
+        val id = ui.resumeRequest ?: return@LaunchedEffect
+        val until = SystemClock.elapsedRealtime() + 30_000
+        while (!app.previousReleased && SystemClock.elapsedRealtime() < until) delay(100)   // one native engine per process
+        ui.notes.clear(); ui.resumeRequest = null
+        runCatching { app.startSession(id) }.onSuccess { ui.session = it; ui.message = "" }.onFailure { ui.message = it.message ?: "Erreur" }
+    }
 
     // ---- observable engine state -> visual state (the graphics never command the engine) ----
     val cockpitState = s?.cockpit?.state
@@ -114,6 +124,7 @@ fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
     LaunchedEffect(exchangeCount) {
         ui.pending = null                                   // the finished turn is now in the history: never shown twice
         val e = s?.exchanges?.lastOrNull() ?: return@LaunchedEffect
+        if (exchangeCount <= s.restoredCount) return@LaunchedEffect    // restored from the journal: not a new answer
         if (e.ttsSamples == 0L && e.answer.isNotBlank()) ui.answeredAt = SystemClock.elapsedRealtime()   // written answer: brief animation
         val topic = if (e.viaVoice) Intents.systemTopic(e.user) else null
         if (topic != null) {
@@ -216,7 +227,7 @@ fun CockpitScene(app: V1App, gov: PerformanceGovernor, actions: SceneActions) {
 }
 
 @Composable
-private fun Header(holo: HoloState, gov: PerformanceGovernor, s: V1Session?) {
+private fun Header(holo: HoloState, gov: PerformanceGovernor, s: ConvSession?) {
     Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically) {
         Text("J A R V I S", style = Holo.label.copy(color = Holo.ice), modifier = Modifier.weight(1f))
         Box(Modifier.size(8.dp).clip(CircleShape).background(Holo.stateColor(holo)))
@@ -240,7 +251,7 @@ private fun KeywordChips(keywords: List<String>, onKeyword: (String) -> Unit) {
 
 /** Response zone: compact, scrollable, each message shown once (the running answer replaces nothing). */
 @Composable
-private fun Conversation(s: V1Session, ui: V3UiState, modifier: Modifier) {
+private fun Conversation(s: ConvSession, ui: V3UiState, modifier: Modifier) {
     val items = buildList<Any> {
         s.exchanges.forEachIndexed { i, e -> ui.notes.filter { it.afterExchanges == i }.forEach { add(it) }; add(i to e) }
         ui.notes.filter { it.afterExchanges >= s.exchanges.size }.forEach { add(it) }
@@ -252,8 +263,9 @@ private fun Conversation(s: V1Session, ui: V3UiState, modifier: Modifier) {
         itemsIndexed(items) { idx, it ->
             when (it) {
                 is SystemNote -> Message(it.question, it.answer, "MESURE ANDROID", idx == items.lastIndex, "Fiche") { ui.openCard = it.cardId; ui.expanded = false }
-                is Pair<*, *> -> { val e = it.second as Exchange
+                is Pair<*, *> -> { val e = it.second as Exchange; val restored = (it.first as Int) < s.restoredCount
                     Message(e.user + if (e.viaVoice) "  🎤" else "", e.answer.ifBlank { e.error ?: "(interrompu)" },
+                        if (restored) "JARVIS · échange précédent (historique local)" else
                         "JARVIS · LLM ${"%.1f".format(e.llmMs / 1000.0)} s" + (e.error?.let { " · $it" } ?: ""), idx == items.lastIndex && !s.busy, "Fiche") {
                         ui.show(CardFactory.fromExchange(ui.nextId(), e.user, e.answer, e.llmMs, e.viaVoice)) } }
             }
@@ -264,6 +276,8 @@ private fun Conversation(s: V1Session, ui: V3UiState, modifier: Modifier) {
             val live = s.phase == Phase.THINKING && s.partial.isNotBlank()
             Column(Modifier.padding(vertical = 6.dp)) {
                 ui.pending?.let { Text(it, style = Holo.small.copy(color = Holo.muted), modifier = Modifier.testTag("pending")) }
+                // The vocal waiting phrase is labelled as such: it is never presented as the answer.
+                if (!live) s.reaction?.let { Text("Réaction vocale : « $it »", style = Holo.small.copy(color = Holo.muted), modifier = Modifier.testTag("reaction")) }
                 Text(if (live) s.partial else s.status, style = Holo.body.copy(color = if (live) Holo.text else Holo.muted),
                     modifier = Modifier.testTag(if (live) "partial" else "busy-status"))
             }
@@ -315,7 +329,7 @@ private fun KnowledgeList(ui: V3UiState) {
 }
 
 @Composable
-private fun SettingsPanel(app: V1App, gov: PerformanceGovernor, ui: V3UiState, actions: SceneActions) {
+private fun SettingsPanel(app: ConvApp, gov: PerformanceGovernor, ui: V3UiState, actions: SceneActions) {
     Text("RENDU", style = Holo.label); Spacer(Modifier.height(6.dp))
     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         Pill("Auto", "mode-auto", active = gov.automatic) { gov.auto() }
@@ -338,19 +352,74 @@ private fun SettingsPanel(app: V1App, gov: PerformanceGovernor, ui: V3UiState, a
     if (ui.message.isNotBlank()) Text(ui.message, style = Holo.small.copy(color = Holo.text))
     Spacer(Modifier.height(8.dp)); Text("PROTOTYPE", style = Holo.label)
     Pill("Galerie des états (exemple, sans données réelles)", "open-gallery") { actions.openGallery() }
+    ui.session?.let { cs ->
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 6.dp)) {
+            Text("Réponses parlées", style = Holo.body, modifier = Modifier.weight(1f))
+            Switch(cs.voiceOutputEnabled, { cs.voiceOutputEnabled = it }, modifier = Modifier.testTag("voice-output"), colors = SwitchDefaults.colors(checkedTrackColor = Holo.cyan))
+        }
+    }
+    Spacer(Modifier.height(8.dp)); PersonaSection(app)
+    Spacer(Modifier.height(8.dp)); HistorySection(app, ui)
     Spacer(Modifier.height(8.dp)); Text("SESSION", style = Holo.label)
     Pill("Fermer la session et libérer la mémoire", "close-session") { ui.panel = Panel.NONE; ui.openCard = null; app.closeSession(); ui.session = null }
 }
 
+/** Structured, persistent personality (CONVERSATION-01 §3): the owner's values, applied from the next turn. */
 @Composable
-private fun ResourceLines(app: V1App) {
+private fun PersonaSection(app: ConvApp) {
+    var p by remember { mutableStateOf(app.personas.load()) }
+    fun set(n: PersonaSettings) { p = n; app.applyPersona(n) }
+    Text("PERSONNALITÉ", style = Holo.label); Spacer(Modifier.height(6.dp))
+    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Pill("Athéna (chaleureuse, malicieuse)", "persona-athena", active = p.profileName == PersonaSettings.ATHENA.profileName) { set(PersonaSettings.ATHENA.copy(tutoiement = p.tutoiement)) }
+        Pill("Neutre (sobre)", "persona-neutral", active = p.profileName == PersonaSettings.NEUTRAL.profileName) { set(PersonaSettings.NEUTRAL.copy(tutoiement = p.tutoiement)) }
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+        Text("Tutoiement", style = Holo.body, modifier = Modifier.weight(1f))
+        Switch(p.tutoiement, { set(p.copy(tutoiement = it)) }, modifier = Modifier.testTag("persona-tutoiement"), colors = SwitchDefaults.colors(checkedTrackColor = Holo.cyan))
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+        Text("Humour léger", style = Holo.body, modifier = Modifier.weight(1f))
+        Switch(p.humour >= 50, { set(p.copy(humour = if (it) 60 else 0)) }, modifier = Modifier.testTag("persona-humour"), colors = SwitchDefaults.colors(checkedTrackColor = Holo.cyan))
+    }
+    Text("JARVIS garde son nom ; la personnalité règle le ton. Valeurs : franchise ${p.frankness}, humour ${p.humour}, initiative ${p.initiative}.", style = Holo.small)
+}
+
+/** Local conversation history: list, resume, delete (app-private files, never exported). */
+@Composable
+private fun HistorySection(app: ConvApp, ui: V3UiState) {
+    var tick by remember { mutableIntStateOf(0) }
+    val conversations = remember(tick, ui.session?.exchanges?.size) { runCatching { app.journal.list() }.getOrDefault(emptyList()) }
+    Text("HISTORIQUE LOCAL", style = Holo.label)
+    if (conversations.isEmpty()) Text("Aucune conversation enregistrée.", style = Holo.small)
+    for (c in conversations.take(8)) {
+        val current = c.id == ui.session?.conversationId
+        Column(Modifier.fillMaxWidth().padding(vertical = 4.dp).glass(active = current, corner = 12.dp).padding(10.dp)) {
+            Text((if (current) "EN COURS · " else "") + "${c.entries.size} échange(s)", style = Holo.label)
+            Text(c.entries.firstOrNull()?.user.orEmpty(), style = Holo.body, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (!current) Pill("Reprendre", "history-resume-${c.id}") {
+                    ui.openCard = null; app.closeSession(); ui.session = null; ui.panel = Panel.NONE
+                    ui.message = "Reprise après libération de la session…"; ui.resumeRequest = c.id
+                }
+                Pill("Supprimer", "history-delete-${c.id}") {
+                    if (current) { ui.openCard = null; app.closeSession(); ui.session = null; ui.panel = Panel.NONE }
+                    app.journal.delete(c.id); tick++
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ResourceLines(app: ConvApp) {
     for ((name, ok) in listOf("Modèle de langage (obligatoire)" to app.assets.llmReady(), "Reconnaissance vocale (optionnelle : micro)" to (app.assets.sttFile() != null),
             "Voix Pocket (optionnelle : réponse parlée)" to app.assets.ttsPresent()))
         Text((if (ok) "✓  " else "✗  ") + name, style = Holo.body.copy(color = if (ok) Holo.ice else Holo.muted))
 }
 
 @Composable
-private fun Setup(app: V1App, actions: SceneActions, sphere: @Composable (Modifier) -> Unit, modifier: Modifier) {
+private fun Setup(app: ConvApp, actions: SceneActions, sphere: @Composable (Modifier) -> Unit, modifier: Modifier) {
     val ui = V3Runtime.ui
     Column(modifier) {
         Box(Modifier.fillMaxWidth().weight(0.45f)) { sphere(Modifier.fillMaxSize()) }
@@ -368,9 +437,16 @@ private fun Setup(app: V1App, actions: SceneActions, sphere: @Composable (Modifi
             Text("Dossier d'import : ${app.importFolder()}", style = Holo.small)
             if (ui.message.isNotBlank()) Text(ui.message, style = Holo.small.copy(color = Holo.text), modifier = Modifier.testTag("message"))
             Spacer(Modifier.height(8.dp))
-            Pill("Démarrer JARVIS", "start", enabled = app.missing().isEmpty(), active = true) {
-                runCatching { app.startSession() }.onSuccess { ui.session = it; ui.message = "" }.onFailure { ui.message = it.message ?: "Erreur" }
+            val latest = remember(ui.session) { runCatching { app.journal.latest() }.getOrNull() }
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Pill("Démarrer JARVIS", "start", enabled = app.missing().isEmpty(), active = true) {
+                    runCatching { app.startSession() }.onSuccess { ui.session = it; ui.message = "" }.onFailure { ui.message = it.message ?: "Erreur" }
+                }
+                if (latest != null) Pill("Reprendre la dernière conversation", "resume", enabled = app.missing().isEmpty()) {
+                    runCatching { app.startSession(latest.id) }.onSuccess { ui.session = it; ui.message = "" }.onFailure { ui.message = it.message ?: "Erreur" }
+                }
             }
+            if (latest != null) Text("Dernière : « ${latest.entries.lastOrNull()?.user.orEmpty().take(60)} » (${latest.entries.size} échange(s))", style = Holo.small)
         }
     }
 }
