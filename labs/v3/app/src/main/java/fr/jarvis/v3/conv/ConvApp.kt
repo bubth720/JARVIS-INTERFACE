@@ -68,7 +68,9 @@ class ConvApp : Application() {
     }
 
     fun closeSession() {
-        val s = session ?: return
+        // A-026 (audit run 43627862972, tests f6/h4): closing an ALREADY closed session used to set previousReleased=false
+        // while close() returned at once without its callback -> every later start waited forever ("libération en cours").
+        val s = session?.takeIf { !it.closed } ?: return
         previousReleased = false
         s.close { previousReleased = true }
     }

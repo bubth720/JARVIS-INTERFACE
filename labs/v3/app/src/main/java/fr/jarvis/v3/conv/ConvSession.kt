@@ -178,13 +178,13 @@ class ConvSession(
             } catch (e: Exception) { finish("Micro : ${e.message}", error = true); return@launch }
             val captureMs = SystemClock.elapsedRealtime() - t0
             if (stopRequested.get()) { finish("Écoute interrompue"); return@launch }
-            if (pcm.size < 16_000 / 2) { finish("Je n'ai rien entendu"); return@launch }
+            if (pcm.size < 16_000 / 2 || SpeechGuard.isSilent(pcm)) { finish("Je n'ai rien entendu"); return@launch }
             phase = Phase.TRANSCRIBING; status = "Reconnaissance vocale locale…"; event(CockpitState.THINKING, EventSource.VOICE)
             val heardAt = SystemClock.elapsedRealtime()
             val text = try { withContext(sttDispatcher) { requireNotNull(stt).transcribe(pcm) } }
                 catch (e: Exception) { finish(if (stopRequested.get()) "Interrompu" else "Reconnaissance : ${e.message}", error = !stopRequested.get()); return@launch }
             val sttMs = SystemClock.elapsedRealtime() - heardAt
-            if (text.isBlank()) { finish("Je n'ai pas compris, tu peux répéter ?"); return@launch }
+            if (text.isBlank() || SpeechGuard.isNoSpeech(text)) { finish("Je n'ai pas compris, tu peux répéter ?"); return@launch }
             converse(text, viaVoice = true, captureMs = captureMs, sttMs = sttMs, requestEndAt = heardAt)
         }.also { turn = it }
     }
@@ -267,7 +267,8 @@ class ConvSession(
         // matched (run 43616811194: the 0.6B invented "10 euros" although told that no document contains it).
         val docNotice = if (grounding != null && grounding.searched && KnowledgePlanner.asksDocuments(text) && cited.isEmpty())
             KnowledgePlanner.NO_DOCUMENT_NOTICE else null
-        val notice = listOfNotNull(if (ActionGuard.claimsDone(text, answer)) ActionGuard.NOTICE else null, docNotice).joinToString(" ").ifBlank { null }
+        val notice = listOfNotNull(if (ActionGuard.claimsDone(text, answer)) ActionGuard.NOTICE else null, docNotice,
+            grounding?.contradiction, if (grounding?.injectionRemoved == true) KnowledgePlanner.INJECTION_NOTICE else null).joinToString(" ").ifBlank { null }
         if (notice != null) notices[exchanges.size] = notice
         why[exchanges.size] = Provenance.explain(factsUsed, memoriesUsed, cited, ActionGuard.requestedAction(text) != null, ActionGuard.claimsDone(text, answer),
             transport.lastMetrics.value?.historyPairsSent)
