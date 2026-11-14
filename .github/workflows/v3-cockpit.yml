@@ -127,7 +127,7 @@ jobs:
             interface/labs/v3/app/build/reports/
             interface/labs/v3/app/build/test-results/
       - name: Commit downscaled review captures to this development branch (commit marked to skip CI)
-        if: always() && github.event_name == 'push'
+        if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         env:
           TOKEN: ${{ github.token }}
         run: |
