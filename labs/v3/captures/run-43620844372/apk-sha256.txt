@@ -1,0 +1,1 @@
+c20b9e5cd64e58827e6cab4bc6d9543c541a7ed72acf7828e51deb1bebf8d76f  interface/labs/v3/app/build/outputs/apk/debug/app-debug.apk
