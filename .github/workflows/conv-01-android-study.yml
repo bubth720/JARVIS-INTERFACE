@@ -1,5 +1,6 @@
 name: CONVERSATION-01 Android model study (emulator only; 0.6B vs owner-authorized 1.7B; no production change)
 # Started by a push touching THIS file only (workflow_dispatch needs the file on main, which is never modified here).
+# Attempt 2: after 3d07d24 (NEXUS Java sources compiled).
 on:
   push:
     branches: ['ccr-5cf17ed2-phgk00']
