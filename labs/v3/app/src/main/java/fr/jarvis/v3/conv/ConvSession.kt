@@ -298,14 +298,18 @@ class ConvSession(
     private suspend fun record(user: String, answer: String, viaVoice: Boolean, cited: List<String>, notice: String?) {
         val j = journal ?: return
         runCatching { withContext(Dispatchers.IO) { j.append(conversationId, ConversationJournal.Entry(user, answer, viaVoice, System.currentTimeMillis(), cited, notice)) } }
-            .onFailure { status = "Historique local non enregistré : ${it.message}" }
+            .onFailure { historyError = "Historique local non enregistré : ${it.message ?: it.javaClass.simpleName}" }
+            .onSuccess { historyError = null }
     }
+
+    /** Last failure to save the history (A-028): shown with every status until a save succeeds again. */
+    var historyError by mutableStateOf<String?>(null); private set
 
     private fun finish(message: String, error: Boolean = false) {
         partial = if (error) partial else ""
         reaction = null
         phase = if (closed) Phase.CLOSED else Phase.READY
-        status = message
+        status = historyError?.let { "$message · $it" } ?: message   // A-028: never silently overwrite a failed save
         event(if (error) CockpitState.ERROR else CockpitState.IDLE, EventSource.CORE, error = if (error) "TURN" else null)
     }
 

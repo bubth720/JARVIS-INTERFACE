@@ -482,6 +482,36 @@ class AuditCampaignT3Test {
     }
 }
 
+/** O — S6 robustness: the history cannot be written (read-only folder, stand-in for full storage). */
+@RunWith(AndroidJUnit4::class)
+class AuditCampaignT4Test {
+    private val inst get() = InstrumentationRegistry.getInstrumentation()
+    private val args get() = InstrumentationRegistry.getArguments()
+    private val app get() = inst.targetContext.applicationContext as ConvApp
+    private val ui get() = V3Runtime.ui
+    private fun <T> main(block: () -> T): T = runBlocking(Dispatchers.Main) { block() }
+    private fun waitUntil(ms: Long, what: String, ok: () -> Boolean) {
+        val t0 = SystemClock.elapsedRealtime()
+        while (!main(ok)) { if (SystemClock.elapsedRealtime() - t0 > ms) fail("Timeout: $what"); Thread.sleep(50) }
+    }
+    @Test fun o_historyWriteFailureKeepsTheConversation() {
+        assumeTrue(args.getString("afterImport") != null)
+        val r = JSONObject(); val dir = File(inst.targetContext.filesDir, "conversations")
+        try {
+            main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
+            val s = main { app.startSession().also { ui.session = it; it.voiceOutputEnabled = false } }
+            waitUntil(360_000, "ready") { s.phase == Phase.READY }
+            dir.mkdirs(); dir.listFiles()?.forEach { it.setWritable(false) }; dir.setWritable(false)
+            val n = main { s.exchanges.size }; main { s.textTurn("Combien font 4 plus 4 ?") }
+            waitUntil(420_000, "answer") { s.phase == Phase.READY && s.exchanges.size > n }
+            r.put("status", main { s.status }).put("answer", main { s.exchanges.last().answer })
+            assertNull("the answer is still delivered", main { s.exchanges.last().error })
+            assertTrue("the failed save is reported to the user: ${r.getString("status")}", r.getString("status").contains("Historique local non enregistré"))
+        } finally { dir.setWritable(true); dir.listFiles()?.forEach { it.setWritable(true) }; main { app.closeSession(); ui.session = null }
+            File(inst.targetContext.filesDir, "audit-o.json").writeText(r.toString(2)) }
+    }
+}
+
 object AuditWav {
     /** 16 kHz mono PCM16 WAV of a tone lasting [seconds] (synthetic test input). */
     fun tone(seconds: Int): ByteArray {

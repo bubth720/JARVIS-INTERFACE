@@ -59,6 +59,10 @@ audit3() { local name="$1"; shift
   for f in $(adb shell run-as fr.jarvis.v3 ls files 2>/dev/null | tr -d '\r' | grep '^audit-'); do adb exec-out run-as fr.jarvis.v3 cat "files/$f" > "$out/$f"; done; }
 for t in j_sessionLifecycleNeverDeadlocks k_sphereStillAtEveryNonAnswerTransition l_hiddenInjectionsInADocument \
          m_longConversationMemoryAndLatency n_resumeKeepsSystemNotices; do audit3 "$t" -e afterImport 1; done
+adb shell am instrument -w -r -e class "fr.jarvis.v3.AuditCampaignT4Test#o_historyWriteFailureKeepsTheConversation" -e afterImport 1 "$R" > "$out/audit-o.txt" 2>&1
+if grep -q '^OK (1 test)' "$out/audit-o.txt"; then echo "PASS o_historyWriteFailureKeepsTheConversation" >> "$out/audit-results.txt"
+else { echo "FAIL o_historyWriteFailureKeepsTheConversation"; grep -m3 -E "AssertionError|Exception|Timeout" "$out/audit-o.txt"; } >> "$out/audit-results.txt"; fi
+adb exec-out run-as fr.jarvis.v3 cat files/audit-o.json > "$out/audit-o.json" 2>/dev/null || true
 anim 0; run d_reducedMotionStaticSphereAndFirstText -e afterImport 1; pull v3-reduced.json; anim 1
 run e_galleryCapturesAndBeforeAfterBench; pull v3-bench.json
 for f in $(adb shell run-as fr.jarvis.v3 ls files/v3shots 2>/dev/null | tr -d '\r'); do adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" > "$out/shots/api$api-$f"; done
