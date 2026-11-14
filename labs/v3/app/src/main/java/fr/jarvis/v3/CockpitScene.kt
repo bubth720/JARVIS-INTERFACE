@@ -290,7 +290,22 @@ private fun Conversation(s: ConvSession, ui: V3UiState, modifier: Modifier) {
                     modifier = Modifier.testTag(if (live) "partial" else "busy-status"))
             }
         }
-        if (items.isEmpty() && !s.busy) item { Text(s.status, style = Holo.small, modifier = Modifier.testTag("status")) }
+        if (items.isEmpty() && !s.busy && s.memoryProposal == null) item { Text(s.status, style = Holo.small, modifier = Modifier.testTag("status")) }
+        s.memoryProposal?.let { (_, shown) -> item { MemoryProposalCard(shown, { s.decideMemory(true) }, { s.decideMemory(false) }) } }
+        s.memoryOutcome?.let { o -> item { Text(o, style = Holo.small.copy(color = Holo.ice), modifier = Modifier.testTag("memory-outcome")) } }
+    }
+}
+
+/** Consent card (CORE workflow): the EXACT text that will be stored, confirmed or refused by the user. */
+@Composable
+fun MemoryProposalCard(shown: String, onAccept: () -> Unit, onReject: () -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 6.dp).glass(active = true, corner = 12.dp).padding(10.dp).testTag("memory-proposal")) {
+        Text("SOUVENIR PROPOSÉ · RIEN N'EST ENREGISTRÉ SANS TON ACCORD", style = Holo.label)
+        Text("« $shown »", style = Holo.body, modifier = Modifier.testTag("memory-proposal-text"))
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Pill("Mémoriser", "memory-accept", active = true, onClick = onAccept)
+            Pill("Ne pas mémoriser", "memory-reject", onClick = onReject)
+        }
     }
 }
 

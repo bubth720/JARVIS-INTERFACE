@@ -27,6 +27,8 @@ android {
     sourceSets.getByName("main").java.srcDir(providers.gradleProperty("labSources").get())
     sourceSets.getByName("main").java.srcDir(rootProject.file("../v1/app/src/main/java"))
     // NEXUS local knowledge (CONVERSATION-01 §6), compiled unchanged from JARVIS-NEXUS FUSION-02 06ccf98 (pinned in CI).
+    // CORE consented-memory workflow (CONVERSATION-01 C3), extracted byte-identical from CORE 5da9838 (tools/prepare_core_memory.py).
+    providers.gradleProperty("coreMemorySources").orNull?.let { sourceSets.getByName("main").java.srcDir(it) }
     providers.gradleProperty("nexusRoot").orNull?.let { n ->
         sourceSets.getByName("main").java.srcDir("$n/nexus-core/src/main/kotlin")
         sourceSets.getByName("main").java.srcDir("$n/nexus-core/src/main/java")

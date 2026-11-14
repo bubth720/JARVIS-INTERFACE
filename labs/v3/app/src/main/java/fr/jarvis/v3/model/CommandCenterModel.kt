@@ -10,7 +10,7 @@ enum class ModuleStatus(val label: String) { OPERATIONAL("opérationnel"), PARTI
 enum class CommandModule(val label: String, val status: ModuleStatus, val note: String) {
     AI_CORE("AI CORE", ModuleStatus.OPERATIONAL, "Modèle local Qwen3-0.6B vérifié, moteur A02 protégé, personnalité et mémoire de conversation."),
     VOICE("VOICE CENTER", ModuleStatus.OPERATIONAL, "Micro → whisper.cpp → réponse → Pocket TTS, réaction d'attente, interruption."),
-    MEMORY("MEMORY VAULT", ModuleStatus.PARTIAL, "Mémoire de conversation et historique local opérationnels ; mémoire durable consentie (CORE) à connecter."),
+    MEMORY("MEMORY VAULT", ModuleStatus.PARTIAL, "Mémoire de conversation, historique local et souvenirs durables confirmés (workflow CORE) ; export chiffré à connecter."),
     NEXUS("NEXUS", ModuleStatus.PARTIAL, "Bibliothèque locale et citations si le SQLite d'Android fournit FTS5 ; Kiwix non configuré."),
     MISSIONS("MISSIONS", ModuleStatus.TO_CONNECT, "Aucun moteur de missions n'est connecté à cette version."),
     AGENTS("AGENTS", ModuleStatus.TO_CONNECT, "Aucun agent n'est disponible : JARVIS n'exécute aucune action."),

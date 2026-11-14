@@ -38,6 +38,7 @@ jobs:
           python3 interface/labs/v3/tools/check_scope.py --interface interface | tee "$RUNNER_TEMP/v3/scope.log"
           python3 interface/labs/v1/tools/check_reuse.py --voice voice | tee "$RUNNER_TEMP/v3/reuse.log"
           python3 interface/labs/v1/tools/prepare_sources.py --core core --interface interface --llm llm --output "$RUNNER_TEMP/v1-sources"
+          python3 interface/labs/v3/tools/prepare_core_memory.py --core core --output "$RUNNER_TEMP/v3-core-memory"
       - name: Pinned native sources (llama.cpp for A02, whisper.cpp v1.8.4)
         run: |
           llm/tools/prepare-native.sh
@@ -53,7 +54,7 @@ jobs:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0 ndk;28.1.13356709 cmake;3.22.1'
       - name: Build V3 APK + test APK, unit tests, Lint
         run: |
-          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" -PnexusRoot="$GITHUB_WORKSPACE/nexus" \
+          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" -PnexusRoot="$GITHUB_WORKSPACE/nexus" -PcoreMemorySources="$RUNNER_TEMP/v3-core-memory" \
             -PwhisperSource="$GITHUB_WORKSPACE/interface/labs/v1/.deps/whisper.cpp" -Pv1Abis=arm64-v8a,x86_64 \
             :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug --no-daemon --max-workers=2 --console=plain
       - name: Inspect the APK (one permission, no INTERNET, engines present, nothing bundled)
@@ -136,7 +137,7 @@ jobs:
           python3 -m pip install -q pillow
           dst="interface/labs/v3/captures/run-${{ github.run_id }}"
           for api in 29 35; do [ -d "$RUNNER_TEMP/v3/api$api/shots" ] && python3 interface/labs/v3/tools/shrink.py "$RUNNER_TEMP/v3/api$api/shots" "$dst"; done
-          for api in 29 35; do for f in results.txt v3-states.json v3-conv.json v3-knowledge.json v3-reduced.json v3-bench.json v3-first-launch.json; do
+          for api in 29 35; do for f in results.txt v3-states.json v3-conv.json v3-knowledge.json v3-memory.json v3-reduced.json v3-bench.json v3-first-launch.json; do
             [ -f "$RUNNER_TEMP/v3/api$api/$f" ] && cp "$RUNNER_TEMP/v3/api$api/$f" "$dst/api$api-$f"; done; done
           cp "$RUNNER_TEMP/v3/apk-sha256.txt" "$dst/" 2>/dev/null || true
           cd interface; git add "labs/v3/captures/run-${{ github.run_id }}" || exit 0

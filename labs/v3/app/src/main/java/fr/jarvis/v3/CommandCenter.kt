@@ -144,14 +144,42 @@ fun CommandCenter(app: ConvApp, gov: PerformanceGovernor, ui: V3UiState, actions
     Text("MÉMOIRE TEMPORAIRE (cette conversation)", style = Holo.label)
     val facts = s?.let { remember(it.exchanges.size) { it.context.facts(it.transport.history.snapshot(), "").facts() } }.orEmpty()
     if (facts.isEmpty()) Text("Aucun fait énoncé dans cette conversation.", style = Holo.small)
-    for (f in facts) Line(f.kind.name.lowercase(), f.value, "cc-fact-${f.key}")
+    for (f in facts) Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("${f.kind.name.lowercase()} : ${f.value}", style = Holo.tabular, modifier = Modifier.weight(1f).testTag("cc-fact-${f.key}"))
+        Pill("Mémoriser…", "cc-remember-${f.key}") { s?.proposeMemory(factSentence(f)) }
+    }
     Text("Ces faits viennent uniquement de ce que tu as dit ; ils disparaissent avec la conversation.", style = Holo.small)
-    Spacer(Modifier.height(8.dp)); Text("MÉMOIRE DURABLE", style = Holo.label)
-    Text("À connecter : souvenirs proposés puis confirmés par toi (workflow de consentement CORE). Rien n'est mémorisé durablement sans ta confirmation.", style = Holo.small)
+    s?.memoryProposal?.let { (_, shown) -> MemoryProposalCard(shown, { s.decideMemory(true) }, { s.decideMemory(false) }) }
+    s?.memoryOutcome?.let { Text(it, style = Holo.small.copy(color = Holo.ice)) }
+    Spacer(Modifier.height(8.dp)); Text("MÉMOIRE DURABLE (confirmée par toi)", style = Holo.label)
+    var rev by remember { mutableIntStateOf(0) }
+    val records = remember(rev, s?.memoryOutcome) { app.memory.list() }
+    if (records.isEmpty()) Text("Aucun souvenir confirmé. Dis « souviens-toi que … » ou utilise « Mémoriser… ».", style = Holo.small)
+    for (r in records) Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag("cc-memory")) {
+        Text("« ${r.content} »", style = Holo.body, modifier = Modifier.weight(1f))
+        Pill("Supprimer", "cc-memory-delete") { app.memory.delete(r); rev++ }
+    }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("Utiliser mes souvenirs dans les réponses", style = Holo.body, modifier = Modifier.weight(1f))
+        var on by remember { mutableStateOf(app.memory.recallEnabled) }
+        Switch(on, { on = it; app.memory.recallEnabled = it }, modifier = Modifier.testTag("cc-memory-recall"), colors = SwitchDefaults.colors(checkedTrackColor = Holo.cyan))
+    }
+    Text("Stockage isolé, exclu des sauvegardes ; export chiffré : à connecter.", style = Holo.small)
     Spacer(Modifier.height(8.dp)); Text("HISTORIQUE LOCAL", style = Holo.label)
     val n = remember(s?.exchanges?.size) { runCatching { app.journal.list().size }.getOrDefault(0) }
     Line("Conversations enregistrées", "$n", "cc-journal-count")
     Text("Reprendre ou supprimer : Réglages › Historique local.", style = Holo.small)
+}
+
+/** The fact as the user's own sentence: this exact text is what the user confirms. */
+private fun factSentence(f: fr.jarvis.v3.conv.WorkingMemory.Fact): String = when (f.kind) {
+    fr.jarvis.v3.conv.WorkingMemory.Kind.NAME -> "Je m'appelle ${f.value}."
+    fr.jarvis.v3.conv.WorkingMemory.Kind.AGE -> "J'ai ${f.value}."
+    fr.jarvis.v3.conv.WorkingMemory.Kind.RELATIVE -> f.value.split(", ").let { v ->
+        (if (f.key in setOf("sœur", "soeur", "fille", "mère", "mere", "femme", "amie")) "Ma" else "Mon") + " ${f.key} s'appelle ${v[0]}" + (v.getOrNull(1)?.let { " et a $it" } ?: "") + "." }
+    fr.jarvis.v3.conv.WorkingMemory.Kind.LIKE -> "J'aime ${f.value}."
+    fr.jarvis.v3.conv.WorkingMemory.Kind.APPOINTMENT -> "Rendez-vous : ${f.value}."
+    fr.jarvis.v3.conv.WorkingMemory.Kind.PLACE -> "Lieu évoqué : ${f.value}."
 }
 
 @Composable private fun NexusScreen(app: ConvApp, s: fr.jarvis.v3.conv.ConvSession?, actions: SceneActions) {

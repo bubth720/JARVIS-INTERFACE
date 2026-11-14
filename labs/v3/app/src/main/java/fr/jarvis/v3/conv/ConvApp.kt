@@ -26,6 +26,8 @@ class ConvApp : Application() {
     val personas by lazy { PersonaStore(getSharedPreferences("persona", Context.MODE_PRIVATE)) }
     /** Local documents (NEXUS), app-private; opened off the main thread on first use. */
     val knowledge by lazy { LocalKnowledge(File(filesDir, "nexus")) }
+    /** Durable memories, stored ONLY after explicit confirmation (CORE 5da9838 workflow, noBackupFilesDir). */
+    val memory by lazy { ConsentedMemory(this) }
     /** Extensions routed to the knowledge base on import (the model / voice files keep their verified importer). */
     fun isDocument(name: String) = name.substringAfterLast('.', "").lowercase() in setOf("txt", "md", "csv", "tsv", "docx", "xml")
     var session: ConvSession? = null; private set
@@ -54,14 +56,14 @@ class ConvApp : Application() {
         check(previousReleased) { "Libération de la session précédente en cours : réessaie dans un instant" }
         check(missing().isEmpty()) { "Ressources manquantes : " + missing().joinToString() }
         val entry = checkNotNull(assets.llm.current())
-        val context = ConversationContext(personas.load())
+        val context = ConversationContext(personas.load(), confirmedMemories = { q -> runCatching { memory.recallBlock(q) }.getOrDefault("") })
         val model = ConvLanguageModel(SealedNativeBridge.get(), VerifiedModel({
             val pfd = ParcelFileDescriptor.open(entry.file, ParcelFileDescriptor.MODE_READ_ONLY)
             object : SourceDescriptor { override val fd = pfd.fd; override fun close() = pfd.close() }
         }, entry.sizeBytes, entry.sha256), ::memoryBudgetBytes, instruction = context::instructionFor)
         val resume = resumeId?.let { runCatching { journal.read(it) }.getOrNull() }
         return ConvSession(scope, model, context, journal, assets.sttFile(), assets.ttsDir().takeIf { assets.ttsPresent() }, ::thermal, ::lowMemory, resume,
-            knowledge = knowledge).also { session = it; scope.launch(Dispatchers.IO) { runCatching { knowledge.open() } }; it.start() }
+            knowledge = knowledge, memory = memory).also { session = it; scope.launch(Dispatchers.IO) { runCatching { knowledge.open() } }; it.start() }
     }
 
     fun closeSession() {

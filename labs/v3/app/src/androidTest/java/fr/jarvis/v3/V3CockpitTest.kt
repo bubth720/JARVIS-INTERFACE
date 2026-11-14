@@ -417,6 +417,49 @@ class V3CockpitTest {
         } finally { write("v3-knowledge.json", r) }
     }
 
+    /**
+     * CONVERSATION-01 C3 (MEMORY VAULT): durable memory exists ONLY after explicit confirmation of the exact text
+     * (CORE 5da9838 workflow, unchanged); a refusal stores nothing; a confirmed memory is recalled in a later session
+     * as quoted data; deletion removes it. Real engine, emulator, airplane mode; synthetic content only.
+     */
+    @Test fun h_consentedMemoryProposeConfirmRecallDelete() {
+        assumeTrue(args.getString("afterImport") != null)
+        Configurator.getInstance().setWaitForIdleTimeout(0)
+        val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT)
+        try {
+            app.memory.list().forEach { app.memory.delete(it) }
+            main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
+            ActivityScenario.launch(CockpitActivity::class.java).use {
+                obj("start", 30_000).click()
+                waitUntil(360_000, "ready") { ui.session?.phase == Phase.READY || ui.session?.phase == Phase.ERROR }
+                main { ui.session!!.voiceOutputEnabled = false }
+                val n0 = main { ui.session!!.exchanges.size }
+                assertNotNull(main { ui.session!!.textTurn("Souviens-toi que je préfère le thé au café.") })
+                assertEquals("Je préfère le thé au café.", obj("memory-proposal-text").text.removeSurrounding("« ", " »"))
+                assertTrue("nothing stored before consent", app.memory.list().isEmpty())
+                assertEquals("a memory request is not sent to the model", n0, main { ui.session!!.exchanges.size })
+                shot("c-mem-01-proposition")
+                obj("memory-reject").click(); SystemClock.sleep(500)
+                assertTrue("refusal stores nothing", app.memory.list().isEmpty())
+                assertNotNull(main { ui.session!!.textTurn("Retiens que je préfère le thé au café.") })
+                obj("memory-proposal"); obj("memory-accept").click(); SystemClock.sleep(500)
+                assertEquals(listOf("Je préfère le thé au café."), app.memory.list().map { it.content })
+                r.put("outcome", obj("memory-outcome").text); shot("c-mem-02-confirme")
+                main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
+            }
+            val s1 = main { app.startSession().also { ui.session = it; it.voiceOutputEnabled = false } }
+            waitUntil(360_000, "ready") { ui.session?.phase == Phase.READY || ui.session?.phase == Phase.ERROR }
+            val n = main { s1.exchanges.size }
+            assertNotNull(main { s1.textTurn("Qu'est-ce que je préfère boire, le thé ou le café ?") })
+            waitUntil(420_000, "answer") { s1.phase == Phase.READY && s1.exchanges.size > n }
+            val instr = main { s1.model.lastInstruction }.orEmpty(); val a = main { s1.exchanges.last().answer }
+            assertTrue("confirmed memory recalled as data in a new session: $instr", instr.contains("Souvenirs confirmés") && instr.contains("thé au café"))
+            r.put("answer", a).put("qualityRecalled", Regex("(?i)th[ée]").containsMatchIn(a))
+            assertTrue(app.memory.delete(app.memory.list().single())); assertTrue(app.memory.list().isEmpty())
+            main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
+        } finally { write("v3-memory.json", r) }
+    }
+
     /** Prototype captures of every state (labelled EXEMPLE) and before/after rendering cost, same box and state. */
     @Test fun e_galleryCapturesAndBeforeAfterBench() {
         val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("note", "Emulator x86_64, software GPU (swiftshader): NOT representative of a phone GPU")

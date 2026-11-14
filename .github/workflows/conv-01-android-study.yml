@@ -39,6 +39,7 @@ jobs:
           git -C interface config user.email ci@invalid && git -C interface config user.name ci
           python3 interface/labs/v3/tools/check_scope.py --interface interface
           python3 interface/labs/v1/tools/prepare_sources.py --core core --interface interface --llm llm --output "$RUNNER_TEMP/v1-sources"
+          python3 interface/labs/v3/tools/prepare_core_memory.py --core core --output "$RUNNER_TEMP/v3-core-memory"
           llm/tools/prepare-native.sh
           interface/labs/v1/tools/prepare_whisper.sh
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
@@ -52,7 +53,7 @@ jobs:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0 ndk;28.1.13356709 cmake;3.22.1'
       - name: Build app + test APK (x86_64 for the emulator)
         run: |
-          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" -PnexusRoot="$GITHUB_WORKSPACE/nexus" \
+          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" -PnexusRoot="$GITHUB_WORKSPACE/nexus" -PcoreMemorySources="$RUNNER_TEMP/v3-core-memory" \
             -PwhisperSource="$GITHUB_WORKSPACE/interface/labs/v1/.deps/whisper.cpp" -Pv1Abis=x86_64 \
             :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --max-workers=2 --console=plain
       - name: Models from their official sources, size + SHA-256 checked against the authorization manifests

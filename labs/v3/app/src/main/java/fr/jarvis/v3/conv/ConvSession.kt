@@ -50,6 +50,8 @@ class ConvSession(
     resume: ConversationJournal.Conversation? = null,
     /** Local documents (NEXUS); null = not available in this build. */
     val knowledge: LocalKnowledge? = null,
+    /** Durable consented memory; null = not available in this build. */
+    val memory: ConsentedMemory? = null,
     /** Disabled in the instrumented tests that measure the raw answer path. */
     var quickReactionEnabled: Boolean = true,
 ) {
@@ -66,6 +68,21 @@ class ConvSession(
     val notices = androidx.compose.runtime.mutableStateMapOf<Int, String>()
     /** Last documentary search: searched?, duration, sources (diagnostics shown on the NEXUS screen). */
     var lastGrounding by mutableStateOf<LocalKnowledge.Grounding?>(null); private set
+    /** Memory proposal awaiting the user's decision: the candidate and the EXACT text displayed. */
+    var memoryProposal by mutableStateOf<Pair<com.stark.jarvislocal.memory.PendingMemoryCandidate, String>?>(null); private set
+    /** Outcome of the last memory decision (shown to the user). */
+    var memoryOutcome by mutableStateOf<String?>(null); private set
+
+    /** Proposes [content] for durable memory; nothing is stored until [decideMemory] with the same displayed text. */
+    fun proposeMemory(content: String): Boolean {
+        val m = memory ?: return false
+        return runCatching { m.propose(content) }.onSuccess { memoryProposal = it to it.content; memoryOutcome = null }
+            .onFailure { memoryOutcome = "Proposition impossible : ${it.message}" }.isSuccess
+    }
+    fun decideMemory(accept: Boolean) {
+        val (candidate, shown) = memoryProposal ?: return
+        memoryOutcome = memory?.decide(candidate, shown, accept); memoryProposal = null
+    }
     /** Exchanges restored from the journal (shown first, marked as earlier). */
     var restoredCount by mutableStateOf(0); private set
     val conversationId: String = resume?.id ?: journal?.newConversationId() ?: "local"
@@ -190,6 +207,15 @@ class ConvSession(
     }
 
     private suspend fun converse(text: String, viaVoice: Boolean, captureMs: Long = 0, sttMs: Long = 0, requestEndAt: Long) {
+        // "Souviens-toi que …": a memory PROPOSAL for the user to confirm, never a model answer and never stored silently.
+        ConsentedMemory.rememberRequest(text)?.takeIf { memory != null }?.let { content ->
+            if (proposeMemory(content)) {
+                status = "Proposition de souvenir : confirme ou refuse ci-dessous."
+                tts?.takeIf { viaVoice && voiceOutputEnabled }?.let { sp -> phase = Phase.SPEAKING
+                    runCatching { withContext(ttsDispatcher) { sp.speak("Veux-tu que je retienne : $content") { } } } }
+                finish(status); return
+            }
+        }
         phase = Phase.THINKING; status = "Réflexion locale…"; partial = ""; reaction = null; lastFirstSoundMs = -1
         event(CockpitState.THINKING, EventSource.CORE)
         // Local documents first (bounded, off the main thread): cited excerpts or an explicit "nothing found".
