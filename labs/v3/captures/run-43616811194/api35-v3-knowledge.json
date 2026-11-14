@@ -1,0 +1,28 @@
+{
+  "sdk": 35,
+  "platform": "Android emulator x86_64 (NOT a phone), airplane mode",
+  "knowledgeState": "Ready(documents=0)",
+  "fts5": true,
+  "engineSqlite": "3.46.0",
+  "import": "club-astronomie.txt : indexé localement (193 octets)",
+  "found": {
+    "q": "Selon mes documents, quand se réunit le club d'astronomie ?",
+    "a": "Selon mes documents, le club d'astronomie de Valmont se réunit le jeudi 12 mars à 19 heures, à la médiathèque.",
+    "llmMs": 24353,
+    "searchMs": 11,
+    "sources": [
+      "club-astronomie.txt"
+    ],
+    "instruction": 745,
+    "qualityDateCited": true
+  },
+  "absent": {
+    "q": "Selon mes documents, quel est le prix du vélo électrique ?",
+    "a": "Le prix du vélo électrique est de 10 euros.",
+    "llmMs": 20933,
+    "searchMs": 18,
+    "sources": [],
+    "instruction": 440,
+    "qualityNoInventedPrice": false
+  }
+}

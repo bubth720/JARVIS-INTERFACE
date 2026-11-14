@@ -1,0 +1,114 @@
+PASS a_manifestSinglePermissionNoNetworkInstallable
+PASS b_firstLaunchThenVerifiedImport
+FAIL c_realEngineStatesCardsMenuLandscapeBackground
+--- instrumentation (tail)
+
+INSTRUMENTATION_STATUS: stream=
+Error in c_realEngineStatesCardsMenuLandscapeBackground(fr.jarvis.v3.V3CockpitTest):
+java.lang.IllegalArgumentException: element 'cc-internet' not shown
+	at fr.jarvis.v3.V3CockpitTest.obj(V3CockpitTest.kt:74)
+	at fr.jarvis.v3.V3CockpitTest.obj$default(V3CockpitTest.kt:74)
+	at fr.jarvis.v3.V3CockpitTest.c_realEngineStatesCardsMenuLandscapeBackground(V3CockpitTest.kt:216)
+
+INSTRUMENTATION_STATUS: test=c_realEngineStatesCardsMenuLandscapeBackground
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 104.3
+There was 1 failure:
+1) c_realEngineStatesCardsMenuLandscapeBackground(fr.jarvis.v3.V3CockpitTest)
+java.lang.IllegalArgumentException: element 'cc-internet' not shown
+	at fr.jarvis.v3.V3CockpitTest.obj(V3CockpitTest.kt:74)
+	at fr.jarvis.v3.V3CockpitTest.obj$default(V3CockpitTest.kt:74)
+	at fr.jarvis.v3.V3CockpitTest.c_realEngineStatesCardsMenuLandscapeBackground(V3CockpitTest.kt:216)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1
+--- logcat errors
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at androidx.test.ext.junit.runners.AndroidJUnit4.run(AndroidJUnit4.java:162)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.Suite.runChild(Suite.java:128)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.Suite.runChild(Suite.java:27)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:68)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:463)
+11-14 17:05:45.530  3833  3846 E TestRunner: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2594)
+11-14 17:05:45.530  3833  3846 E TestRunner: ----- end exception -----
+--------- beginning of system
+11-14 17:05:45.728   576  3052 E ActivityManager: Unable to freeze binder for 3833: -11
+PASS f_conversationContextPersonaResume
+PASS g_localKnowledgeCitedAnswer
+FAIL h_consentedMemoryProposeConfirmRecallDelete
+--- instrumentation (tail)
+
+INSTRUMENTATION_STATUS: stream=
+Error in h_consentedMemoryProposeConfirmRecallDelete(fr.jarvis.v3.V3CockpitTest):
+androidx.test.uiautomator.StaleObjectException
+	at androidx.test.uiautomator.UiObject2.getAccessibilityNodeInfo(UiObject2.java:1018)
+	at androidx.test.uiautomator.UiObject2.click(UiObject2.java:516)
+	at fr.jarvis.v3.V3CockpitTest.h_consentedMemoryProposeConfirmRecallDelete(V3CockpitTest.kt:448)
+
+INSTRUMENTATION_STATUS: test=h_consentedMemoryProposeConfirmRecallDelete
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 8.542
+There was 1 failure:
+1) h_consentedMemoryProposeConfirmRecallDelete(fr.jarvis.v3.V3CockpitTest)
+androidx.test.uiautomator.StaleObjectException
+	at androidx.test.uiautomator.UiObject2.getAccessibilityNodeInfo(UiObject2.java:1018)
+	at androidx.test.uiautomator.UiObject2.click(UiObject2.java:516)
+	at fr.jarvis.v3.V3CockpitTest.h_consentedMemoryProposeConfirmRecallDelete(V3CockpitTest.kt:448)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1
+--- logcat errors
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:68)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:463)
+11-14 17:10:43.028  4324  4338 E TestRunner: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2594)
+11-14 17:10:43.028  4324  4338 E TestRunner: ----- end exception -----
+11-14 17:10:43.236   576  1885 E ActivityManager: Unable to freeze binder for 4324: -11
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: Unable to get suggestions from AGA
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: io.grpc.StatusRuntimeException: UNKNOWN
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: 	at k3.e.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:77)
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: 	at i3.l.b(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:43)
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: 	at i3.l.a(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:27)
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: 	at i3.z.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:7)
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: 	at i3.m2.run(go/retraceme 31f9979659277bb965985aff1272c33e3c3c9e755b77166d20a2465454178f2c:19)
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+11-14 17:10:43.274  3431  4383 E OneSearchSuggestProvider: 	at java.lang.Thread.run(Thread.java:1012)
+PASS d_reducedMotionStaticSphereAndFirstText
+PASS e_galleryCapturesAndBeforeAfterBench
+PASS reopen_after_force_stop
+PASS no_crash
