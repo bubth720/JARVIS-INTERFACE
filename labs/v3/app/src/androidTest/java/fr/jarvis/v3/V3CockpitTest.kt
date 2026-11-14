@@ -205,14 +205,19 @@ class V3CockpitTest {
             // The open menu is modal (the dock leaves the accessibility tree): measure the input field before opening it.
             val inputBox = obj("input").visibleBounds
             obj("radial").click(); SystemClock.sleep(900); captures.put(shot("11-menu-radial")); assertTextsFit("radial menu")
-            for (d in listOf("cockpit", "knowledge", "documents", "services", "settings")) {
+            for (d in listOf("cockpit", "knowledge", "memory", "command", "settings")) {
                 val b = obj("dest-$d").visibleBounds
                 assertFalse("radial item '$d' $b covers the input field $inputBox", android.graphics.Rect.intersects(b, inputBox))
             }
-            obj("dest-documents").click(); SystemClock.sleep(900)
-            assertTrue(obj("card-provenance").text.contains("non connecté")); captures.put(shot("12-module-indisponible"))
-            // The card leaves with an exit animation: wait for it to be gone (slow API 35 emulator), the assertion is unchanged.
-            dev.pressBack(); dev.wait(Until.gone(By.res("card")), 3_000); assertNull("Android back must close the card", dev.findObject(By.res("card")))
+            // Command Center V2: real AI CORE data, and an unconnected module shown "à connecter" (never simulated).
+            obj("dest-command").click(); SystemClock.sleep(900)
+            assertTrue(obj("cc-model").text.startsWith("Qwen3-0.6B")); assertTrue(obj("cc-internet").text.startsWith("aucun"))
+            captures.put(shot("12-command-center")); assertTextsFit("command center")
+            obj("cc-tab-missions").click(); SystemClock.sleep(500)
+            assertEquals("MISSIONS · À CONNECTER", obj("cc-module-status").text); obj("cc-to-connect"); captures.put(shot("12b-module-a-connecter"))
+            obj("cc-tab-blueprint").click(); SystemClock.sleep(500); obj("cc-node-nexus"); captures.put(shot("12c-blueprint"))
+            // The panel leaves with an exit animation: wait for it to be gone (slow API 35 emulator).
+            dev.pressBack(); dev.wait(Until.gone(By.res("panel-command")), 3_000); assertNull("Android back must close the panel", dev.findObject(By.res("panel-command")))
             obj("radial").click(); SystemClock.sleep(700); obj("dest-settings").click(); SystemClock.sleep(900); captures.put(shot("13-reglages"))
             obj("panel-settings-close").click(); SystemClock.sleep(600)
             // Device question: answered from an Android measurement, the LLM is NOT called.

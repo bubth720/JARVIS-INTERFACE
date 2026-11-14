@@ -4,12 +4,16 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** The five first-level destinations of the radial menu (§06). The menu publishes intents only. */
+/**
+ * The five first-level destinations of the radial menu (§06, Command Center V2 §2 "bibliothèque, mémoire,
+ * réglages, missions…"). The menu publishes intents only. Every destination is real in this build: the modules
+ * that are not connected are reached through the Command Center, where they are shown "à connecter".
+ */
 enum class Destination(val label: String, val available: Boolean, val unavailableReason: String? = null) {
     COCKPIT("Cockpit", true),
-    KNOWLEDGE("Connaissances", true),
-    DOCUMENTS("Documents", false, "NEXUS non connecté"),
-    SERVICES("Services", false, "SERVICES non connecté"),
+    KNOWLEDGE("Bibliothèque", true),
+    MEMORY("Mémoire", true),
+    COMMAND("Command Center", true),
     SETTINGS("Réglages", true),
 }
 

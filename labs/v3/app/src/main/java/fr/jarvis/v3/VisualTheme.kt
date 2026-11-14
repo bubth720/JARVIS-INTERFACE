@@ -115,11 +115,11 @@ object HoloIcons {
             0 -> { drawCircle(c, w * 0.30f, m, style = s()); drawCircle(c, w * 0.08f, m) }                                  // cockpit
             1 -> { drawRect(c, Offset(w * 0.22f, h * 0.26f), androidx.compose.ui.geometry.Size(w * 0.26f, h * 0.48f), style = s())   // knowledge (open book)
                    drawRect(c, Offset(w * 0.52f, h * 0.26f), androidx.compose.ui.geometry.Size(w * 0.26f, h * 0.48f), style = s()) }
-            2 -> { val p = androidx.compose.ui.graphics.Path().apply { moveTo(w * 0.2f, h * 0.3f); lineTo(w * 0.42f, h * 0.3f); lineTo(w * 0.48f, h * 0.38f)
-                       lineTo(w * 0.8f, h * 0.38f); lineTo(w * 0.8f, h * 0.72f); lineTo(w * 0.2f, h * 0.72f); close() }; drawPath(p, c, style = s()) } // documents
-            3 -> { drawCircle(c, w * 0.18f, m, style = s()); for (k in 0 until 8) { val a = k * Math.PI / 4
-                       drawLine(c, Offset(m.x + (w * 0.24f * kotlin.math.cos(a)).toFloat(), m.y + (h * 0.24f * kotlin.math.sin(a)).toFloat()),
-                           Offset(m.x + (w * 0.32f * kotlin.math.cos(a)).toFloat(), m.y + (h * 0.32f * kotlin.math.sin(a)).toFloat()), strokeWidth = 1.8f * density) } } // services
+            2 -> { drawRect(c, Offset(w * 0.3f, h * 0.3f), androidx.compose.ui.geometry.Size(w * 0.4f, h * 0.4f), style = s())                // memory (chip)
+                   for (k in 0 until 3) { val t = 0.38f + 0.12f * k
+                       drawLine(c, Offset(w * 0.18f, h * t), Offset(w * 0.3f, h * t), strokeWidth = 1.6f * density); drawLine(c, Offset(w * 0.7f, h * t), Offset(w * 0.82f, h * t), strokeWidth = 1.6f * density) } }
+            3 -> { for (k in 0 until 4) { val x = if (k % 2 == 0) 0.2f else 0.54f; val y = if (k < 2) 0.2f else 0.54f                     // command center (dashboard grid)
+                       drawRect(c, Offset(w * x, h * y), androidx.compose.ui.geometry.Size(w * 0.26f, h * 0.26f), style = s()) } }
             else -> { for (k in 0 until 3) { val y = h * (0.32f + 0.18f * k); drawLine(c, Offset(w * 0.22f, y), Offset(w * 0.78f, y), strokeWidth = 1.6f * density)
                        drawCircle(c, w * 0.06f, Offset(w * (0.36f + 0.14f * k), y)) } }                                    // settings
         }

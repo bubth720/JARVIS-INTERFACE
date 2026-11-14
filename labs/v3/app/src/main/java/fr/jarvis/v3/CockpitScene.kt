@@ -49,7 +49,7 @@ import kotlinx.coroutines.delay
 /** A typed device question answered from a real Android measurement (never by the language model). */
 data class SystemNote(val afterExchanges: Int, val question: String, val answer: String, val cardId: String)
 
-enum class Panel { NONE, KNOWLEDGE, SETTINGS }
+enum class Panel { NONE, KNOWLEDGE, SETTINGS, COMMAND }
 
 /** Process-scoped UI state: survives rotation and activity recreation (§03 "orientation changée"). */
 class V3UiState {
@@ -70,6 +70,8 @@ class V3UiState {
     var anchor by mutableStateOf(Offset.Zero)
     /** Conversation to resume once the previous native engine is released (one engine per process). */
     var resumeRequest by mutableStateOf<String?>(null)
+    /** Last Command Center screen (kept across rotation). */
+    var commandTab by mutableStateOf(fr.jarvis.v3.model.CommandModule.AI_CORE)
     private var seq = 0
     fun nextId() = "c${++seq}"
     fun card(id: String?) = cards.firstOrNull { it.id == id }
@@ -157,8 +159,8 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
             Destination.COCKPIT -> { ui.openCard = null; ui.panel = Panel.NONE }
             Destination.KNOWLEDGE -> { ui.openCard = null; ui.panel = Panel.KNOWLEDGE }
             Destination.SETTINGS -> { ui.openCard = null; ui.panel = Panel.SETTINGS }
-            Destination.DOCUMENTS -> ui.show(CardFactory.unavailable(ui.nextId(), "NEXUS", "La consultation de documents"))
-            Destination.SERVICES -> ui.show(CardFactory.unavailable(ui.nextId(), "SERVICES", "L'exécution de services"))
+            Destination.MEMORY -> { ui.openCard = null; ui.commandTab = fr.jarvis.v3.model.CommandModule.MEMORY; ui.panel = Panel.COMMAND }
+            Destination.COMMAND -> { ui.openCard = null; ui.panel = Panel.COMMAND }
         }
     }
     BackHandler(enabled = !ui.menuOpen && (ui.openCard != null || ui.panel != Panel.NONE)) { if (ui.openCard != null) ui.openCard = null else ui.panel = Panel.NONE }
@@ -222,6 +224,7 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
         if (s != null) {
             PanelSheet(ui.panel == Panel.KNOWLEDGE, "Connaissances de la session", "panel-knowledge", { ui.panel = Panel.NONE }) { KnowledgeList(ui) }
             PanelSheet(ui.panel == Panel.SETTINGS, "Réglages", "panel-settings", { ui.panel = Panel.NONE }) { SettingsPanel(app, gov, ui, actions) }
+            PanelSheet(ui.panel == Panel.COMMAND, "Command Center", "panel-command", { ui.panel = Panel.NONE }) { CommandCenter(app, gov, ui, actions) }
         }
         val a11y = remember { (app.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager).isTouchExplorationEnabled }
         RadialMenuOverlay(ui.menuOpen, ui.anchor, a11y, onDismiss = { ui.menuOpen = false }, onSelect = ::destination)

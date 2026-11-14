@@ -101,7 +101,7 @@ class V3ModelTest {
 
     @Test fun radialMenuHasFiveDestinationsAndRoomFor48dpTargets() {
         assertEquals(5, Destination.entries.size)
-        assertEquals(listOf(Destination.DOCUMENTS, Destination.SERVICES), Destination.entries.filterNot { it.available })
+        assertTrue("every radial destination is real (unconnected modules live in the Command Center)", Destination.entries.all { it.available })
         val p = RadialGeometry.positions(5, 172f)
         assertEquals(-172f, p.first().first, 0.01f); assertEquals(-172f, p.last().second, 0.01f)
         assertTrue(RadialGeometry.minChordDp(5, 172f) >= 64f) // 48 dp circle + label line, no overlap
