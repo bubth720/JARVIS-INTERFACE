@@ -211,7 +211,8 @@ class V3CockpitTest {
             }
             obj("dest-documents").click(); SystemClock.sleep(900)
             assertTrue(obj("card-provenance").text.contains("non connecté")); captures.put(shot("12-module-indisponible"))
-            dev.pressBack(); SystemClock.sleep(600); assertNull("Android back must close the card", dev.findObject(By.res("card")))
+            // The card leaves with an exit animation: wait for it to be gone (slow API 35 emulator), the assertion is unchanged.
+            dev.pressBack(); dev.wait(Until.gone(By.res("card")), 3_000); assertNull("Android back must close the card", dev.findObject(By.res("card")))
             obj("radial").click(); SystemClock.sleep(700); obj("dest-settings").click(); SystemClock.sleep(900); captures.put(shot("13-reglages"))
             obj("panel-settings-close").click(); SystemClock.sleep(600)
             // Device question: answered from an Android measurement, the LLM is NOT called.
@@ -311,9 +312,9 @@ class V3CockpitTest {
             ask("Combien font 12 fois 12 ?", "calcul-144") { it.contains("144") }
             ask("Et si on divise ce résultat par 4 ?", "reference-resultat-36") { it.contains("36") }
             val brother = ask("Revenons à mon frère : quel âge a-t-il ?", "retour-sujet-age-frere") { Regex("(?i)douze|12").has(it) }
-            assertTrue("brother fact must reach the instruction beyond the 3-exchange window: $brother", brother.contains("frère : Paul, douze ans"))
+            assertTrue("brother fact must reach the instruction beyond the 3-exchange window: $brother", brother.contains("son frère s'appelle Paul (douze ans)"))
             val name = ask("Comment je m'appelle ?", "prenom-corrige") { it.contains("Léo") && !it.contains("Marc") }
-            assertTrue("corrected name must reach the instruction: $name", name.contains("prénom : Léo") && !name.contains("Marc"))
+            assertTrue("corrected name must reach the instruction: $name", name.contains("l'utilisateur s'appelle Léo") && !name.contains("Marc"))
             // Owner rule: never claim an action that was not executed (instruction + system notice if the model still claims it).
             val act = ask("Allume la lumière du salon.", "refus-action-sans-pretention") { !fr.jarvis.v3.conv.ActionGuard.claimsDone("Allume la lumière du salon.", it) }
             assertTrue("action request must reach the instruction: $act", act.contains("Tu ne peux pas l'exécuter"))
@@ -333,7 +334,7 @@ class V3CockpitTest {
             val s1 = main { app.startSession(id).also { ui.session = it; it.voiceOutputEnabled = false } }; ready()
             assertEquals(before, main { s1.restoredCount }); assertEquals(id, s1.conversationId)
             val resumed = ask("Tu te souviens de mon prénom ?", "reprise-prenom") { it.contains("Léo") }
-            assertTrue("resumed context must contain the stated facts: $resumed", resumed.contains("prénom : Léo"))
+            assertTrue("resumed context must contain the stated facts: $resumed", resumed.contains("l'utilisateur s'appelle Léo"))
             // Persona switch from the next turn (owner setting, persisted).
             main { app.applyPersona(fr.jarvis.v3.conv.PersonaSettings.NEUTRAL.copy(tutoiement = false)) }
             val neutral = ask("Quelle est la capitale de l'Espagne ?", "neutre-vouvoiement-madrid") { Regex("(?i)madrid").has(it) }

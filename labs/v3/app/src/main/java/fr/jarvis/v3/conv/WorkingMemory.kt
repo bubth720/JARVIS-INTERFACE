@@ -41,21 +41,31 @@ class WorkingMemory(private val maxFacts: Int = 8) {
         }
     }
 
-    /** Short quoted block appended to the instruction; empty when nothing is known. */
+    /**
+     * Short quoted block appended to the instruction; empty when nothing is known. The user's own name uses the
+     * sentence measured in V1-B (100 % on name scenarios): "Fait connu : l'utilisateur s'appelle X (ce n'est pas
+     * ton nom)." Relatives are written as relatives ("son frère s'appelle Paul"), never as bare first names: the
+     * emulator acceptance run 43592693625 showed the 0.6B answering the brother's name to "Comment je m'appelle ?".
+     */
     fun render(): String {
         if (facts.isEmpty()) return ""
-        val parts = facts().map { f ->
+        val name = facts.values.firstOrNull { it.kind == Kind.NAME }?.value
+        val parts = facts().filter { it.kind != Kind.NAME }.map { f ->
             when (f.kind) {
-                Kind.NAME -> "prénom : ${f.value}"
-                Kind.AGE -> "âge : ${f.value}"
-                Kind.RELATIVE -> "${f.key} : ${f.value}"
-                Kind.LIKE -> "aime : ${f.value}"
-                Kind.APPOINTMENT -> "rendez-vous : ${f.value}"
+                Kind.NAME -> ""
+                Kind.AGE -> "il a ${f.value}"
+                Kind.RELATIVE -> f.value.split(", ").let { v -> "${possessive(f.key)} ${f.key} s'appelle ${v[0]}" + (v.getOrNull(1)?.let { " ($it)" } ?: "") }
+                Kind.LIKE -> "il aime ${f.value}"
+                Kind.APPOINTMENT -> "son rendez-vous : ${f.value}"
                 Kind.PLACE -> "lieu évoqué : ${f.value}"
             }
         }
-        return "Faits dits par l'utilisateur dans cette conversation (ce sont les siens, pas les tiens) : " + parts.joinToString(" ; ") + "."
+        return listOfNotNull(name?.let { "Fait connu : l'utilisateur s'appelle $it (ce n'est pas ton nom)." },
+            parts.takeIf { it.isNotEmpty() }?.let { "Autres faits dits par l'utilisateur dans cette conversation : " + it.joinToString(" ; ") + "." })
+            .joinToString(" ")
     }
+
+    private fun possessive(rel: String) = if (rel in setOf("sœur", "soeur", "fille", "mère", "mere", "femme", "amie")) "sa" else "son"
 
     fun clear() { facts.clear(); turn = 0 }
 

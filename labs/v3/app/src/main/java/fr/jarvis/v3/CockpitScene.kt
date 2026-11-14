@@ -113,7 +113,9 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
     val errorAge = ui.errorSince?.let { now - it }
     val holo = SphereStateAdapter.resolve(s?.phase?.name, s != null && s.phase == Phase.THINKING && s.partial.isNotBlank(), errorAge,
         ui.answeredAt?.let { now - it })
-    val level = if (holo == HoloState.LISTENING || holo == HoloState.SPEAKING) (s?.cockpit?.level ?: 0f) else 0f
+    // Owner rule (14/11): the sphere is still while listening; the microphone level only drives the dock visualiser.
+    val micLevel = if (holo == HoloState.LISTENING) (s?.cockpit?.level ?: 0f) else 0f
+    val level = if (holo == HoloState.SPEAKING) (s?.cockpit?.level ?: 0f) else 0f
     var pulse by remember { mutableIntStateOf(0) }
     LaunchedEffect(s?.partial) { if (!s?.partial.isNullOrBlank()) pulse++ }
     val last = s?.exchanges?.lastOrNull()
@@ -173,7 +175,7 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
         ConversationDock(ui.typed, { ui.typed = it }, { keyboard?.hide(); send() }, sendEnabled = ui.typed.isNotBlank() && s?.phase == Phase.READY,
             micEnabled = s != null && s.voiceInputAvailable && (s.phase == Phase.READY || s.phase == Phase.SPEAKING), listening = s?.phase == Phase.LISTENING,
             onMic = { if (s != null && s.phase == Phase.LISTENING) s.interrupt() else actions.requestMicThenTalk() }, busy = s?.busy == true, onStop = { s?.interrupt() },
-            level = level, menuOpen = ui.menuOpen, onMenu = { ui.menuOpen = !ui.menuOpen }, onAnchor = { ui.anchor = it }, modifier = m)
+            level = if (holo == HoloState.LISTENING) micLevel else level, menuOpen = ui.menuOpen, onMenu = { ui.menuOpen = !ui.menuOpen }, onAnchor = { ui.anchor = it }, modifier = m)
     }
     val openCard = ui.card(ui.openCard)
     val cardView: @Composable (Modifier) -> Unit = { m ->

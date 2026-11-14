@@ -15,9 +15,9 @@ class ConversationContextTest {
         val ctx = ConversationContext(PersonaSettings.ATHENA)
         val general = ctx.instructionFor(h, "Quel âge a-t-il ?")
         assertTrue(general, general.startsWith(PersonaRenderer.general(PersonaSettings.ATHENA)))
-        assertTrue(general, general.contains("frère : Paul, douze ans") && general.contains("prénom : Léo") && !general.contains("Marc"))
+        assertTrue(general, general.contains("son frère s'appelle Paul (douze ans)") && general.contains("l'utilisateur s'appelle Léo") && !general.contains("Marc"))
         val name = ctx.instructionFor(h, "Comment je m'appelle ?")
-        assertTrue(name, name.startsWith(PersonaRenderer.name(PersonaSettings.ATHENA)) && name.contains("prénom : Léo"))
+        assertTrue(name, name.startsWith(PersonaRenderer.name(PersonaSettings.ATHENA)) && name.contains("Fait connu : l'utilisateur s'appelle Léo (ce n'est pas ton nom)."))
     }
 
     @Test fun personaChangeAppliesToTheNextTurnAndNothingIsInvented() {

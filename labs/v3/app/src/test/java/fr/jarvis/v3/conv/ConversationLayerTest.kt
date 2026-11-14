@@ -15,12 +15,11 @@ class ConversationLayerTest {
         m.observe("Je prépare un voyage à Lyon le week-end prochain.")
         m.observe("J'aime beaucoup le chocolat.")
         val r = m.render()
-        assertTrue(r, r.contains("prénom : Léo")); assertFalse(r, r.contains("Marc"))
-        assertTrue(r, r.contains("frère : Paul, douze ans"))
-        assertTrue(r, r.contains("rendez-vous : mercredi à 10 heures")); assertFalse(r, r.contains("mardi"))
+        assertTrue(r, r.startsWith("Fait connu : l'utilisateur s'appelle Léo (ce n'est pas ton nom).")); assertFalse(r, r.contains("Marc"))
+        assertTrue(r, r.contains("son frère s'appelle Paul (douze ans)"))
+        assertTrue(r, r.contains("son rendez-vous : mercredi à 10 heures")); assertFalse(r, r.contains("mardi"))
         assertTrue(r, r.contains("lieu évoqué : Lyon"))
-        assertTrue(r, r.contains("aime : le chocolat"))
-        assertTrue(r.startsWith("Faits dits par l'utilisateur"))
+        assertTrue(r, r.contains("il aime le chocolat"))
     }
 
     @Test fun workingMemoryInfersNothingAndStaysBounded() {
