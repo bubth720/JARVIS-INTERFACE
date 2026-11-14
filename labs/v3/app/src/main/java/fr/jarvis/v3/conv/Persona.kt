@@ -58,7 +58,7 @@ object PersonaRenderer {
         (if (p.tutoiement) "Tutoie" else "Vouvoie") + " l'utilisateur" +
         (if (p.elegant && p.humour >= 50) ", avec chaleur et un brin d'humour. " else if (p.elegant) ", avec chaleur. " else ". ") +
         "Réponds seulement à sa dernière question, directement. Donne directement les faits connus, comme les capitales ou les calculs. " +
-        "S'il se corrige, la correction prime." +
+        "S'il se corrige, la correction prime. Tu ne peux faire aucune action (message, appareil, lumière) : dis-le simplement, sans prétendre l'avoir fait." +
         when (p.brevity) { PersonaSettings.Brevity.CONCISE -> " Réponds en une ou deux phrases."; PersonaSettings.Brevity.DETAILED -> " Développe les points utiles."; else -> "" }
 
     /** Identical, for ATHENA, to conv01-instructions.json ATHENA_COMPACT (name part). */

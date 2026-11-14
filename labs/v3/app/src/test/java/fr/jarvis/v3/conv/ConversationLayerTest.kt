@@ -50,13 +50,14 @@ class ConversationLayerTest {
         assertTrue(PersonaRenderer.general(full.copy(brevity = PersonaSettings.Brevity.CONCISE)).contains("une ou deux phrases"))
         // Default (0.6B) rendering = measured ATHENA_COMPACT, both routes.
         assertEquals("Tutoie l'utilisateur, avec chaleur et un brin d'humour. Réponds seulement à sa dernière question, directement. " +
-            "Donne directement les faits connus, comme les capitales ou les calculs. S'il se corrige, la correction prime.", PersonaRenderer.general(PersonaSettings.ATHENA))
+            "Donne directement les faits connus, comme les capitales ou les calculs. S'il se corrige, la correction prime. " +
+            "Tu ne peux faire aucune action (message, appareil, lumière) : dis-le simplement, sans prétendre l'avoir fait.", PersonaRenderer.general(PersonaSettings.ATHENA))
         assertEquals("Tutoie l'utilisateur. Ne te présente qu'une fois. S'il demande son prénom, et seulement dans ce cas, réponds « Tu t'appelles » " +
             "suivi du dernier prénom qu'il t'a donné. Pour une question de culture générale, donne directement la réponse.", PersonaRenderer.name(PersonaSettings.ATHENA))
     }
 
     @Test fun compactRenderingMatchesTheMeasuredStudyText() {
-        // Snapshot of JARVIS-LLM a02/tests/personas/conv01-instructions.json at ce817b1 (study branch ccr-5cf17ed2-phgk00).
+        // Snapshot of JARVIS-LLM a02/tests/personas/conv01-instructions.json at 3e2560e (study branch ccr-5cf17ed2-phgk00).
         val json = requireNotNull(javaClass.classLoader!!.getResource("conv01-instructions.json")).readText()
         val athena = Regex("\"ATHENA_COMPACT\": \"ROUTE:([^|]*)\\|([^\"]*)\"").find(json) ?: error("ATHENA_COMPACT missing")
         assertEquals(athena.groupValues[1], PersonaRenderer.general(PersonaSettings.ATHENA))
