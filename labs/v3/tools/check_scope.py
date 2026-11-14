@@ -4,7 +4,7 @@
 1. Runs the V1 guard (labs/v1/tools/check_scope.py) byte-identical on the frozen V1 delivery commit
    9599d99 in a detached worktree; it chains the M55-D, V1-B, V1-A and original M50 guards.
 2. On HEAD: every file of that commit (historical app, all labs including labs/v1, workflows) is
-   unchanged, and additions are confined to labs/v3/ and the V3 workflow. Avatar, LLM, CORE and VOICE
+   unchanged, and additions are confined to labs/v3/, the V3 workflow and the CONVERSATION-01 Android study workflow. Avatar, LLM, CORE and VOICE
    are other repositories and are only read at pinned commits by the workflow.
 """
 import argparse, subprocess, sys, tempfile
@@ -12,7 +12,7 @@ from pathlib import Path
 
 V1 = '9599d99147f9c9baaccdd07b4d5a6359d558b4c6'   # V1 delivery: run 43313299256 PASS API 29/35
 GUARD = 'labs/v1/tools/check_scope.py'
-ALLOWED = ('labs/v3/', '.github/workflows/v3-cockpit.yml')
+ALLOWED = ('labs/v3/', '.github/workflows/v3-cockpit.yml', '.github/workflows/conv-01-android-study.yml')  # + CONVERSATION-01 Android model study
 
 
 def git(root, *a):
