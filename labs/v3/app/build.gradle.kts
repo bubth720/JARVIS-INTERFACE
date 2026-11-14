@@ -42,6 +42,9 @@ dependencies {
     implementation(project(":stt"))
     implementation(project(":pocket"))
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.27.0")
+    // NEXUS full-text search needs FTS5, absent from the platform SQLite (CI API 29/35). Owner approval 14/11/2026:
+    // embedded AndroidX SQLite, used ONLY by the NEXUS adapter (conv/BundledNexusStorage); CORE keeps the platform SQLite.
+    implementation("androidx.sqlite:sqlite-bundled-android:2.5.2")
     val bom = platform("androidx.compose:compose-bom:2025.04.01")
     implementation(bom); androidTestImplementation(bom)
     implementation("androidx.activity:activity-compose:1.10.1")

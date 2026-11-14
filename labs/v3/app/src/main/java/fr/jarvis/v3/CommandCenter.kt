@@ -2,7 +2,6 @@ package fr.jarvis.v3
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
 import android.os.Debug
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
@@ -42,11 +41,12 @@ fun CommandCenter(app: ConvApp, gov: PerformanceGovernor, ui: V3UiState, actions
     LaunchedEffect(Unit) { while (true) { delay(2_000); tick++ } }   // live gauges, 0.5 Hz, only while this panel is shown
     val measure = remember(tick) { PerformanceGovernor.measure(app) }
     val s = ui.session?.takeIf { !it.closed }
-    val offline = remember(tick) { (app.getSystemService(ConnectivityManager::class.java)).activeNetwork == null }
+    // No ACCESS_NETWORK_STATE (single permission: microphone): the airplane-mode setting is read instead, without permission.
+    val offline = remember(tick) { android.provider.Settings.Global.getInt(app.contentResolver, android.provider.Settings.Global.AIRPLANE_MODE_ON, 0) == 1 }
     // Top bar (§6): date/time, local/offline, battery, AI state.
     Row(Modifier.fillMaxWidth().padding(bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date()), style = Holo.tabular, modifier = Modifier.weight(1f))
-        Text((if (offline) "HORS LIGNE" else "RÉSEAU ACTIF") + " · " + (measure.batteryPercent?.let { "$it %" } ?: "batterie ?") +
+        Text((if (offline) "MODE AVION" else "SANS INTERNET") + " · " + (measure.batteryPercent?.let { "$it %" } ?: "batterie ?") +
             " · IA " + (s?.phase?.name ?: "ARRÊTÉE"), style = Holo.label, modifier = Modifier.testTag("cc-status"))
     }
     Row(Modifier.horizontalScroll(rememberScrollState()).padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -185,6 +185,7 @@ private fun factSentence(f: fr.jarvis.v3.conv.WorkingMemory.Fact): String = when
 @Composable private fun NexusScreen(app: ConvApp, s: fr.jarvis.v3.conv.ConvSession?, actions: SceneActions) {
     val st = app.knowledge.state
     Line("Moteur", when (st) { is LocalKnowledge.State.Ready -> "prêt · ${st.documents} document(s)"; is LocalKnowledge.State.Unavailable -> "indisponible : ${st.reason}" }, "cc-nexus-state")
+    Line("SQLite embarqué (FTS5)", app.knowledge.engineVersion ?: "—")
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text("Utiliser mes documents dans les réponses", style = Holo.body, modifier = Modifier.weight(1f))
         var on by remember { mutableStateOf(app.knowledge.enabled) }
@@ -201,7 +202,7 @@ private fun factSentence(f: fr.jarvis.v3.conv.WorkingMemory.Fact): String = when
     val perms = remember { app.packageManager.getPackageInfo(app.packageName, PackageManager.GET_PERMISSIONS).requestedPermissions.orEmpty().toList() }
     Line("Permission micro", if (mic) "accordée" else "non accordée (demandée au premier usage)", "cc-perm-mic")
     Line("Accès Internet", if (perms.none { it == Manifest.permission.INTERNET }) "aucun (permission absente de l'APK)" else "DÉCLARÉ", "cc-internet")
-    Line("Réseau actuel", if (offline) "hors ligne" else "actif (JARVIS n'en a pas l'usage)")
+    Line("Mode avion", if (offline) "activé" else "désactivé (JARVIS n'utilise pas le réseau de toute façon)")
     Line("Garde thermique", "refus d'un tour si l'état est sévère · actuel : ${m.thermal}")
     Line("Garde mémoire", "refus si la mémoire système est basse · libre : ${m.ramAvailMb ?: "?"} Mio")
     Line("Actions", "aucune exécutée ; garde « action non réalisée » active", "cc-action-guard")

@@ -384,12 +384,9 @@ class V3CockpitTest {
         try {
             val st = app.knowledge.open()
             r.put("knowledgeState", st.toString())
-            if (st is fr.jarvis.v3.conv.LocalKnowledge.State.Unavailable) {
-                r.put("fts5", false)
-                assertTrue(app.knowledge.import("x.txt", "a".toByteArray()).contains("indisponibles"))
-                return
-            }
-            r.put("fts5", true)
+            // Owner decision 14/11: embedded AndroidX SQLite (the platform SQLite of API 29/35 has no FTS5, run 43609210897).
+            r.put("fts5", st is fr.jarvis.v3.conv.LocalKnowledge.State.Ready).put("engineSqlite", app.knowledge.engineVersion)
+            assertTrue("NEXUS must be ready on the embedded SQLite: $st", st is fr.jarvis.v3.conv.LocalKnowledge.State.Ready)
             val doc = "Le club d'astronomie de Valmont se réunit le jeudi 12 mars à 19 heures, à la médiathèque. " +
                 "La cotisation annuelle est de 35 euros. Les télescopes sont prêtés aux membres le samedi matin."
             r.put("import", app.knowledge.import("club-astronomie.txt", doc.toByteArray()))

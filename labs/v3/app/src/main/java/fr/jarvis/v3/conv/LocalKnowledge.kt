@@ -1,9 +1,6 @@
 package fr.jarvis.v3.conv
 
 import android.os.SystemClock
-import fr.jarvis.nexus.android.AndroidNexusStorage
-import fr.jarvis.nexus.android.OpenFailure
-import fr.jarvis.nexus.android.StorageOpenResult
 import fr.jarvis.nexus.api.AccessPolicy
 import fr.jarvis.nexus.api.CatalogResult
 import fr.jarvis.nexus.api.KnowledgeCatalogService
@@ -22,7 +19,7 @@ import java.io.File
 
 /**
  * Local documentary knowledge (CONVERSATION-01 §6) over the NEXUS engine, compiled unchanged from JARVIS-NEXUS
- * (FUSION-02 06ccf98): app-private SQLite store, import of documents the user explicitly picked, FTS5 search,
+ * (FUSION-02 06ccf98) over the AndroidX embedded SQLite (BundledNexusStorage): app-private store, import of documents the user explicitly picked, FTS5 search,
  * DocumentaryGateway (authorization, deadline, citation re-verification). Nothing is scanned or imported
  * automatically. If the platform SQLite lacks FTS5, NEXUS refuses BEFORE creating any file and this class
  * reports the capability as unavailable: no degraded or simulated search.
@@ -37,7 +34,9 @@ class LocalKnowledge(private val dir: File) : AutoCloseable {
     @Volatile var state: State = State.Unavailable("non ouvert"); private set
     /** Owner setting: use the imported documents in answers. */
     @Volatile var enabled = true
-    private var storage: AndroidNexusStorage? = null
+    private var storage: BundledNexusStorage? = null
+    /** SQLite version of the embedded engine (diagnostics). */
+    @Volatile var engineVersion: String? = null; private set
     private var catalog: KnowledgeCatalogService? = null
     private var gateway: DocumentaryGateway? = null
     private var collection: String? = null
@@ -45,14 +44,15 @@ class LocalKnowledge(private val dir: File) : AutoCloseable {
     @Synchronized fun open(): State {
         if (storage != null) return state
         dir.mkdirs()
-        state = when (val r = AndroidNexusStorage.open(dir)) {
-            is StorageOpenResult.Rejected -> State.Unavailable(when (r.reason) {
-                OpenFailure.CAPABILITY_UNAVAILABLE -> "recherche plein texte (FTS5) absente du SQLite de cet Android"
-                OpenFailure.INCOMPATIBLE_VERSION -> "base de connaissances d'une version incompatible (conservée intacte)"
-                OpenFailure.STORAGE_FAILURE -> "stockage local indisponible"
+        // Embedded AndroidX SQLite (owner decision 14/11): the platform SQLite of API 29/35 has no FTS5.
+        state = when (val r = BundledNexusStorage.open(dir)) {
+            is BundledNexusStorage.Open.Rejected -> State.Unavailable(when (r.reason) {
+                BundledNexusStorage.Failure.CAPABILITY_UNAVAILABLE -> "recherche plein texte (FTS5) indisponible"
+                BundledNexusStorage.Failure.INCOMPATIBLE_VERSION -> "base de connaissances d'une version incompatible (conservée intacte)"
+                BundledNexusStorage.Failure.STORAGE_FAILURE -> "stockage local indisponible"
             })
-            is StorageOpenResult.Ready -> {
-                val db = r.storage; storage = db
+            is BundledNexusStorage.Open.Ready -> {
+                val db = r.storage; storage = db; engineVersion = r.sqliteVersion
                 val cat = KnowledgeCatalogService(db, AccessPolicy { true }).also { catalog = it }
                 val idFile = File(dir, "collection.id")
                 collection = idFile.takeIf { it.isFile }?.readText()?.trim()?.takeIf { it.isNotEmpty() }
