@@ -28,3 +28,14 @@ class CommandCenterModelTest {
         assertTrue(Blueprint.EDGES.all { (a, b) -> Blueprint.NODES.any { it.name == a } && Blueprint.NODES.any { it.name == b } })
     }
 }
+
+class AvatarExpressionTest {
+    @Test fun expressionFollowsTheRealStateAndOnlySpeaksWhileAnswering() {
+        assertEquals("sereine", fr.jarvis.v3.model.AvatarExpression.of(fr.jarvis.v3.model.HoloState.IDLE))
+        assertEquals("attentive", fr.jarvis.v3.model.AvatarExpression.of(fr.jarvis.v3.model.HoloState.LISTENING))
+        assertEquals("pensive", fr.jarvis.v3.model.AvatarExpression.of(fr.jarvis.v3.model.HoloState.THINKING))
+        assertEquals("préoccupée", fr.jarvis.v3.model.AvatarExpression.of(fr.jarvis.v3.model.HoloState.ERROR))
+        val speaking = fr.jarvis.v3.model.HoloState.entries.filter { fr.jarvis.v3.model.AvatarExpression.of(it) == "parle" }
+        assertEquals(fr.jarvis.v3.model.HoloState.entries.filter { fr.jarvis.v3.model.SphereStateAdapter.animates(it) }.toSet(), speaking.toSet())
+    }
+}

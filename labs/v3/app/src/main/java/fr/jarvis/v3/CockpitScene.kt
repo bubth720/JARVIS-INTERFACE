@@ -72,6 +72,8 @@ class V3UiState {
     var resumeRequest by mutableStateOf<String?>(null)
     /** Last Command Center screen (kept across rotation). */
     var commandTab by mutableStateOf(fr.jarvis.v3.model.CommandModule.AI_CORE)
+    /** Persona avatar shown (owner setting, persisted in app preferences). */
+    var showAvatar by mutableStateOf(true)
     private var seq = 0
     fun nextId() = "c${++seq}"
     fun card(id: String?) = cards.firstOrNull { it.id == id }
@@ -233,7 +235,10 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
 
 @Composable
 private fun Header(holo: HoloState, gov: PerformanceGovernor, s: ConvSession?) {
-    Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically) {
+    val ui = V3Runtime.ui
+    Row(Modifier.fillMaxWidth().height(if (ui.showAvatar) 60.dp else 40.dp), verticalAlignment = Alignment.CenterVertically) {
+        // Persona avatar zone (Command Center V2 §2): still unless JARVIS answers; mouth follows the real voice level.
+        if (ui.showAvatar) { AvatarView(holo, if (holo == HoloState.SPEAKING) (s?.cockpit?.level ?: 0f) else 0f, 56.dp); Spacer(Modifier.width(8.dp)) }
         Text("J A R V I S", style = Holo.label.copy(color = Holo.ice), modifier = Modifier.weight(1f))
         Box(Modifier.size(8.dp).clip(CircleShape).background(Holo.stateColor(holo)))
         Spacer(Modifier.width(6.dp))
@@ -380,6 +385,11 @@ private fun SettingsPanel(app: ConvApp, gov: PerformanceGovernor, ui: V3UiState,
             Text("Réponses parlées", style = Holo.body, modifier = Modifier.weight(1f))
             Switch(cs.voiceOutputEnabled, { cs.voiceOutputEnabled = it }, modifier = Modifier.testTag("voice-output"), colors = SwitchDefaults.colors(checkedTrackColor = Holo.cyan))
         }
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 6.dp)) {
+        Text("Avatar d'Athéna (portrait 2D original)", style = Holo.body, modifier = Modifier.weight(1f))
+        Switch(ui.showAvatar, { ui.showAvatar = it; app.getSharedPreferences("ui", android.content.Context.MODE_PRIVATE).edit().putBoolean("avatar", it).apply() },
+            modifier = Modifier.testTag("avatar-toggle"), colors = SwitchDefaults.colors(checkedTrackColor = Holo.cyan))
     }
     Spacer(Modifier.height(8.dp)); PersonaSection(app)
     Spacer(Modifier.height(8.dp)); HistorySection(app, ui)

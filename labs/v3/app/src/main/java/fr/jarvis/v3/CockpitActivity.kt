@@ -34,6 +34,7 @@ class CockpitActivity : ComponentActivity(), SceneActions {
         super.onCreate(savedInstanceState)
         val gov = V3Runtime.governor ?: PerformanceGovernor(applicationContext).also { V3Runtime.governor = it }
         if (ui.session == null) app.session?.takeIf { !it.closed }?.let { ui.session = it }
+        ui.showAvatar = getSharedPreferences("ui", MODE_PRIVATE).getBoolean("avatar", true)
         setContent { HoloTheme { CockpitScene(app, gov, this) } }
     }
 

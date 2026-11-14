@@ -155,6 +155,8 @@ class V3CockpitTest {
             // V3-FIX-01: still at rest (animations ON) and NOT manipulable: a real swipe changes nothing.
             val restFrames = drawnDuring(2_000); r.put("restFrames2s", restFrames)
             assertTrue("sphere must be still at rest ($restFrames frames)", restFrames <= 1)
+            // Persona avatar (Command Center V2 §5): present, original procedural portrait, expression = real state.
+            assertTrue(obj("avatar").contentDescription.contains("sereine"))
             val sphere = obj("sphere").visibleBounds; val yaw0 = V3Runtime.motion.yaw
             dev.swipe(sphere.left + sphere.width() * 3 / 4, sphere.centerY(), sphere.left + sphere.width() / 4, sphere.centerY(), 20)
             SystemClock.sleep(600); r.put("swipe", JSONObject().put("dragEvents", V3Runtime.motion.dragEvents).put("yawDelta", V3Runtime.motion.yaw - yaw0))
