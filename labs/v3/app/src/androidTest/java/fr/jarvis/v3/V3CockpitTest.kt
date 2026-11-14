@@ -22,8 +22,8 @@ import fr.jarvis.m55d.RenderMode
 import fr.jarvis.v1.EndpointDetector
 import fr.jarvis.v1.Phase
 import fr.jarvis.v1.SpeechCapture
-import fr.jarvis.v1.V1App
-import fr.jarvis.v1.V1Session
+import fr.jarvis.v3.conv.ConvApp
+import fr.jarvis.v3.conv.ConvSession
 import fr.jarvis.v3.model.CardFactory
 import fr.jarvis.v3.model.HoloState
 import java.io.File
@@ -58,12 +58,12 @@ class RealtimeWav(private val file: File) : SpeechCapture {
 class V3CockpitTest {
     private val inst get() = InstrumentationRegistry.getInstrumentation()
     private val args get() = InstrumentationRegistry.getArguments()
-    private val app get() = inst.targetContext.applicationContext as V1App
+    private val app get() = inst.targetContext.applicationContext as ConvApp
     private val ui get() = V3Runtime.ui
     private val dev get() = UiDevice.getInstance(inst)
     private val shots get() = File(inst.targetContext.filesDir, "v3shots").also { it.mkdirs() }
     private fun <T> main(block: () -> T): T = runBlocking(Dispatchers.Main) { block() }
-    private fun s(): V1Session? = main { ui.session }
+    private fun s(): ConvSession? = main { ui.session }
     private fun phase() = main { ui.session?.phase }
     private fun shot(name: String): String { inst.uiAutomation.takeScreenshot()?.let { b -> File(shots, "$name.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }; return name }
     private fun waitUntil(ms: Long, what: String, ok: () -> Boolean): Long {
@@ -202,8 +202,9 @@ class V3CockpitTest {
                 obj("card-close").click(); SystemClock.sleep(600) }
             else { obj("card-open-latest").click(); SystemClock.sleep(900); obj("card"); captures.put(shot("09-fiche-reponse")); obj("card-close").click(); SystemClock.sleep(600); r.put("keywordCard", JSONObject.NULL) }
             // Radial menu, unavailable module, settings.
-            obj("radial").click(); SystemClock.sleep(900); captures.put(shot("11-menu-radial")); assertTextsFit("radial menu")
+            // The open menu is modal (the dock leaves the accessibility tree): measure the input field before opening it.
             val inputBox = obj("input").visibleBounds
+            obj("radial").click(); SystemClock.sleep(900); captures.put(shot("11-menu-radial")); assertTextsFit("radial menu")
             for (d in listOf("cockpit", "knowledge", "documents", "services", "settings")) {
                 val b = obj("dest-$d").visibleBounds
                 assertFalse("radial item '$d' $b covers the input field $inputBox", android.graphics.Rect.intersects(b, inputBox))
