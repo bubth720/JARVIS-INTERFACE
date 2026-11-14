@@ -31,6 +31,7 @@ class ConvApp : Application() {
     /** Extensions routed to the knowledge base on import (the model / voice files keep their verified importer). */
     fun isDocument(name: String) = name.substringAfterLast('.', "").lowercase() in setOf("txt", "md", "csv", "tsv", "docx", "xml")
     var session: ConvSession? = null; private set
+    companion object { /** Marker for "start a new conversation" after the previous engine is released. */ const val NEW_CONVERSATION = "new" }
     @Volatile var previousReleased = true; private set
 
     fun thermal(): Int = getSystemService(PowerManager::class.java).currentThermalStatus

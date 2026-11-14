@@ -39,3 +39,12 @@ class AvatarExpressionTest {
         assertEquals(fr.jarvis.v3.model.HoloState.entries.filter { fr.jarvis.v3.model.SphereStateAdapter.animates(it) }.toSet(), speaking.toSet())
     }
 }
+
+class CommandPaletteTest {
+    @Test fun searchIgnoresAccentsAndOnlyListsRealCommands() {
+        assertEquals(fr.jarvis.v3.model.PaletteCommand.entries.toList(), fr.jarvis.v3.model.PaletteCommand.search(""))
+        assertEquals(listOf(fr.jarvis.v3.model.PaletteCommand.MEMORY_VAULT), fr.jarvis.v3.model.PaletteCommand.search("memoire supprimer"))
+        assertTrue(fr.jarvis.v3.model.PaletteCommand.search("reprise").contains(fr.jarvis.v3.model.PaletteCommand.RESUME_LAST))
+        assertTrue(fr.jarvis.v3.model.PaletteCommand.search("mission").isEmpty())   // no missions engine: no fake command
+    }
+}

@@ -49,7 +49,7 @@ import kotlinx.coroutines.delay
 /** A typed device question answered from a real Android measurement (never by the language model). */
 data class SystemNote(val afterExchanges: Int, val question: String, val answer: String, val cardId: String)
 
-enum class Panel { NONE, KNOWLEDGE, SETTINGS, COMMAND }
+enum class Panel { NONE, KNOWLEDGE, SETTINGS, COMMAND, PALETTE }
 
 /** Process-scoped UI state: survives rotation and activity recreation (§03 "orientation changée"). */
 class V3UiState {
@@ -103,7 +103,7 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
         val until = SystemClock.elapsedRealtime() + 30_000
         while (!app.previousReleased && SystemClock.elapsedRealtime() < until) delay(100)   // one native engine per process
         ui.notes.clear(); ui.resumeRequest = null
-        runCatching { app.startSession(id) }.onSuccess { ui.session = it; ui.message = "" }.onFailure { ui.message = it.message ?: "Erreur" }
+        runCatching { app.startSession(id.takeIf { it != ConvApp.NEW_CONVERSATION }) }.onSuccess { ui.session = it; ui.message = "" }.onFailure { ui.message = it.message ?: "Erreur" }
     }
 
     // ---- observable engine state -> visual state (the graphics never command the engine) ----
@@ -227,6 +227,7 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
             PanelSheet(ui.panel == Panel.KNOWLEDGE, "Connaissances de la session", "panel-knowledge", { ui.panel = Panel.NONE }) { KnowledgeList(ui) }
             PanelSheet(ui.panel == Panel.SETTINGS, "Réglages", "panel-settings", { ui.panel = Panel.NONE }) { SettingsPanel(app, gov, ui, actions) }
             PanelSheet(ui.panel == Panel.COMMAND, "Command Center", "panel-command", { ui.panel = Panel.NONE }) { CommandCenter(app, gov, ui, actions) }
+            PanelSheet(ui.panel == Panel.PALETTE, "Commandes", "panel-palette", { ui.panel = Panel.NONE }) { PaletteSheet(app, ui, actions) }
         }
         val a11y = remember { (app.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager).isTouchExplorationEnabled }
         RadialMenuOverlay(ui.menuOpen, ui.anchor, a11y, onDismiss = { ui.menuOpen = false }, onSelect = ::destination)
@@ -240,6 +241,13 @@ private fun Header(holo: HoloState, gov: PerformanceGovernor, s: ConvSession?) {
         // Persona avatar zone (Command Center V2 §2): still unless JARVIS answers; mouth follows the real voice level.
         if (ui.showAvatar) { AvatarView(holo, if (holo == HoloState.SPEAKING) (s?.cockpit?.level ?: 0f) else 0f, 56.dp); Spacer(Modifier.width(8.dp)) }
         Text("J A R V I S", style = Holo.label.copy(color = Holo.ice), modifier = Modifier.weight(1f))
+        if (s != null) {
+            GlyphButton("Commandes", "open-palette", size = 40, onClick = { ui.panel = Panel.PALETTE }) { c ->
+                drawCircle(c, size.width * 0.22f, androidx.compose.ui.geometry.Offset(size.width * 0.44f, size.height * 0.44f), style = androidx.compose.ui.graphics.drawscope.Stroke(1.8f * density))
+                drawLine(c, androidx.compose.ui.geometry.Offset(size.width * 0.6f, size.height * 0.6f), androidx.compose.ui.geometry.Offset(size.width * 0.78f, size.height * 0.78f), strokeWidth = 1.8f * density)
+            }
+            Spacer(Modifier.width(6.dp))
+        }
         Box(Modifier.size(8.dp).clip(CircleShape).background(Holo.stateColor(holo)))
         Spacer(Modifier.width(6.dp))
         Text(if (s == null) "LOCAL · HORS LIGNE" else "${holo.label.uppercase()} · LOCAL", style = Holo.label, modifier = Modifier.testTag("state-chip"),
