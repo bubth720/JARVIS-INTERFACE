@@ -72,6 +72,13 @@ class V3CockpitTest {
         return SystemClock.elapsedRealtime() - t0
     }
     private fun obj(res: String, ms: Long = 20_000): UiObject2 = requireNotNull(dev.wait(Until.findObject(By.res(res)), ms)) { "element '$res' not shown" }
+    /** Command Center tab: the tab row scrolls horizontally, so off-screen tabs are reached like a user would (run 43620844372). */
+    private fun tab(name: String) {
+        for (dir in listOf(androidx.test.uiautomator.Direction.RIGHT, androidx.test.uiautomator.Direction.LEFT)) repeat(6) {
+            if (dev.findObject(By.res("cc-tab-$name")) != null) { tap("cc-tab-$name"); return }
+            obj("cc-tabs").scroll(dir, 0.8f); SystemClock.sleep(300) }
+        tap("cc-tab-$name")
+    }
     /** Click that survives a recomposition between lookup and click (StaleObjectException, API 35 run 43616811194). */
     private fun tap(res: String) {
         repeat(3) { attempt -> try { obj(res).click(); return } catch (e: androidx.test.uiautomator.StaleObjectException) { if (attempt == 2) throw e; SystemClock.sleep(300) } }
@@ -218,11 +225,11 @@ class V3CockpitTest {
             // Command Center V2: real AI CORE data, and an unconnected module shown "à connecter" (never simulated).
             obj("dest-command").click(); SystemClock.sleep(900)
             assertTrue(obj("cc-model").text.startsWith("Qwen3-0.6B"))
-            tap("cc-tab-security"); SystemClock.sleep(500); assertTrue(obj("cc-internet").text.startsWith("aucun"))
+            tab("security"); SystemClock.sleep(500); assertTrue(obj("cc-internet").text.startsWith("aucun"))
             captures.put(shot("12-command-center")); assertTextsFit("command center")
-            obj("cc-tab-missions").click(); SystemClock.sleep(500)
+            tab("missions"); SystemClock.sleep(500)
             assertEquals("MISSIONS · À CONNECTER", obj("cc-module-status").text); obj("cc-to-connect"); captures.put(shot("12b-module-a-connecter"))
-            obj("cc-tab-blueprint").click(); SystemClock.sleep(500); obj("cc-node-nexus"); captures.put(shot("12c-blueprint"))
+            tab("blueprint"); SystemClock.sleep(500); obj("cc-node-nexus"); captures.put(shot("12c-blueprint"))
             // The panel leaves with an exit animation: wait for it to be gone (slow API 35 emulator).
             dev.pressBack(); dev.wait(Until.gone(By.res("panel-command")), 3_000); assertNull("Android back must close the panel", dev.findObject(By.res("panel-command")))
             // Command Palette: real commands only; an unavailable one says why.

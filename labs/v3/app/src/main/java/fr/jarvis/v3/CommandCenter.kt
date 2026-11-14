@@ -49,7 +49,7 @@ fun CommandCenter(app: ConvApp, gov: PerformanceGovernor, ui: V3UiState, actions
         Text((if (offline) "MODE AVION" else "SANS INTERNET") + " · " + (measure.batteryPercent?.let { "$it %" } ?: "batterie ?") +
             " · IA " + (s?.phase?.name ?: "ARRÊTÉE"), style = Holo.label, modifier = Modifier.testTag("cc-status"))
     }
-    Row(Modifier.horizontalScroll(rememberScrollState()).padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    Row(Modifier.horizontalScroll(rememberScrollState()).padding(bottom = 8.dp).testTag("cc-tabs"), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         for (m in CommandModule.entries) Pill(m.label + if (m.status == ModuleStatus.TO_CONNECT) " ◌" else "", "cc-tab-${m.name.lowercase()}", active = tab == m) { tab = m }
     }
     Text("${tab.label} · ${tab.status.label.uppercase()}", style = Holo.label.copy(color = when (tab.status) {
