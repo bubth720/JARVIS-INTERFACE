@@ -140,6 +140,7 @@ jobs:
           for api in 29 35; do for f in results.txt v3-states.json v3-conv.json v3-knowledge.json v3-memory.json v3-long.json v3-reduced.json v3-bench.json v3-first-launch.json; do
             [ -f "$RUNNER_TEMP/v3/api$api/$f" ] && cp "$RUNNER_TEMP/v3/api$api/$f" "$dst/api$api-$f"; done; done
           cp "$RUNNER_TEMP/v3/apk-sha256.txt" "$dst/" 2>/dev/null || true
+          for api in 29 35; do for f in "$RUNNER_TEMP"/v3/api$api/audit-*.json "$RUNNER_TEMP"/v3/api$api/audit-results.txt; do [ -f "$f" ] && cp "$f" "$dst/api$api-$(basename "$f")"; done; done
           cd interface; git add "labs/v3/captures/run-${{ github.run_id }}" || exit 0
           git diff --cached --quiet && exit 0
           git -c user.name="jarvis-ci" -c user.email="ci@invalid" commit -q -m "ci(v3): review captures and reports of run ${{ github.run_id }} [skip ci]"
