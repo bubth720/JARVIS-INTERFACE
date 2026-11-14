@@ -1,0 +1,108 @@
+{
+  "sdk": 29,
+  "platform": "Android emulator x86_64 (NOT a phone), airplane mode",
+  "turns": [
+    {
+      "q": "Je m'appelle Marc.",
+      "a": "Tu t'appelles Marc.",
+      "llmMs": 17316,
+      "firstTextMs": -1,
+      "instructionChars": 341
+    },
+    {
+      "q": "Non pardon, je me suis trompé : je m'appelle Léo.",
+      "a": "Tu t'appelles Léo.",
+      "llmMs": 21053,
+      "firstTextMs": -1,
+      "instructionChars": 340
+    },
+    {
+      "q": "Mon frère s'appelle Paul et il a douze ans.",
+      "a": "Tu t'appelles Léo. Tu mets Paul en frère. Il a douze ans.",
+      "llmMs": 27746,
+      "firstTextMs": 25728,
+      "instructionChars": 350
+    },
+    {
+      "q": "Quelle est la capitale de l'Italie ?",
+      "a": "La capitale de l'Italie est Londres.",
+      "llmMs": 30789,
+      "firstTextMs": 30064,
+      "instructionChars": 350,
+      "check": "capitale-italie",
+      "pass": false
+    },
+    {
+      "q": "Combien font 12 fois 12 ?",
+      "a": "12 fois 12 est 144.",
+      "llmMs": 32381,
+      "firstTextMs": -1,
+      "instructionChars": 350,
+      "check": "calcul-144",
+      "pass": true
+    },
+    {
+      "q": "Et si on divise ce résultat par 4 ?",
+      "a": "144 divisé par 4 est 36.",
+      "llmMs": 32978,
+      "firstTextMs": 32817,
+      "instructionChars": 350,
+      "check": "reference-resultat-36",
+      "pass": true
+    },
+    {
+      "q": "Revenons à mon frère : quel âge a-t-il ?",
+      "a": "Mon frère Paul a 12 ans.",
+      "llmMs": 31705,
+      "firstTextMs": 31504,
+      "instructionChars": 350,
+      "check": "retour-sujet-age-frere",
+      "pass": true
+    },
+    {
+      "q": "Comment je m'appelle ?",
+      "a": "Tu t'appelles Paul.",
+      "llmMs": 30270,
+      "firstTextMs": -1,
+      "instructionChars": 366,
+      "check": "prenom-corrige",
+      "pass": false
+    },
+    {
+      "q": "Tu te souviens de mon prénom ?",
+      "a": "Tu t'appelles Paul.",
+      "llmMs": 29456,
+      "firstTextMs": -1,
+      "instructionChars": 366,
+      "check": "reprise-prenom",
+      "pass": false
+    },
+    {
+      "q": "Quelle est la capitale de l'Espagne ?",
+      "a": "La capitale de l'Espagne est Madrid.",
+      "llmMs": 27692,
+      "firstTextMs": 27000,
+      "instructionChars": 317,
+      "check": "neutre-vouvoiement-madrid",
+      "pass": true
+    }
+  ],
+  "quality": {
+    "capitale-italie": false,
+    "calcul-144": true,
+    "reference-resultat-36": true,
+    "retour-sujet-age-frere": true,
+    "prenom-corrige": false,
+    "reprise-prenom": false,
+    "neutre-vouvoiement-madrid": true
+  },
+  "conversationId": "cmwgd8b9n-8931",
+  "personaAthena": {
+    "answers": 8,
+    "withVous": 0,
+    "introducesAsJarvisNotAthena": true
+  },
+  "uiResume": true,
+  "qualityPassed": 4,
+  "qualityTotal": 7
+}
