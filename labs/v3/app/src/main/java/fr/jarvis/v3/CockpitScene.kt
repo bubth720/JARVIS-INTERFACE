@@ -279,7 +279,7 @@ private fun Conversation(s: ConvSession, ui: V3UiState, modifier: Modifier) {
                         (if (restored) "JARVIS · échange précédent (historique local)" else
                         "JARVIS · LLM ${"%.1f".format(e.llmMs / 1000.0)} s" + (e.error?.let { " · $it" } ?: "")) +
                         (if (cited.isNotEmpty()) "\nSources locales : " + cited.joinToString(" · ") else "") +
-                        (s.notices[i]?.let { "\n⚠ SYSTÈME : $it" } ?: ""), idx == items.lastIndex && !s.busy, "Fiche") {
+                        (s.notices[i]?.let { "\n⚠ SYSTÈME : $it" } ?: ""), idx == items.lastIndex && !s.busy, "Fiche", s.why[i]) {
                         ui.show(CardFactory.fromExchange(ui.nextId(), e.user, e.answer, e.llmMs, e.viaVoice)) } }
             }
         }
@@ -315,14 +315,20 @@ fun MemoryProposalCard(shown: String, onAccept: () -> Unit, onReject: () -> Unit
 }
 
 @Composable
-private fun Message(question: String, answer: String, meta: String, latest: Boolean, cardLabel: String, onCard: () -> Unit) {
+private fun Message(question: String, answer: String, meta: String, latest: Boolean, cardLabel: String, why: List<String>? = null, onCard: () -> Unit) {
+    var open by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
         Text(question, style = Holo.small.copy(color = Holo.muted))
         Text(answer, style = Holo.body, modifier = if (latest) Modifier.testTag("answer") else Modifier)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(meta, style = Holo.tabular.copy(color = Holo.muted), modifier = Modifier.weight(1f),
                 onTextLayout = { TextFit.report("meta", it.hasVisualOverflow) })
+            // Data Provenance (Command Center V2 §8): what really fed this answer.
+            if (why != null) { Pill("Pourquoi ?", if (latest) "why-latest" else "why", active = open) { open = !open }; Spacer(Modifier.width(6.dp)) }
             Pill(cardLabel, if (latest) "card-open-latest" else "card-open") { onCard() }
+        }
+        if (open && why != null) Column(Modifier.padding(top = 4.dp).testTag(if (latest) "why-panel-latest" else "why-panel")) {
+            for (w in why) Text("• $w", style = Holo.small)
         }
     }
 }

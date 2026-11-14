@@ -66,6 +66,8 @@ class ConvSession(
     val sources = androidx.compose.runtime.mutableStateMapOf<Int, List<String>>()
     /** System notices per exchange index (ActionGuard: an answer claimed an action that was not executed). */
     val notices = androidx.compose.runtime.mutableStateMapOf<Int, String>()
+    /** "Pourquoi ?" per exchange index: what really fed that answer (recorded when the turn was built). */
+    val why = androidx.compose.runtime.mutableStateMapOf<Int, List<String>>()
     /** Last documentary search: searched?, duration, sources (diagnostics shown on the NEXUS screen). */
     var lastGrounding by mutableStateOf<LocalKnowledge.Grounding?>(null); private set
     /** Memory proposal awaiting the user's decision: the candidate and the EXACT text displayed. */
@@ -223,6 +225,9 @@ class ConvSession(
         lastGrounding = grounding
         context.groundNext(text, grounding?.block.orEmpty())
         val cited = grounding?.sources.orEmpty()
+        val factsUsed = context.facts(history.snapshot(), text).facts()
+        val memoriesUsed = memory?.let { m -> runCatching { withContext(Dispatchers.IO) { m.recallBlock(text) } }.getOrDefault("") }
+            ?.let { b -> if (b.isBlank()) 0 else Regex("« ").findAll(b).count() } ?: 0
         val l0 = SystemClock.elapsedRealtime()
         if (!client.submit(text)) { finish("CORE a refusé la demande (occupé ou fermé)", error = true); return }
         val waiting = scheduleReaction(viaVoice, requestEndAt) { client.state.value.text.isNotEmpty() }
@@ -249,6 +254,8 @@ class ConvSession(
         if (cited.isNotEmpty()) sources[exchanges.size] = cited
         val notice = if (ActionGuard.claimsDone(text, answer)) ActionGuard.NOTICE else null
         if (notice != null) notices[exchanges.size] = notice
+        why[exchanges.size] = Provenance.explain(factsUsed, memoriesUsed, cited, ActionGuard.requestedAction(text) != null, notice != null,
+            transport.lastMetrics.value?.historyPairsSent)
         val speech = tts?.takeIf { voiceOutputEnabled }
         if (speech == null) {
             exchanges += Exchange(text, answer, viaVoice, captureMs, sttMs, llmMs, firstText)
