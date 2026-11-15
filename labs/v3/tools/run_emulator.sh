@@ -58,6 +58,16 @@ for f in llm.gguf stt.bin tts.zip utt1.wav; do timeout 600 adb push "$res/$f" "/
 pull() { timeout 30 adb exec-out run-as fr.jarvis.v3 cat "files/$1" > "$out/$1" 2>/dev/null || rm -f "$out/$1"; }
 run a_manifestSinglePermissionNoNetworkInstallable
 run b_firstLaunchThenVerifiedImport -e llmPath /data/local/tmp/v3-llm.gguf -e sttPath /data/local/tmp/v3-stt.bin -e ttsZip /data/local/tmp/v3-tts.zip; pull v3-first-launch.json
+# Owner request 15/11: CAPTURES_ONLY=1 = real screenshots of every screen (ScreenTourTest), no campaign.
+if [ "${CAPTURES_ONLY:-0}" = 1 ]; then
+  precheck w_screenTour
+  instr -w -r -e class "fr.jarvis.v3.ScreenTourTest#w_screenTour" -e afterImport 1 "$R" > "$out/instr-tour.txt" 2>&1
+  if grep -q '^OK (1 test)' "$out/instr-tour.txt"; then echo "PASS w_screenTour" | tee -a "$out/results.txt"; else echo "FAIL w_screenTour" | tee -a "$out/results.txt"; tail -n 30 "$out/instr-tour.txt" | tee -a "$out/results.txt"; fail=1; fi
+  for f in $(timeout 30 adb shell run-as fr.jarvis.v3 ls files/v3shots 2>/dev/null | tr -d '\r' | grep '^tour-'); do timeout 30 adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" > "$out/shots/api$api-$f"; done
+  timeout 30 adb exec-out run-as fr.jarvis.v3 cat files/audit-tour.json > "$out/audit-tour.json" 2>/dev/null || true
+  A shell rm -f /data/local/tmp/v3-* || true
+  echo "=== API $api captures"; ls "$out/shots"; exit $fail
+fi
 run c_realEngineStatesCardsMenuLandscapeBackground -e afterImport 1 -e wav1 /data/local/tmp/v3-utt1.wav; pull v3-states.json
 run f_conversationContextPersonaResume -e afterImport 1; pull v3-conv.json
 run g_localKnowledgeCitedAnswer -e afterImport 1; pull v3-knowledge.json

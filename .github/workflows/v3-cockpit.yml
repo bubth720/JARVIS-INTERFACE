@@ -4,6 +4,11 @@ on:
     branches: ['ccr-5cf17ed2-phgk00']
     paths: ['.github/workflows/v3-cockpit.yml', 'labs/v3/**', '!labs/v3/captures/**', '!labs/v3/*.md']
   workflow_dispatch:
+    inputs:
+      captures_only:
+        description: 'Real screenshots of every screen only (ScreenTourTest), no campaign'
+        type: boolean
+        default: false
 permissions:
   contents: read
 defaults:
@@ -20,6 +25,7 @@ jobs:
       contents: write   # only to commit the downscaled review captures ([skip ci]) to this development branch
     env:
       PYTHONDONTWRITEBYTECODE: '1'
+      CAPTURES_ONLY: ${{ inputs.captures_only && '1' || '0' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {path: interface, fetch-depth: 0, persist-credentials: false}
