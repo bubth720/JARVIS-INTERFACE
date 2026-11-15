@@ -243,7 +243,7 @@ private fun Header(holo: HoloState, gov: PerformanceGovernor, s: ConvSession?) {
         if (ui.showAvatar) { AvatarView(holo, if (holo == HoloState.SPEAKING) (s?.cockpit?.level ?: 0f) else 0f, 56.dp); Spacer(Modifier.width(8.dp)) }
         Text("J A R V I S", style = Holo.label.copy(color = Holo.ice), modifier = Modifier.weight(1f))
         if (s != null) {
-            GlyphButton("Commandes", "open-palette", size = 40, onClick = { ui.panel = Panel.PALETTE }) { c ->
+            GlyphButton("Commandes", "open-palette", size = 48, onClick = { ui.panel = Panel.PALETTE }) { c ->
                 drawCircle(c, size.width * 0.22f, androidx.compose.ui.geometry.Offset(size.width * 0.44f, size.height * 0.44f), style = androidx.compose.ui.graphics.drawscope.Stroke(1.8f * density))
                 drawLine(c, androidx.compose.ui.geometry.Offset(size.width * 0.6f, size.height * 0.6f), androidx.compose.ui.geometry.Offset(size.width * 0.78f, size.height * 0.78f), strokeWidth = 1.8f * density)
             }

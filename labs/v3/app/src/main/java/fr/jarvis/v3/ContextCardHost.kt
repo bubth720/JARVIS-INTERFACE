@@ -47,7 +47,7 @@ fun GlyphButton(label: String, tag: String, modifier: Modifier = Modifier, enabl
 
 @Composable
 fun Pill(text: String, tag: String, enabled: Boolean = true, active: Boolean = false, onClick: () -> Unit) {
-    Box(Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(20.dp))
+    Box(Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(24.dp))   // S4: 48 dp touch target (Android accessibility)
         .background(if (active) Holo.cyan.copy(alpha = 0.18f) else Holo.surface.copy(alpha = 0.6f))
         .border(1.dp, Holo.cyan.copy(alpha = if (!enabled) 0.15f else if (active) 0.8f else 0.4f), RoundedCornerShape(20.dp))
         .clickable(enabled = enabled, role = Role.Button, onClick = onClick).testTag(tag).padding(horizontal = 14.dp, vertical = 9.dp),
