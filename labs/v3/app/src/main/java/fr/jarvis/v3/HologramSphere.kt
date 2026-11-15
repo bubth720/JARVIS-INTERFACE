@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -102,6 +103,10 @@ fun HologramSphere(
 
     Canvas(
         modifier
+            // A-008 (run 43643453245: 12 frames while listening even with instant transitions): without its own layer
+            // the sphere was re-recorded every time ANY sibling redrew (the dock's microphone meter, 10 Hz). Its own
+            // RenderNode means it redraws only when its own state changes.
+            .graphicsLayer()
             .testTag("sphere")
             .semantics { contentDescription = "Sphère holographique de JARVIS (affichage, non interactive)"; stateDescription = state.label }
     ) {

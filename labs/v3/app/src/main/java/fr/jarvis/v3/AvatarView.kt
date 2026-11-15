@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -28,7 +29,7 @@ import fr.jarvis.v3.model.HoloState
 fun AvatarView(state: HoloState, voiceLevel: Float, size: Dp, modifier: Modifier = Modifier) {
     val expression = AvatarExpression.of(state)
     val mouth = if (expression == "parle") (0.15f + 0.85f * voiceLevel.coerceIn(0f, 1f)) else 0f
-    Canvas(modifier.size(size).testTag("avatar").semantics { contentDescription = "Avatar d'Athéna, expression $expression" }) {
+    Canvas(modifier.size(size).graphicsLayer().testTag("avatar").semantics { contentDescription = "Avatar d'Athéna, expression $expression" }) {
         AvatarStats.draws++          // consumption measurement (audit E7): 0 redraws expected at rest
         drawPortrait(expression, mouth)
     }
