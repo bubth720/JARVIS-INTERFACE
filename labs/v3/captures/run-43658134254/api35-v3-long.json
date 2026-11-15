@@ -1,0 +1,122 @@
+{
+  "sdk": 35,
+  "turns": [
+    {
+      "q": "Je m'appelle Camille.",
+      "a": "Tu t'appelles Camille.",
+      "llmMs": 20912,
+      "promptTokens": 219,
+      "instructionBytes": 527
+    },
+    {
+      "q": "J'aime beaucoup la randonnée en montagne.",
+      "a": "Tu t'appelles Camille. J'aime beaucoup la randonnée en montagne.",
+      "llmMs": 25332,
+      "promptTokens": 243,
+      "instructionBytes": 501
+    },
+    {
+      "q": "Quelle est la capitale du Japon ?",
+      "a": "La capitale du Japon est Tokyo.",
+      "llmMs": 28226,
+      "promptTokens": 282,
+      "instructionBytes": 501
+    },
+    {
+      "q": "Et combien font 9 fois 7 ?",
+      "a": "La réponse est 63.",
+      "llmMs": 31423,
+      "promptTokens": 311,
+      "instructionBytes": 501
+    },
+    {
+      "q": "Donne-moi une idée de dessert simple.",
+      "a": "Une idée de dessert simple : un cake au lait.",
+      "llmMs": 33081,
+      "promptTokens": 315,
+      "instructionBytes": 501
+    },
+    {
+      "q": "Mon chat s'appelle Moka.",
+      "a": "Bien sûr, Moka est votre chat.",
+      "llmMs": 39188,
+      "promptTokens": 370,
+      "instructionBytes": 742
+    },
+    {
+      "q": "Quelle est la plus haute montagne d'Europe ?",
+      "a": "La plus haute montagne d'Europe est la Montagne Éiren.",
+      "llmMs": 33493,
+      "promptTokens": 315,
+      "instructionBytes": 527
+    },
+    {
+      "q": "Raconte-moi une blague courte.",
+      "a": "Bien sûr, voici une blague courte : \"Quel est le plus grand animal de la terre ? Un chat.\"",
+      "llmMs": 35685,
+      "promptTokens": 323,
+      "instructionBytes": 527
+    },
+    {
+      "q": "Combien de jours y a-t-il en février une année bissextile ?",
+      "a": "Il y a 12 jours en février dans une année bissextile.",
+      "llmMs": 36685,
+      "promptTokens": 341,
+      "instructionBytes": 527
+    },
+    {
+      "q": "Je pars en voyage à Lisbonne.",
+      "a": "Je suis en voyage à Lisbonne. 🌴",
+      "llmMs": 37583,
+      "promptTokens": 356,
+      "instructionBytes": 552
+    },
+    {
+      "q": "Que pourrais-je visiter là-bas ?",
+      "a": "Je visiterais le lac de Lisbonne, les sites historiques et les paysages naturels. 🌳",
+      "llmMs": 39156,
+      "promptTokens": 351,
+      "instructionBytes": 552
+    },
+    {
+      "q": "Comment dit-on merci en portugais ?",
+      "a": "Merci! 🌸",
+      "llmMs": 35949,
+      "promptTokens": 350,
+      "instructionBytes": 552
+    },
+    {
+      "q": "Quel est le contraire de rapide ?",
+      "a": "Le contraire de \"rapide\" est \"lent\". 🚶",
+      "llmMs": 35206,
+      "promptTokens": 331,
+      "instructionBytes": 552
+    },
+    {
+      "q": "Allume la télévision.",
+      "a": "Je ne peux pas l'exécuter, mais je peux vous aider à choisir une émission. Veuillez préciser votre interesse. 🌟",
+      "llmMs": 45221,
+      "promptTokens": 389,
+      "instructionBytes": 766
+    },
+    {
+      "q": "Au fait, quel sport j'aime ?",
+      "a": "Je ne peux pas l'exécuter, mais je peux vous aider à choisir une émission. Veuillez préciser votre interesse. 🌟",
+      "llmMs": 38842,
+      "promptTokens": 339,
+      "instructionBytes": 552
+    },
+    {
+      "q": "Comment je m'appelle ?",
+      "a": "Tu t'appelles Camille.",
+      "llmMs": 34142,
+      "promptTokens": 332,
+      "instructionBytes": 463
+    }
+  ],
+  "qualityNameAfter15": true,
+  "qualitySportRecalled": false,
+  "answersWithVous": 3,
+  "firstHalfMedianMs": 33081,
+  "secondHalfMedianMs": 37583
+}

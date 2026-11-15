@@ -1,0 +1,5 @@
+{
+  "junk": "Rejected(reason=STORAGE_FAILURE)",
+  "future": "Rejected(reason=INCOMPATIBLE_VERSION)",
+  "symlink": "Rejected(reason=STORAGE_FAILURE)"
+}

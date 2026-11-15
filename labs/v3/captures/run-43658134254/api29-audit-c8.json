@@ -1,0 +1,18 @@
+{
+  "general": {
+    "q": "Quelle est la capitale de l'Italie ?",
+    "a": "La capitale de l'Italie est Londres.",
+    "error": null,
+    "llmMs": 17271,
+    "sources": [],
+    "notice": null
+  },
+  "documentary": {
+    "q": "Selon mes documents, quelle est la capitale de l'Italie ?",
+    "a": "La capitale de l'Italie est Londres.",
+    "error": null,
+    "llmMs": 23800,
+    "sources": [],
+    "notice": "Aucun de tes documents locaux ne contient cette information : cette réponse ne vient pas de tes documents. Cette réponse reprend presque mot pour mot la précédente : elle ne répond probablement pas à ta question. Reformule-la."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "listening": {
+    "status": "Écoute interrompue",
+    "phase": "READY",
+    "exchanges": 0
+  },
+  "thinking": {
+    "status": "Réponse interrompue",
+    "interrupted": true,
+    "exchanges": 1
+  },
+  "after": {
+    "q": "Combien font 3 plus 4 ?",
+    "a": "Je fais cela en français : 3 + 4 = 7.",
+    "error": null,
+    "llmMs": 17767,
+    "sources": [],
+    "notice": null
+  }
+}

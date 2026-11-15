@@ -1,0 +1,24 @@
+PASS b3_ambiguousMemoriesAreNotInjectedWithoutChoice
+PASS c3_unknownQuestionsAreNotInvented
+FAIL c8_generalAnswerIsNeverPresentedAsDocumentary
+PASS d2_voiceErrorsLeaveTheSessionUsableWithoutDuplicates
+PASS d3_interruptionAtEachStage
+PASS f2f3f4_documentsContradictoryCorruptAndInjected
+PASS f6_deletionIsVerifiedOnDisk
+PASS g6_modelOrDocumentCannotCreateAMemory
+PASS a3_knowledgeImportFormatsAndLimits
+PASS a4_corruptFutureAndSymlinkDatabasesRefusedAndKept
+PASS a5_memoryConsentMismatchAndExpiry
+PASS e2e3e6e7_layoutStressAccessibilityAvatar
+PASS g1_microphoneRevokedTextStillWorks
+PASS g2_thermalSevereRefusesTurn
+PASS h4_loadUnloadCyclesDoNotLeak
+PASS j_sessionLifecycleNeverDeadlocks
+FAIL k_sphereStillAtEveryNonAnswerTransition
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: no frame at thinking onset: {"thinkingOnset1s":2,"listeningOnset1s":2,"restAfter2s":2}
+java.lang.AssertionError: no frame at thinking onset: {"thinkingOnset1s":2,"listeningOnset1s":2,"restAfter2s":2}
+java.lang.AssertionError: no frame at thinking onset: {"thinkingOnset1s":2,"listeningOnset1s":2,"restAfter2s":2}
+PASS l_hiddenInjectionsInADocument
+PASS m_longConversationMemoryAndLatency
+PASS n_resumeKeepsSystemNotices
+PASS o_historyWriteFailureKeepsTheConversation

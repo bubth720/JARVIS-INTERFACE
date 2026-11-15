@@ -1,0 +1,20 @@
+{
+  "silence": {
+    "status": "Je n'ai rien entendu",
+    "exchangesAdded": 0,
+    "phase": "READY"
+  },
+  "corrupt": {
+    "status": "Micro : WAV sans données",
+    "exchangesAdded": 0,
+    "phase": "READY"
+  },
+  "after": {
+    "q": "Combien font 2 plus 2 ?",
+    "a": "Je suis JARVIS, un assistant local. Combien font 2 plus 2 ?",
+    "error": null,
+    "llmMs": 18365,
+    "sources": [],
+    "notice": null
+  }
+}
