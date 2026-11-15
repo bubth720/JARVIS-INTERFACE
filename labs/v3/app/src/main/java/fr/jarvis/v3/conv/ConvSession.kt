@@ -240,6 +240,15 @@ class ConvSession(
             ?.takeIf { it.size > 1 }?.let { text to it }
         val memoriesUsed = memory?.let { m -> runCatching { withContext(Dispatchers.IO) { m.recallBlock(text) } }.getOrDefault("") }
             ?.let { b -> if (b.isBlank()) 0 else Regex("« ").findAll(b).count() } ?: 0
+        val excerpts = grounding?.excerpts.orEmpty()
+        // Owner points 4-5 (15/11): nothing found for a documentary question, or documents that disagree -> JARVIS says
+        // so in its own deterministic words; the model is not asked, so no invented value can be shown even briefly.
+        DocumentaryAnswer.beforeModel(text, grounding?.searched == true, excerpts)?.let { o ->
+            deterministicAnswer(text, o, viaVoice, cited, factsUsed, memoriesUsed, captureMs, sttMs, requestEndAt, grounding?.injectionRemoved == true)
+            return
+        }
+        val verify = DocumentaryAnswer.verifiesBeforeShowing(text, excerpts)
+        if (verify) status = "Recherche et vérification dans tes documents…"
         val l0 = SystemClock.elapsedRealtime()
         if (!client.submit(text)) { finish("CORE a refusé la demande (occupé ou fermé)", error = true); return }
         val waiting = scheduleReaction(viaVoice, requestEndAt) { client.state.value.text.isNotEmpty() }
@@ -247,13 +256,18 @@ class ConvSession(
         val deadline = l0 + 300_000
         while (client.state.value.busy) {
             val s = client.state.value
-            if (s.text.isNotEmpty()) { partial = s.text; if (firstText < 0) firstText = SystemClock.elapsedRealtime() - l0 }
+            // A documentary draft is NOT shown while it is written: it is verified against the excerpts first.
+            if (s.text.isNotEmpty()) { if (!verify) partial = s.text; if (firstText < 0) firstText = SystemClock.elapsedRealtime() - l0 }
             if (SystemClock.elapsedRealtime() > deadline) { client.cancel(); break }
             delay(40)
         }
         val llmMs = SystemClock.elapsedRealtime() - l0
-        val answer = client.state.value.text.trim()
+        val draft = client.state.value.text.trim()
         val llmError = transport.lastError.value
+        val outcome = if (draft.isEmpty() || llmError != null) null else DocumentaryAnswer.afterModel(text, draft, excerpts)
+        val answer = outcome?.text ?: draft
+        // The engine context must not keep a rejected draft (an invented value would come back at the next turn).
+        if (outcome != null && outcome.kind != DocumentaryAnswer.Kind.MODEL) replaceLastEngineTurn(text, answer)
         // A reaction that has not started yet is dropped; one already speaking is cut so the answer comes at once.
         waiting?.cancel(); if (tts?.isSpeaking == true) tts?.stop(); waiting?.join()
         if (stopRequested.get() || answer.isEmpty() || llmError != null) {
@@ -263,19 +277,17 @@ class ConvSession(
         }
         partial = answer
         if (cited.isNotEmpty()) sources[exchanges.size] = cited
-        // System notices: an unexecuted action presented as done, or an answer about the user's documents when none
-        // matched (run 43616811194: the 0.6B invented "10 euros" although told that no document contains it).
-        val docNotice = if (grounding != null && grounding.searched && KnowledgePlanner.asksDocuments(text) && cited.isEmpty())
-            KnowledgePlanner.NO_DOCUMENT_NOTICE else null
-        val notice = listOfNotNull(if (ActionGuard.claimsDone(text, answer)) ActionGuard.NOTICE else null, docNotice,
-            grounding?.contradiction, if (grounding?.injectionRemoved == true) KnowledgePlanner.INJECTION_NOTICE else null,
-            grounding?.let { KnowledgePlanner.unsupported(text, answer, it.excerpts) },
+        // System notices: an unexecuted action presented as done, orders removed from a document, a repeated answer.
+        // Absent / contradictory / unsupported documentary values no longer get a notice: the answer itself says it (DocumentaryAnswer).
+        val ownWords = answer.substringBefore("je la cite sans l'appliquer")   // an attributed quote is the document's, not JARVIS'
+        val notice = listOfNotNull(if (ActionGuard.claimsDone(text, ownWords)) ActionGuard.NOTICE else null,
+            if (grounding?.injectionRemoved == true) KnowledgePlanner.INJECTION_NOTICE else null,
             exchanges.lastOrNull { it.answer.isNotBlank() }?.takeIf { RepetitionGuard.repeats(it.user, it.answer, text, answer) }?.let { RepetitionGuard.NOTICE })
             .joinToString(" ").ifBlank { null }
         if (notice != null) notices[exchanges.size] = notice
         record(text, answer, viaVoice, cited, notice)   // the system notice is kept with the exchange (resume keeps the warning)
         why[exchanges.size] = Provenance.explain(factsUsed, memoriesUsed, cited, ActionGuard.requestedAction(text) != null, ActionGuard.claimsDone(text, answer),
-            transport.lastMetrics.value?.historyPairsSent)
+            transport.lastMetrics.value?.historyPairsSent) + listOfNotNull(outcome?.takeIf { it.kind != DocumentaryAnswer.Kind.MODEL }?.let { "Réponse du modèle écartée (${it.reason}) : « ${it.rejectedDraft} »" })
         val speech = tts?.takeIf { voiceOutputEnabled }
         if (speech == null) {
             exchanges += Exchange(text, answer, viaVoice, captureMs, sttMs, llmMs, firstText)
@@ -291,6 +303,38 @@ class ConvSession(
         }
         if (lastFirstSoundMs < 0 && spoken.firstPcmMs >= 0) lastFirstSoundMs = speakAt - requestEndAt + spoken.firstPcmMs.toLong()
         exchanges += Exchange(text, answer, viaVoice, captureMs, sttMs, llmMs, firstText, spoken.firstPcmMs, spoken.audioSeconds, spoken.samplesWritten, spoken.interrupted)
+        finish(if (spoken.interrupted) "Parole interrompue · prêt" else "Prêt · hors ligne")
+    }
+
+    /** Replaces the engine's last (user, draft) pair by the verified answer, through the public V1-B history API only. */
+    private fun replaceLastEngineTurn(user: String, answer: String) {
+        val turns = history.snapshot()
+        if (turns.lastOrNull()?.user != user) return
+        history.clear(); turns.dropLast(1).forEach { history.record(it.user, it.assistant) }
+        if (V1bPolicy.admissible(user) && V1bPolicy.admissible(answer)) history.record(user, answer)
+    }
+
+    /** A documentary turn answered without the model (DocumentaryAnswer.beforeModel): shown, recorded, spoken like any answer. */
+    private suspend fun deterministicAnswer(text: String, o: DocumentaryAnswer.Outcome, viaVoice: Boolean, cited: List<String>, factsUsed: List<WorkingMemory.Fact>,
+                                            memoriesUsed: Int, captureMs: Long, sttMs: Long, requestEndAt: Long, injectionRemoved: Boolean) {
+        val notice = if (injectionRemoved) KnowledgePlanner.INJECTION_NOTICE else null
+        if (cited.isNotEmpty()) sources[exchanges.size] = cited
+        if (notice != null) notices[exchanges.size] = notice
+        if (V1bPolicy.admissible(text) && V1bPolicy.admissible(o.text)) history.record(text, o.text)
+        record(text, o.text, viaVoice, cited, notice)
+        why[exchanges.size] = Provenance.explain(factsUsed, memoriesUsed, cited, false, false, null) + "Réponse rédigée par JARVIS sans le modèle de langage (${o.reason})"
+        partial = o.text
+        val speech = tts?.takeIf { voiceOutputEnabled }
+        if (speech == null) { exchanges += Exchange(text, o.text, viaVoice, captureMs, sttMs, 0, -1); finish("Prêt · hors ligne"); return }
+        phase = Phase.SPEAKING; status = "JARVIS parle… (touche Interrompre)"; event(CockpitState.SPEAKING, EventSource.VOICE)
+        val speakAt = SystemClock.elapsedRealtime()
+        val spoken = try {
+            withContext(ttsDispatcher) { speech.speak(if (notice != null) "${o.text} Note du système : $notice" else o.text) { lvl -> scope.launch { if (phase == Phase.SPEAKING) event(CockpitState.SPEAKING, EventSource.VOICE, lvl) } } }
+        } catch (e: Exception) {
+            exchanges += Exchange(text, o.text, viaVoice, captureMs, sttMs, 0, -1, error = "TTS : ${e.message}"); finish("Synthèse vocale : ${e.message}", error = true); return
+        }
+        if (lastFirstSoundMs < 0 && spoken.firstPcmMs >= 0) lastFirstSoundMs = speakAt - requestEndAt + spoken.firstPcmMs.toLong()
+        exchanges += Exchange(text, o.text, viaVoice, captureMs, sttMs, 0, -1, spoken.firstPcmMs, spoken.audioSeconds, spoken.samplesWritten, spoken.interrupted)
         finish(if (spoken.interrupted) "Parole interrompue · prêt" else "Prêt · hors ligne")
     }
 

@@ -425,9 +425,9 @@ class V3CockpitTest {
                 ActivityScenario.launch(CockpitActivity::class.java).use { dev.wait(Until.findObject(By.textContains("Sources locales : club-astronomie.txt")), 20_000).also { shot("c-conv-04-source-locale") } } })
             val absent = ask("Selon mes documents, quel est le prix du vélo électrique ?")
             assertEquals(0, absent.getJSONArray("sources").length())
-            assertTrue("absence must be declared to the model", main { s0.model.lastInstruction }.orEmpty().contains("Aucun document local"))
-            assertEquals("an answer about the documents with no matching document carries the system notice",
-                fr.jarvis.v3.conv.KnowledgePlanner.NO_DOCUMENT_NOTICE, main { s0.notices[s0.exchanges.size - 1] })
+            // Owner point 5 (15/11): absence is the answer itself, written without the model (no invented value, even briefly).
+            assertEquals("absence is answered plainly", fr.jarvis.v3.conv.DocumentaryAnswer.NO_DOCUMENT, absent.getString("a"))
+            assertEquals("the model is not asked", 0L, main { s0.exchanges.last().llmMs })
             absent.put("qualityNoInventedPrice", !Regex("\\d+ ?(€|euros)").containsMatchIn(absent.getString("a"))); r.put("absent", absent)
             assertEquals(listOf("club-astronomie.txt"), app.journal.read(s0.conversationId)!!.entries.first { it.sources.isNotEmpty() }.sources)
             main { app.closeSession(); ui.session = null }; waitUntil(60_000, "released") { app.previousReleased }
