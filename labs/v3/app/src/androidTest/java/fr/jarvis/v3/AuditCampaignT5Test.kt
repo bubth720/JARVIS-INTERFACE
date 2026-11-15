@@ -185,4 +185,68 @@ class AuditCampaignT5Test {
             }
         } finally { main { app.closeSession(); ui.session = null }; runCatching { released() }; write("r", r) }
     }
+
+    /** S — G4 on the device (A-032): a torn last line left by a killed process never swallows the next exchange. */
+    @Test fun s_tornJournalLineNeverLosesTheNextExchange() {
+        assumeTrue(args.getString("afterImport") != null)
+        val r = JSONObject()
+        try {
+            main { app.closeSession(); ui.session = null }; released(); val s1 = startNew()
+            ask(s1, "Combien font 3 plus 4 ?"); val id = main { s1.conversationId }
+            main { app.closeSession(); ui.session = null }; released()
+            val f = File(File(inst.targetContext.filesDir, "conversations"), "$id.jlog")
+            assumeTrue("journal file expected at ${f.path}", f.isFile)
+            f.appendText("v1\u001f1700000000000\u001f0\u001fQuestion coup", Charsets.UTF_8)   // the process died mid-write
+            val s2 = main { app.startSession(id).also { ui.session = it; it.voiceOutputEnabled = false } }
+            waitUntil(360_000, "ready") { s2.phase == Phase.READY }
+            ask(s2, "Et combien font 5 plus 5 ?")
+            val users = app.journal.read(id)!!.entries.map { it.user }; r.put("entries", JSONArray(users))
+            assertEquals("both real exchanges kept, the torn one ignored: $users", listOf("Combien font 3 plus 4 ?", "Et combien font 5 plus 5 ?"), users)
+        } finally { main { app.closeSession(); ui.session = null }; runCatching { released() }; write("s", r) }
+    }
+
+    /**
+     * T — G3: the storage REALLY full (a filler file written until ENOSPC, deleted afterwards): an import is refused with
+     * an understandable message, the knowledge base stays usable and uncorrupted, a turn still answers and the failed
+     * history save is reported; once space is freed, import and history work again.
+     */
+    @Test fun t_storageFullIsRefusedCleanlyAndRecovers() {
+        assumeTrue(args.getString("afterImport") != null)
+        val r = JSONObject(); val filler = File(inst.targetContext.filesDir, "g3-filler.bin")
+        try {
+            assumeTrue(app.knowledge.open() is LocalKnowledge.State.Ready)
+            app.knowledge.import("g3-avant.txt", "Le marché de Valcourt a lieu le mercredi matin sur la place.".toByteArray())
+            val docsBefore = app.knowledge.titles().size
+            main { app.closeSession(); ui.session = null }; released(); val s = startNew()
+            val free0 = android.os.StatFs(inst.targetContext.filesDir.path).availableBytes; r.put("freeBeforeMiB", free0 shr 20)
+            assumeTrue("INCONCLUSIVE: too much free space to fill safely ($free0 bytes)", free0 < 12L * 1024 * 1024 * 1024)
+            val buf = ByteArray(8 shl 20) { 0x5a }; var written = 0L; val t0 = SystemClock.elapsedRealtime()
+            runCatching { java.io.FileOutputStream(filler).use { o -> while (true) { o.write(buf); written += buf.size } } }
+            runCatching { java.io.FileOutputStream(filler, true).use { o -> while (true) { o.write(buf, 0, 4096); written += 4096 } } }
+            runCatching { java.io.FileOutputStream(filler, true).use { o -> while (true) { o.write(buf, 0, 64); o.fd.sync(); written += 64 } } }
+            r.put("filledMiB", written shr 20).put("fillMs", SystemClock.elapsedRealtime() - t0).put("freeAfterFillKiB", android.os.StatFs(inst.targetContext.filesDir.path).availableBytes shr 10)
+            val refused = app.knowledge.import("g3-plein.txt", ("Document importé pendant que le stockage est plein. " + "Texte de remplissage. ".repeat(2000)).toByteArray())
+            r.put("importWhenFull", refused)
+            r.put("stateWhenFull", app.knowledge.state.javaClass.simpleName)
+            val n = main { s.exchanges.size }; main { s.textTurn("Combien font 9 plus 1 ?") }
+            waitUntil(420_000, "answer when full") { s.phase == Phase.READY && s.exchanges.size > n }
+            r.put("statusWhenFull", main { s.status }).put("answerWhenFull", main { s.exchanges.last().answer })
+            filler.delete(); r.put("freeAfterDeleteMiB", android.os.StatFs(inst.targetContext.filesDir.path).availableBytes shr 20)
+            val again = app.knowledge.import("g3-apres.txt", "La brocante de Valcourt a lieu le dimanche.".toByteArray()); r.put("importAfterFree", again)
+            val n2 = main { s.exchanges.size }; main { s.textTurn("Combien font 2 plus 2 ?") }
+            waitUntil(420_000, "answer after free") { s.phase == Phase.READY && s.exchanges.size > n2 }
+            r.put("statusAfterFree", main { s.status }).put("docsAfter", app.knowledge.titles().size)
+            assertTrue("refusal must be understandable: $refused", refused.contains("stockage") || refused.contains("refusé"))
+            assertFalse("the full-storage document must not be half-indexed: ${app.knowledge.titles()}", app.knowledge.titles().contains("g3-plein.txt"))
+            assertTrue("the knowledge base stays usable", app.knowledge.state is LocalKnowledge.State.Ready)
+            assertNull("a turn still answers when the storage is full", main { s.exchanges[n].error })
+            // Never a silent loss: the exchange made while full is either in the journal or its failed save is reported.
+            val savedWhenFull = app.journal.read(main { s.conversationId })?.entries.orEmpty().any { it.user == "Combien font 9 plus 1 ?" }
+            r.put("savedWhenFull", savedWhenFull)
+            assertTrue("exchange lost silently: ${r.getString("statusWhenFull")}", savedWhenFull || r.getString("statusWhenFull").contains("Historique local non enregistré"))
+            assertTrue("import works again once space is freed: $again", again.contains("indexé"))
+            assertEquals(docsBefore + 1, app.knowledge.titles().size)
+            assertFalse("history saving recovers: ${r.getString("statusAfterFree")}", r.getString("statusAfterFree").contains("non enregistré"))
+        } finally { filler.delete(); main { app.closeSession(); ui.session = null }; runCatching { released() }; write("t", r) }
+    }
 }

@@ -29,6 +29,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextOverflow
@@ -301,10 +303,11 @@ private fun Conversation(s: ConvSession, ui: V3UiState, modifier: Modifier) {
                 // The vocal waiting phrase is labelled as such: it is never presented as the answer.
                 if (!live) s.reaction?.let { Text("Réaction vocale : « $it »", style = Holo.small.copy(color = Holo.muted), modifier = Modifier.testTag("reaction")) }
                 Text(if (live) s.partial else s.status, style = Holo.body.copy(color = if (live) Holo.text else Holo.muted),
-                    modifier = Modifier.testTag(if (live) "partial" else "busy-status"))
+                    // S4 / A-033: TalkBack announces state changes (not every streamed word).
+                    modifier = Modifier.testTag(if (live) "partial" else "busy-status").semantics { if (!live) liveRegion = LiveRegionMode.Polite })
             }
         }
-        if (items.isEmpty() && !s.busy && s.memoryProposal == null) item { Text(s.status, style = Holo.small, modifier = Modifier.testTag("status")) }
+        if (items.isEmpty() && !s.busy && s.memoryProposal == null) item { Text(s.status, style = Holo.small, modifier = Modifier.testTag("status").semantics { liveRegion = LiveRegionMode.Polite }) }
         s.memoryProposal?.let { (_, shown) -> item { MemoryProposalCard(shown, { s.decideMemory(true) }, { s.decideMemory(false) }) } }
         s.memoryChoice?.let { (_, items) -> item {
             // A-010: an ambiguous recall injects nothing; the user chooses (CORE NEEDS_CONFIRMATION).

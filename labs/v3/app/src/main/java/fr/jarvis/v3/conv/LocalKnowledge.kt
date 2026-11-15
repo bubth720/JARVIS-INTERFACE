@@ -73,7 +73,14 @@ class LocalKnowledge(private val dir: File) : AutoCloseable {
     private fun count(): Int = (catalog?.documents(100, 0, false) as? CatalogResult.Ok)?.value?.size ?: 0
 
     /** Imports ONE document the user picked (txt, md, csv, tsv, docx, xml; ≤ 2 Mio). Returns a short French outcome. */
-    @Synchronized fun import(name: String, bytes: ByteArray): String {
+    @Synchronized fun import(name: String, bytes: ByteArray): String = try { importChecked(name, bytes) } catch (e: Exception) {
+        // S6 / G3: a full storage must give an understandable refusal (the NEXUS import transaction is rolled back).
+        val m = generateSequence<Throwable>(e) { it.cause }.joinToString(" ") { it.message.orEmpty() }
+        if (Regex("(?i)SQLITE_FULL|disk is full|ENOSPC|no space left").containsMatchIn(m)) "$name : refusé, stockage du téléphone plein (libère de l'espace puis réessaie)"
+        else "$name : échec (${e.message ?: e.javaClass.simpleName})"
+    }
+
+    private fun importChecked(name: String, bytes: ByteArray): String {
         val db = storage ?: return "Connaissances locales indisponibles : ${(state as? State.Unavailable)?.reason}"
         val cat = catalog!!; val col = collection!!
         val text = ParserPort { _, b, stop -> stop.check(); listOf(ExtractedPage(null, b.toString(Charsets.UTF_8))) }

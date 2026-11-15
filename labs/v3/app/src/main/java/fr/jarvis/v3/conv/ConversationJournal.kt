@@ -21,7 +21,13 @@ class ConversationJournal(private val dir: File, private val clock: () -> Long =
     fun append(conversationId: String, e: Entry) {
         require(ID.matches(conversationId)) { "invalid conversation id" }
         val f = File(dir, "$conversationId.jlog")
-        f.appendText(encode(e) + "\n", Charsets.UTF_8)
+        // S6 / A-032: a process killed while appending leaves a torn last line without "\n"; appending right after it
+        // glued the next exchange to the torn line and lost it silently. The torn line is closed first (it stays
+        // ignored by read), and the write is forced to disk so a finished exchange survives a power cut.
+        val tornTail = f.length() > 0 && java.io.RandomAccessFile(f, "r").use { r -> r.seek(r.length() - 1); r.read() != '\n'.code }
+        java.io.FileOutputStream(f, true).use { out ->
+            out.write(((if (tornTail) "\n" else "") + encode(e) + "\n").toByteArray(Charsets.UTF_8)); out.fd.sync()
+        }
     }
 
     fun read(conversationId: String): Conversation? {

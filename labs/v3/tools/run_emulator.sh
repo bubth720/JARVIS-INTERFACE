@@ -99,7 +99,9 @@ audit5() { local name="$1"; shift; precheck "$name"
   if grep -q '^OK (1 test)' "$out/audit-$name.txt"; then echo "PASS $name" >> "$out/audit-results.txt"
   else { echo "FAIL $name"; grep -m3 -E "AssertionError|Exception|Timeout" "$out/audit-$name.txt"; } >> "$out/audit-results.txt"; fi
   for f in $(timeout 30 adb shell run-as fr.jarvis.v3 ls files 2>/dev/null | tr -d '\r' | grep '^audit-'); do timeout 30 adb exec-out run-as fr.jarvis.v3 cat "files/$f" > "$out/$f"; done; }
-for t in p_sphereStillAndCheapOutsideTheAnswer q_unseenInjectionsNeverBecomeInstructions r_absentValueInAFoundDocumentIsNotInvented; do audit5 "$t" -e afterImport 1; done
+for t in p_sphereStillAndCheapOutsideTheAnswer q_unseenInjectionsNeverBecomeInstructions r_absentValueInAFoundDocumentIsNotInvented \
+         s_tornJournalLineNeverLosesTheNextExchange t_storageFullIsRefusedCleanlyAndRecovers; do audit5 "$t" -e afterImport 1; done
+A shell run-as fr.jarvis.v3 rm -f files/g3-filler.bin || true   # G3 filler removed even if its test process died
 anim 0; run d_reducedMotionStaticSphereAndFirstText -e afterImport 1; pull v3-reduced.json; anim 1
 run e_galleryCapturesAndBeforeAfterBench; pull v3-bench.json
 for f in $(timeout 30 adb shell run-as fr.jarvis.v3 ls files/v3shots 2>/dev/null | tr -d '\r'); do timeout 30 adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" > "$out/shots/api$api-$f"; done
