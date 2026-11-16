@@ -15,11 +15,17 @@ case "$args" in
   "shell echo ok") echo ok;;
   "shell settings get global airplane_mode_on") echo 1;;
   "shell pidof "*) echo 4242;;
+  "shell run-as fr.jarvis.v3 ls files/v3shots") python3 "$FAKE_CAPTURE_FIXTURE" list;;
+  "exec-out run-as fr.jarvis.v3 cat files/audit-tour.json") python3 "$FAKE_CAPTURE_FIXTURE" index;;
+  "exec-out run-as fr.jarvis.v3 cat files/v3shots/"*)
+     [ "${FAKE_EVIDENCE:-}" = pull_error ] && exit 1
+     python3 "$FAKE_CAPTURE_FIXTURE" png;;
   "shell am instrument "*)
      n=$((n + 1)); echo "$n" > "$d/instr"; echo "$args" >> "$d/instr.log"
      if [ -n "${FAKE_HANG:-}" ] && [ "$n" -eq "$FAKE_HANG" ]; then sleep 600; exit 1; fi
      if [ "$FAKE_SCENARIO" = lost_during ] && [ "$n" -ge "${FAKE_AFTER:-3}" ]; then touch "$d/offline"; sleep 600; exit 1; fi
      echo "INSTRUMENTATION_STATUS_CODE: -1"; echo "OK (1 test)"
+     [ "${FAKE_EVIDENCE:-}" = nonzero_ok ] && [ "$n" -eq 3 ] && exit 1
      if [ "$FAKE_SCENARIO" != healthy ] && [ "$n" -ge "${FAKE_AFTER:-3}" ]; then touch "$d/offline"; fi;;
   *) :;;
 esac

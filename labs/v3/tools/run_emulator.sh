@@ -62,9 +62,33 @@ run b_firstLaunchThenVerifiedImport -e llmPath /data/local/tmp/v3-llm.gguf -e st
 if [ "${CAPTURES_ONLY:-0}" = 1 ]; then
   precheck w_screenTour
   instr -w -r -e class "fr.jarvis.v3.ScreenTourTest#w_screenTour" -e afterImport 1 "$R" > "$out/instr-tour.txt" 2>&1
-  if grep -q '^OK (1 test)' "$out/instr-tour.txt"; then echo "PASS w_screenTour" | tee -a "$out/results.txt"; else echo "FAIL w_screenTour" | tee -a "$out/results.txt"; tail -n 30 "$out/instr-tour.txt" | tee -a "$out/results.txt"; fail=1; fi
-  for f in $(timeout 30 adb shell run-as fr.jarvis.v3 ls files/v3shots 2>/dev/null | tr -d '\r' | grep '^tour-'); do timeout 30 adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" > "$out/shots/api$api-$f"; done
-  timeout 30 adb exec-out run-as fr.jarvis.v3 cat files/audit-tour.json > "$out/audit-tour.json" 2>/dev/null || true
+  tour_rc=$?
+  if [ "$tour_rc" = 0 ] && grep -q '^OK (1 test)' "$out/instr-tour.txt"; then echo "PASS w_screenTour" | tee -a "$out/results.txt"; else echo "FAIL w_screenTour" | tee -a "$out/results.txt"; tail -n 30 "$out/instr-tour.txt" | tee -a "$out/results.txt"; fail=1; fi
+  # A successful instrumentation is not proof that its images reached the host. Detect a device lost
+  # just after the tour, keep every transfer bounded, and reject missing/empty/incomplete evidence.
+  precheck capture_collection
+  if ! A shell run-as fr.jarvis.v3 ls files/v3shots > "$out/capture-files.txt"; then
+    echo "FAIL capture_listing" | tee -a "$out/results.txt"; fail=1
+  fi
+  while IFS= read -r f; do
+    f="${f%$'\r'}"
+    [[ "$f" =~ ^tour-[a-zA-Z0-9_-]+\.png$ ]] || continue
+    precheck "capture:$f"
+    if ! timeout 30 adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" > "$out/shots/api$api-$f"; then
+      echo "FAIL capture_transfer:$f" | tee -a "$out/results.txt"; fail=1
+    fi
+  done < "$out/capture-files.txt"
+  precheck capture_index
+  if ! A exec-out run-as fr.jarvis.v3 cat files/audit-tour.json > "$out/audit-tour.json"; then
+    echo "FAIL capture_index" | tee -a "$out/results.txt"; fail=1
+  fi
+  precheck captures_complete
+  if python3 "$(dirname "$0")/validate_captures.py" --api "$api" --output "$out"; then
+    echo "PASS captures_verified" | tee -a "$out/results.txt"
+  else echo "FAIL captures_verified" | tee -a "$out/results.txt"; fail=1; fi
+  if A logcat -d -b crash > "$out/crash.txt" && ! grep -q "fr.jarvis.v3" "$out/crash.txt"; then
+    echo "PASS no_crash" | tee -a "$out/results.txt"
+  else echo "FAIL no_crash" | tee -a "$out/results.txt"; fail=1; fi
   A shell rm -f /data/local/tmp/v3-* || true
   echo "=== API $api captures"; ls "$out/shots"; exit $fail
 fi
