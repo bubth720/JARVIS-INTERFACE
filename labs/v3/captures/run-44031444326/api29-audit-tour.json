@@ -1,0 +1,108 @@
+{
+  "schema": "jarvis.capture-tour\/1",
+  "api": 29,
+  "package": "fr.jarvis.v3",
+  "syntheticFixtures": true,
+  "captures": [
+    {
+      "file": "tour-01-ecran-principal-sphere-repos",
+      "screen": "Écran principal : sphère au repos, avatar Athéna, dock de conversation",
+      "status": "captured"
+    },
+    {
+      "file": "tour-02-reponse-documentaire-citee",
+      "screen": "Réponse documentaire de l'application locale avec source NEXUS",
+      "status": "captured"
+    },
+    {
+      "file": "tour-03-proposition-de-souvenir",
+      "screen": "MEMORY VAULT : proposition de souvenir soumise au consentement",
+      "status": "captured"
+    },
+    {
+      "file": "tour-04-souvenir-confirme",
+      "screen": "Souvenir synthétique confirmé par le test de consentement",
+      "status": "captured"
+    },
+    {
+      "file": "tour-05-menu-radial",
+      "screen": "Menu radial (Cockpit, Bibliothèque, Mémoire, Command Center, Réglages)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-ai_core",
+      "screen": "Command Center V2, onglet AI CORE (opérationnel)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-voice",
+      "screen": "Command Center V2, onglet VOICE CENTER (opérationnel)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-memory",
+      "screen": "Command Center V2, onglet MEMORY VAULT (partiel)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-nexus",
+      "screen": "Command Center V2, onglet NEXUS (partiel)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-missions",
+      "screen": "Command Center V2, onglet MISSIONS (à connecter)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-agents",
+      "screen": "Command Center V2, onglet AGENTS (à connecter)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-automations",
+      "screen": "Command Center V2, onglet AUTOMATIONS (à connecter)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-security",
+      "screen": "Command Center V2, onglet SECURITY (opérationnel)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-evolution",
+      "screen": "Command Center V2, onglet EVOLUTION LAB (partiel)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-10-command-center-blueprint",
+      "screen": "Command Center V2, onglet SYSTEM BLUEPRINT (opérationnel)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-20-nexus-bibliotheque",
+      "screen": "NEXUS : bibliothèque locale (documents importés, recherche)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-21-palette-de-commandes",
+      "screen": "Palette de commandes",
+      "status": "captured"
+    },
+    {
+      "file": "tour-22-reglages",
+      "screen": "Réglages (personnalité, voix, affichage)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-30-avatar-athena-gros-plan",
+      "screen": "Avatar Athéna (rendu procédural 2D, gros plan au repos)",
+      "status": "captured"
+    },
+    {
+      "file": "tour-40-paysage",
+      "screen": "Écran principal en paysage",
+      "status": "captured"
+    }
+  ]
+}
