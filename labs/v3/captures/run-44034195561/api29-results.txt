@@ -1,0 +1,5 @@
+PASS a_manifestSinglePermissionNoNetworkInstallable
+PASS b_firstLaunchThenVerifiedImport
+PASS w_screenTour
+PASS captures_verified
+PASS no_crash
