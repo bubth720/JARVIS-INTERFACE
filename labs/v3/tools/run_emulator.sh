@@ -67,17 +67,19 @@ if [ "${CAPTURES_ONLY:-0}" = 1 ]; then
   # A successful instrumentation is not proof that its images reached the host. Detect a device lost
   # just after the tour, keep every transfer bounded, and reject missing/empty/incomplete evidence.
   precheck capture_collection
-  if ! A shell run-as fr.jarvis.v3 ls files/v3shots > "$out/capture-files.txt"; then
+  if ! A shell run-as fr.jarvis.v3 ls -1 files/v3shots > "$out/capture-files.txt"; then
     echo "FAIL capture_listing" | tee -a "$out/results.txt"; fail=1
   fi
-  while IFS= read -r f; do
+  # adb reads stdin even for exec-out. Give the list its own descriptor so the first transfer/probe
+  # cannot consume the remaining filenames (reproduced on API29/35 by run 44031444326).
+  while IFS= read -r f <&3; do
     f="${f%$'\r'}"
     [[ "$f" =~ ^tour-[a-zA-Z0-9_-]+\.png$ ]] || continue
-    precheck "capture:$f"
-    if ! timeout 30 adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" > "$out/shots/api$api-$f"; then
+    precheck "capture:$f" < /dev/null
+    if ! timeout 30 adb exec-out run-as fr.jarvis.v3 cat "files/v3shots/$f" < /dev/null > "$out/shots/api$api-$f"; then
       echo "FAIL capture_transfer:$f" | tee -a "$out/results.txt"; fail=1
     fi
-  done < "$out/capture-files.txt"
+  done 3< "$out/capture-files.txt"
   precheck capture_index
   if ! A exec-out run-as fr.jarvis.v3 cat files/audit-tour.json > "$out/audit-tour.json"; then
     echo "FAIL capture_index" | tee -a "$out/results.txt"; fail=1

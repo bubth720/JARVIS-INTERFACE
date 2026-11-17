@@ -4,6 +4,8 @@
 #   lost_before  after $FAKE_AFTER instrumentations the device is offline (get-state fails)
 #   lost_during  instrumentation number $FAKE_AFTER hangs and the device goes offline while it runs
 #   shell_hang   after $FAKE_AFTER instrumentations get-state says 'device' but every shell command hangs
+# Real adb can consume its stdin. Reproduce that behaviour so a file-reading shell loop cannot silently stop early.
+[ "${FAKE_DRAIN_STDIN:-0}" = 1 ] && cat > /dev/null
 d="$FAKE_ADB_DIR"; [ -n "${FAKE_OFFLINE_AT_START:-}" ] && [ ! -f "$d/started" ] && { touch "$d/started" "$d/offline"; }; n=$(cat "$d/instr" 2>/dev/null || echo 0); off=$([ -f "$d/offline" ] && echo 1 || echo 0)
 case "$1" in
   get-state) if [ "$off" = 1 ] && [ "$FAKE_SCENARIO" != shell_hang ]; then echo "error: device offline" >&2; exit 1; fi; echo device; exit 0;;
@@ -15,7 +17,7 @@ case "$args" in
   "shell echo ok") echo ok;;
   "shell settings get global airplane_mode_on") echo 1;;
   "shell pidof "*) echo 4242;;
-  "shell run-as fr.jarvis.v3 ls files/v3shots") python3 "$FAKE_CAPTURE_FIXTURE" list;;
+  "shell run-as fr.jarvis.v3 ls files/v3shots"|"shell run-as fr.jarvis.v3 ls -1 files/v3shots") python3 "$FAKE_CAPTURE_FIXTURE" list;;
   "exec-out run-as fr.jarvis.v3 cat files/audit-tour.json") python3 "$FAKE_CAPTURE_FIXTURE" index;;
   "exec-out run-as fr.jarvis.v3 cat files/v3shots/"*)
      [ "${FAKE_EVIDENCE:-}" = pull_error ] && exit 1

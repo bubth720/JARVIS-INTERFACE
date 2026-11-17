@@ -42,6 +42,7 @@ scenario lost_at_setup                    3  20 "DEVICE_LOST at setup"          
 scenario budget_exhausted                 4  20 "BUDGET_EXCEEDED at"                     FAKE_SCENARIO=healthy BUDGET_S=0
 scenario hung_instrumentation_is_bounded  1 120 "INSTRUMENTATION_TIMEOUT\|FAIL c_realEngine" FAKE_SCENARIO=healthy FAKE_HANG=3 INSTR_LIMIT=3
 scenario captures_complete               0 30 "PASS captures_verified" CAPTURES_ONLY=1 FAKE_SCENARIO=healthy
+scenario captures_adb_stdin_is_isolated   0 30 "PASS captures_verified" CAPTURES_ONLY=1 FAKE_SCENARIO=healthy FAKE_DRAIN_STDIN=1
 scenario captures_lost_before_tour       3 20 "DEVICE_LOST at w_screenTour: emulator not responding before the test" CAPTURES_ONLY=1 FAKE_SCENARIO=lost_before FAKE_AFTER=2
 scenario captures_lost_during_tour       3 20 "DEVICE_LOST at w_screenTour: emulator stopped responding during the test" CAPTURES_ONLY=1 FAKE_SCENARIO=lost_during FAKE_AFTER=3
 scenario captures_lost_after_tour        3 20 "DEVICE_LOST at capture_collection" CAPTURES_ONLY=1 FAKE_SCENARIO=lost_before FAKE_AFTER=3
