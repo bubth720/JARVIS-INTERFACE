@@ -1,0 +1,15 @@
+{
+  "txt": "audit-a3.txt : indexé localement (34 octets)",
+  "md": "audit-a3.md : indexé localement (45 octets)",
+  "csv": "audit-a3.csv : indexé localement (29 octets)",
+  "oversized": "audit-a3-big.txt : refusé (LIMIT_EXCEEDED)",
+  "titles": [
+    "chant-a.txt",
+    "club-astronomie.txt",
+    "audit-a3.csv",
+    "audit-a3.txt",
+    "chant-b.txt",
+    "audit-a3.md",
+    "note-service.txt"
+  ]
+}

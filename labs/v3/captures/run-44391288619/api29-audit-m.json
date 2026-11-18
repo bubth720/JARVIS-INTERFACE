@@ -1,0 +1,152 @@
+{
+  "turns": [
+    {
+      "turn": 1,
+      "llmMs": 22203,
+      "pssKb": 873787,
+      "notice": null
+    },
+    {
+      "turn": 2,
+      "llmMs": 22069,
+      "pssKb": 874450,
+      "notice": null
+    },
+    {
+      "turn": 3,
+      "llmMs": 25473,
+      "pssKb": 875340,
+      "notice": null
+    },
+    {
+      "turn": 4,
+      "llmMs": 29160,
+      "pssKb": 881659,
+      "notice": null
+    },
+    {
+      "turn": 5,
+      "llmMs": 32523,
+      "pssKb": 879006,
+      "notice": null
+    },
+    {
+      "turn": 6,
+      "llmMs": 32748,
+      "pssKb": 881970,
+      "notice": null
+    },
+    {
+      "turn": 7,
+      "llmMs": 49017,
+      "pssKb": 887240,
+      "notice": "Cette réponse reprend presque mot pour mot la précédente : elle ne répond probablement pas à ta question. Reformule-la."
+    },
+    {
+      "turn": 8,
+      "llmMs": 32309,
+      "pssKb": 876258,
+      "notice": null
+    },
+    {
+      "turn": 9,
+      "llmMs": 34988,
+      "pssKb": 875438,
+      "notice": null
+    },
+    {
+      "turn": 10,
+      "llmMs": 30794,
+      "pssKb": 875794,
+      "notice": null
+    },
+    {
+      "turn": 11,
+      "llmMs": 31164,
+      "pssKb": 879014,
+      "notice": null
+    },
+    {
+      "turn": 12,
+      "llmMs": 31036,
+      "pssKb": 882886,
+      "notice": null
+    },
+    {
+      "turn": 13,
+      "llmMs": 32289,
+      "pssKb": 886130,
+      "notice": null
+    },
+    {
+      "turn": 14,
+      "llmMs": 32227,
+      "pssKb": 887430,
+      "notice": null
+    },
+    {
+      "turn": 15,
+      "llmMs": 48676,
+      "pssKb": 874338,
+      "notice": "Cette réponse reprend presque mot pour mot la précédente : elle ne répond probablement pas à ta question. Reformule-la."
+    },
+    {
+      "turn": 16,
+      "llmMs": 32236,
+      "pssKb": 878362,
+      "notice": null
+    },
+    {
+      "turn": 17,
+      "llmMs": 34680,
+      "pssKb": 880322,
+      "notice": null
+    },
+    {
+      "turn": 18,
+      "llmMs": 30670,
+      "pssKb": 884086,
+      "notice": null
+    },
+    {
+      "turn": 19,
+      "llmMs": 30972,
+      "pssKb": 886786,
+      "notice": null
+    },
+    {
+      "turn": 20,
+      "llmMs": 30941,
+      "pssKb": 873214,
+      "notice": null
+    },
+    {
+      "turn": 21,
+      "llmMs": 32181,
+      "pssKb": 875514,
+      "notice": null
+    },
+    {
+      "turn": 22,
+      "llmMs": 32248,
+      "pssKb": 879522,
+      "notice": null
+    },
+    {
+      "turn": 23,
+      "llmMs": 48581,
+      "pssKb": 886082,
+      "notice": "Cette réponse reprend presque mot pour mot la précédente : elle ne répond probablement pas à ta question. Reformule-la."
+    },
+    {
+      "turn": 24,
+      "llmMs": 32226,
+      "pssKb": 874680,
+      "notice": null
+    }
+  ],
+  "pssGrowthKb": 893,
+  "medianFirst8Ms": 32309,
+  "medianLast8Ms": 32226,
+  "repetitionNotices": 3
+}

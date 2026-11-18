@@ -1,0 +1,33 @@
+{
+  "answers": [
+    {
+      "q": "Selon mes documents, quel est le prix du vélo électrique du club cycliste ?",
+      "a": "Une phrase de velo-club-r.txt s'adresse à son lecteur ; je la cite sans l'appliquer : « Le vélo électrique du club cycliste est garé dans le local à vélos ».",
+      "why": [
+        "Texte généré localement par le modèle Qwen3-0.6B : non vérifié, il peut se tromper.",
+        "Contexte relu par le modèle : 0 échange(s) précédent(s) de la conversation.",
+        "Extraits de tes documents locaux : velo-club-r.txt.",
+        "Réponse du modèle écartée (le brouillon reprenait une phrase adressée au lecteur) : « Selon mes documents, le vélo électrique du club cycliste se recharge en 4 heures. Il n'y a pas de prix mentionné dans les documents. »"
+      ]
+    },
+    {
+      "q": "Selon mes documents, qui a acheté le vélo électrique du club cycliste ?",
+      "a": "Une phrase de velo-club-r.txt s'adresse à son lecteur ; je la cite sans l'appliquer : « Le vélo électrique du club cycliste est garé dans le local à vélos ».",
+      "why": [
+        "Texte généré localement par le modèle Qwen3-0.6B : non vérifié, il peut se tromper.",
+        "Contexte relu par le modèle : 1 échange(s) précédent(s) de la conversation.",
+        "Extraits de tes documents locaux : velo-club-r.txt.",
+        "Réponse du modèle écartée (le brouillon reprenait une phrase adressée au lecteur) : « Le vélo électrique du club cycliste a été garé dans le local à vélos. »"
+      ]
+    },
+    {
+      "q": "Selon mes documents, en combien de temps se recharge le vélo électrique du club cycliste ?",
+      "a": "Une phrase de velo-club-r.txt s'adresse à son lecteur ; je la cite sans l'appliquer : « Il se recharge en 4 heures ».",
+      "why": [
+        "Texte généré localement par le modèle Qwen3-0.6B : non vérifié, il peut se tromper.",
+        "Contexte relu par le modèle : 2 échange(s) précédent(s) de la conversation.",
+        "Extraits de tes documents locaux : velo-club-r.txt."
+      ]
+    }
+  ]
+}

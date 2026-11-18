@@ -1,0 +1,32 @@
+PASS b3_ambiguousMemoriesAreNotInjectedWithoutChoice
+PASS c3_unknownQuestionsAreNotInvented
+PASS c8_generalAnswerIsNeverPresentedAsDocumentary
+PASS d2_voiceErrorsLeaveTheSessionUsableWithoutDuplicates
+PASS d3_interruptionAtEachStage
+PASS f2f3f4_documentsContradictoryCorruptAndInjected
+PASS f6_deletionIsVerifiedOnDisk
+PASS g6_modelOrDocumentCannotCreateAMemory
+PASS a3_knowledgeImportFormatsAndLimits
+PASS a4_corruptFutureAndSymlinkDatabasesRefusedAndKept
+PASS a5_memoryConsentMismatchAndExpiry
+PASS e2e3e6e7_layoutStressAccessibilityAvatar
+PASS g1_microphoneRevokedTextStillWorks
+PASS g2_thermalSevereRefusesTurn
+PASS h4_loadUnloadCyclesDoNotLeak
+PASS j_sessionLifecycleNeverDeadlocks
+FAIL k_sphereStillAtEveryNonAnswerTransition
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: no frame at thinking onset: {"thinkingOnset1s":2,"listeningOnset1s":2,"restAfter2s":2}
+java.lang.AssertionError: no frame at thinking onset: {"thinkingOnset1s":2,"listeningOnset1s":2,"restAfter2s":2}
+java.lang.AssertionError: no frame at thinking onset: {"thinkingOnset1s":2,"listeningOnset1s":2,"restAfter2s":2}
+PASS l_hiddenInjectionsInADocument
+PASS m_longConversationMemoryAndLatency
+PASS n_resumeKeepsSystemNotices
+PASS o_historyWriteFailureKeepsTheConversation
+FAIL p_sphereStillAndCheapOutsideTheAnswer
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: restAfterAnswer: sphere redrawn 12 times (limit 1): {"sphereBounds":"32 221 1048 1181","rest":{"ms":3000,"sphereDraws":0,"windowFrames":0,"visibleChange":0},"listening":{"ms":3000,"sphereDraws":0,"windowFrames":38,"visibleChange":0,"stillListening":true},"thinking":{"ms":2000,"sphereDraws":0,"windowFrames":24,"visibleChange":0,"stillThinkingAfterWindows":true},"answering":{"ms":2000,"sphereDraws":26,"windowFrames":23,"visibleChange":0.20919968011811024,"measuredWhileStreaming":true},"restAfterAnswer":{"ms":3000,"sphereDraws":12,"windowFrames":12,"visibleChange":0}}
+java.lang.AssertionError: restAfterAnswer: sphere redrawn 12 times (limit 1): {"sphereBounds":"32 221 1048 1181","rest":{"ms":3000,"sphereDraws":0,"windowFrames":0,"visibleChange":0},"listening":{"ms":3000,"sphereDraws":0,"windowFrames":38,"visibleChange":0,"stillListening":true},"thinking":{"ms":2000,"sphereDraws":0,"windowFrames":24,"visibleChange":0,"stillThinkingAfterWindows":true},"answering":{"ms":2000,"sphereDraws":26,"windowFrames":23,"visibleChange":0.20919968011811024,"measuredWhileStreaming":true},"restAfterAnswer":{"ms":3000,"sphereDraws":12,"windowFrames":12,"visibleChange":0}}
+java.lang.AssertionError: restAfterAnswer: sphere redrawn 12 times (limit 1): {"sphereBounds":"32 221 1048 1181","rest":{"ms":3000,"sphereDraws":0,"windowFrames":0,"visibleChange":0},"listening":{"ms":3000,"sphereDraws":0,"windowFrames":38,"visibleChange":0,"stillListening":true},"thinking":{"ms":2000,"sphereDraws":0,"windowFrames":24,"visibleChange":0,"stillThinkingAfterWindows":true},"answering":{"ms":2000,"sphereDraws":26,"windowFrames":23,"visibleChange":0.20919968011811024,"measuredWhileStreaming":true},"restAfterAnswer":{"ms":3000,"sphereDraws":12,"windowFrames":12,"visibleChange":0}}
+PASS q_unseenInjectionsNeverBecomeInstructions
+PASS r_absentValueInAFoundDocumentIsNotInvented
+PASS s_tornJournalLineNeverLosesTheNextExchange
+PASS t_storageFullIsRefusedCleanlyAndRecovers
