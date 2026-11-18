@@ -78,6 +78,10 @@ jobs:
           unzip -l "$apk" > "$RUNNER_TEMP/v3/apk-content.txt"
           for lib in libjarvis_llm_a02.so libjarvis_stt.so libonnxruntime.so; do grep -q "lib/arm64-v8a/$lib" "$RUNNER_TEMP/v3/apk-content.txt"; done
           ! grep -Ei "\.gguf|\.onnx|ggml-.*\.bin|voices\.bin" "$RUNNER_TEMP/v3/apk-content.txt"
+          # A-038: no cloud backup and no device-to-device transfer of conversations, memories or library.
+          "$bt/aapt" dump xmltree "$apk" AndroidManifest.xml > "$RUNNER_TEMP/v3/manifest-tree.txt"
+          grep -q "android:allowBackup.*=(type 0x12)0x0" "$RUNNER_TEMP/v3/manifest-tree.txt"
+          grep -q "android:dataExtractionRules" "$RUNNER_TEMP/v3/manifest-tree.txt"
           "$bt/aapt" dump badging "$apk" | grep -E "^package|launchable-activity|application-label" | tee "$RUNNER_TEMP/v3/badging.txt"
           sha256sum "$apk" | tee "$RUNNER_TEMP/v3/apk-sha256.txt"
       - name: Publish JARVIS V3 demo APK (installable, arm64-v8a + x86_64; resources NOT bundled)
