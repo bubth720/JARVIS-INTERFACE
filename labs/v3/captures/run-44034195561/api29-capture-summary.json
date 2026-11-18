@@ -1,0 +1,208 @@
+{
+  "schema": "jarvis.capture-evidence/1",
+  "api": 29,
+  "status": "PASS",
+  "captured": 20,
+  "screens": [
+    {
+      "file": "tour-01-ecran-principal-sphere-repos",
+      "screen": "Écran principal : sphère au repos, avatar Athéna, dock de conversation",
+      "status": "captured",
+      "path": "shots/api29-tour-01-ecran-principal-sphere-repos.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 470632,
+      "sha256": "0eb266d992944a5f1853f0d83cf1ef0832c444b2151f5a10ceb5f969df771834"
+    },
+    {
+      "file": "tour-02-reponse-documentaire-citee",
+      "screen": "Réponse documentaire de l'application locale avec source NEXUS",
+      "status": "captured",
+      "path": "shots/api29-tour-02-reponse-documentaire-citee.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 571916,
+      "sha256": "a30175811a908e2ff99b279a6ce249416d720036d2d10b3f285ea7d516c0101d"
+    },
+    {
+      "file": "tour-03-proposition-de-souvenir",
+      "screen": "MEMORY VAULT : proposition de souvenir soumise au consentement",
+      "status": "captured",
+      "path": "shots/api29-tour-03-proposition-de-souvenir.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 590017,
+      "sha256": "d58fe5176a604bc042d1d7c6ec62556163ee116e65e8f9fae99dc47e7b33890d"
+    },
+    {
+      "file": "tour-04-souvenir-confirme",
+      "screen": "Souvenir synthétique confirmé par le test de consentement",
+      "status": "captured",
+      "path": "shots/api29-tour-04-souvenir-confirme.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 568994,
+      "sha256": "92dab5ca98b72f685c9aadbb309e05917384cd87fab452aec4911d71f63ef27a"
+    },
+    {
+      "file": "tour-05-menu-radial",
+      "screen": "Menu radial (Cockpit, Bibliothèque, Mémoire, Command Center, Réglages)",
+      "status": "captured",
+      "path": "shots/api29-tour-05-menu-radial.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 530515,
+      "sha256": "4f7075676ebaef494553f4c2070214a0ed05fff4145e469e6cfe35c77c32e4f8"
+    },
+    {
+      "file": "tour-10-command-center-ai_core",
+      "screen": "Command Center V2, onglet AI CORE (opérationnel)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-ai_core.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 359399,
+      "sha256": "e9ece50f69375f1730bbec7b4bafdce94ece23ffa0c644c6e2b674f620cd2e00"
+    },
+    {
+      "file": "tour-10-command-center-voice",
+      "screen": "Command Center V2, onglet VOICE CENTER (opérationnel)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-voice.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 316308,
+      "sha256": "afa34abfc9fa32b83517caddbe5084cbdf20f10a79d307078c06bca402ba4495"
+    },
+    {
+      "file": "tour-10-command-center-memory",
+      "screen": "Command Center V2, onglet MEMORY VAULT (partiel)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-memory.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 343810,
+      "sha256": "568a5b298b5885a7fa462050a0af0783d2f172fea5441576a2374e800fc53578"
+    },
+    {
+      "file": "tour-10-command-center-nexus",
+      "screen": "Command Center V2, onglet NEXUS (partiel)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-nexus.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 308153,
+      "sha256": "28b688753c961703cdff7a3ace686341cbc5f33f5a25172648fa65716fe0e960"
+    },
+    {
+      "file": "tour-10-command-center-missions",
+      "screen": "Command Center V2, onglet MISSIONS (à connecter)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-missions.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 265985,
+      "sha256": "3b726e9e8fd3842cb55a65a092f42b93c111f233cea75069489cab8f49d2c17c"
+    },
+    {
+      "file": "tour-10-command-center-agents",
+      "screen": "Command Center V2, onglet AGENTS (à connecter)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-agents.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 274432,
+      "sha256": "18a9c6c707b8a7f822c89f025ee0fc699113bf5fc94a30fe1fadb7ea65a2d3ff"
+    },
+    {
+      "file": "tour-10-command-center-automations",
+      "screen": "Command Center V2, onglet AUTOMATIONS (à connecter)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-automations.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 267174,
+      "sha256": "51d85fc82e54b9ee1c41a1ba86c5e34691447cd71415ceeece07bc0cea383b85"
+    },
+    {
+      "file": "tour-10-command-center-security",
+      "screen": "Command Center V2, onglet SECURITY (opérationnel)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-security.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 351781,
+      "sha256": "4d38c3b9e92bde8fddb6e0346a2d4b631ecc3f836c8023f153a0b82f21ad3845"
+    },
+    {
+      "file": "tour-10-command-center-evolution",
+      "screen": "Command Center V2, onglet EVOLUTION LAB (partiel)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-evolution.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 287020,
+      "sha256": "2eef63b2d1a6fba49b92ab30fbafa63fecfa4eb1f862c141a564af2f3f5ff36c"
+    },
+    {
+      "file": "tour-10-command-center-blueprint",
+      "screen": "Command Center V2, onglet SYSTEM BLUEPRINT (opérationnel)",
+      "status": "captured",
+      "path": "shots/api29-tour-10-command-center-blueprint.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 393400,
+      "sha256": "4367fc414d8cc75521a37c4776b81443ce29c53dc6b6a4615d4665d52df16b73"
+    },
+    {
+      "file": "tour-20-nexus-bibliotheque",
+      "screen": "NEXUS : bibliothèque locale (documents importés, recherche)",
+      "status": "captured",
+      "path": "shots/api29-tour-20-nexus-bibliotheque.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 308471,
+      "sha256": "f25c6436174f253e0b300d62b389d7ec7960f21c5f1fef168f4c185e8f6e2631"
+    },
+    {
+      "file": "tour-21-palette-de-commandes",
+      "screen": "Palette de commandes",
+      "status": "captured",
+      "path": "shots/api29-tour-21-palette-de-commandes.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 281242,
+      "sha256": "6a339598fb4ded931b5fc780edc5b905947ec794b57adba1568e3eb4931d1c1c"
+    },
+    {
+      "file": "tour-22-reglages",
+      "screen": "Réglages (personnalité, voix, affichage)",
+      "status": "captured",
+      "path": "shots/api29-tour-22-reglages.png",
+      "width": 1080,
+      "height": 2400,
+      "bytes": 345269,
+      "sha256": "ee9a8831fe166ea380e57ff676b234652b1ae5eb94cb8c5c9b9f370a1a1e5368"
+    },
+    {
+      "file": "tour-30-avatar-athena-gros-plan",
+      "screen": "Avatar Athéna (rendu procédural 2D, gros plan au repos)",
+      "status": "captured",
+      "path": "shots/api29-tour-30-avatar-athena-gros-plan.png",
+      "width": 293,
+      "height": 293,
+      "bytes": 20097,
+      "sha256": "cadcfe4bad1ed60936e66a4460a2f94bf875dc8d843ec0c339e1f644e91ec47d"
+    },
+    {
+      "file": "tour-40-paysage",
+      "screen": "Écran principal en paysage",
+      "status": "captured",
+      "path": "shots/api29-tour-40-paysage.png",
+      "width": 2400,
+      "height": 1080,
+      "bytes": 1200584,
+      "sha256": "853caa2fd76c8be025c9b0641a6a247f7d049a9e6f7c548eb8460fb4697e0371"
+    }
+  ]
+}

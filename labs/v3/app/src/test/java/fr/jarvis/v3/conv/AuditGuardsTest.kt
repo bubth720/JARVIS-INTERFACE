@@ -44,7 +44,10 @@ class DocumentFidelityTest {
     @Test fun inventedValuesAndUnconsultedSourcesAreFlagged() {
         val n = KnowledgePlanner.unsupported("Quand se réunit le club ?", "Le club se réunit le vendredi 14 mars à 20 heures (source : agenda.txt).", listOf(club))
         assertNotNull(n); assertTrue(n!!, n.contains("vendredi") && n.contains("14") && n.contains("agenda.txt"))
-        assertTrue(KnowledgePlanner.unsupported("Combien coûte la cotisation ?", "Elle coûte 10 euros.", listOf(club))!!.contains("10€"))
+        // A-030/031 normalises amounts to their numeric value (the unit is not part of the value key).
+        // Assert the exact unsupported value as well as the notice, rather than the old display spelling "10€".
+        assertEquals(listOf("10"), KnowledgePlanner.unsupportedValues("Combien coûte la cotisation ?", "Elle coûte 10 euros.", listOf(club)))
+        assertTrue(KnowledgePlanner.unsupported("Combien coûte la cotisation ?", "Elle coûte 10 euros.", listOf(club))!!.contains("10"))
     }
 
     @Test fun contradictionUnitsAreNormalised() {
