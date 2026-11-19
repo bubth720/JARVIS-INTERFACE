@@ -244,6 +244,9 @@ jobs:
 
           gallery = report("v3-gallery-trace.json")
           events = gallery.get("events", [])
+          intervals = [{"event": left["event"], "next": right["event"], "ms": right["elapsedMs"] - left["elapsedMs"]}
+                       for left, right in zip(events, events[1:])]
+          print("e longest intervals", json.dumps(sorted(intervals, key=lambda item: -item["ms"])[:12], indent=2))
           print("e", json.dumps({
               "events": events[-18:],
               "eventAgeMs": gallery.get("eventAgeMs"),
@@ -254,4 +257,7 @@ jobs:
           print("c", json.dumps(report("v3-states.json").get("tabTrace"), indent=2))
           print("K", json.dumps(report("audit-k.json"), indent=2))
           print("P", json.dumps(report("audit-p.json"), indent=2))
+          for p in root.rglob("s04-api35/b_firstLaunchThenVerifiedImport.txt"):
+              print("b instrumentation")
+              print("\n".join(p.read_text().splitlines()[-55:]))
           PY
