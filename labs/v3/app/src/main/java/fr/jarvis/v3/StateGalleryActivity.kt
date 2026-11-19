@@ -46,7 +46,19 @@ class StateGalleryActivity : ComponentActivity() {
             var state by remember { mutableStateOf(state0) }
             var mode by remember { mutableStateOf(mode0) }
             var t by remember { mutableFloatStateOf(0f) }
-            LaunchedEffect(Unit) { while (true) { delay(50); t += 0.05f } }
+            LaunchedEffect(Unit) {
+                val probe = RenderDiagnostics.active
+                probe?.count(RenderDiagnostics.Signal.GALLERY_START)
+                try {
+                    while (true) {
+                        delay(50)
+                        probe?.count(RenderDiagnostics.Signal.GALLERY_TICK)
+                        t += 0.05f
+                    }
+                } finally {
+                    probe?.count(RenderDiagnostics.Signal.GALLERY_STOP)
+                }
+            }
             val exampleLevel = if (state == HoloState.LISTENING || state == HoloState.SPEAKING) (0.45f + 0.35f * sin(t * 5f)).coerceIn(0f, 1f) else 0f
             Column(Modifier.fillMaxSize().background(Holo.background).semantics { testTagsAsResourceId = true }.safeDrawingPadding().padding(12.dp)) {
                 if (!bench) {

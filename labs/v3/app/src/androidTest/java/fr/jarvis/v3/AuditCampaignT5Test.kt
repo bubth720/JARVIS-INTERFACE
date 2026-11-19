@@ -61,9 +61,12 @@ class AuditCampaignT5Test {
     private fun windowFrames(): Long = Regex("Total frames rendered: (\\d+)").find(shell("dumpsys gfxinfo fr.jarvis.v3"))?.groupValues?.get(1)?.toLong() ?: -1L
     private fun cost(ms: Long): JSONObject {
         shell("dumpsys gfxinfo fr.jarvis.v3 reset"); val f0 = V3Runtime.motion.drawnFrames; val w0 = windowFrames()
+        val before = RenderDiagnostics.active!!.counts()
         SystemClock.sleep(ms)
+        val after = RenderDiagnostics.active!!.counts()
         val w1 = windowFrames()
         return JSONObject().put("ms", ms).put("sphereDraws", V3Runtime.motion.drawnFrames - f0).put("windowFrames", if (w0 < 0 || w1 < 0) -1 else w1 - w0)
+            .put("signalDeltas", JSONObject(after.mapValues { (key, value) -> value - before.getValue(key) }))
     }
 
     // ---- visible motion (pixels of the sphere only) ----
@@ -97,6 +100,8 @@ class AuditCampaignT5Test {
     @Test fun p_sphereStillAndCheapOutsideTheAnswer() {
         assumeTrue(args.getString("afterImport") != null)
         val r = JSONObject()
+        val probe = RenderDiagnostics.Counters()
+        RenderDiagnostics.active = probe
         try {
             ActivityScenario.launch(CockpitActivity::class.java).use {
                 Configurator.getInstance().setWaitForIdleTimeout(0)
@@ -136,7 +141,13 @@ class AuditCampaignT5Test {
                 assertTrue("the sphere must visibly move while answering: $r", a.getDouble("visibleChange") > 0.005)
                 assertTrue("the sphere must animate while answering: $r", a.getLong("sphereDraws") >= 5)
             }
-        } finally { main { app.closeSession(); ui.session = null }; runCatching { released() }; write("p", r) }
+        } finally {
+            RenderDiagnostics.active = null
+            r.put("visualStates", JSONArray(probe.states()))
+            main { app.closeSession(); ui.session = null }
+            runCatching { released() }
+            write("p", r)
+        }
     }
 
     /** What JARVIS says in its own name: everything before an attributed quotation of a reader-addressed sentence. */

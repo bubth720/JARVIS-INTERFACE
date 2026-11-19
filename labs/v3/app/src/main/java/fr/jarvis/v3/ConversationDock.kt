@@ -29,13 +29,19 @@ fun ConversationDock(
     micEnabled: Boolean, listening: Boolean, onMic: () -> Unit, busy: Boolean, onStop: () -> Unit,
     level: Float, menuOpen: Boolean, onMenu: () -> Unit, onAnchor: (Offset) -> Unit, modifier: Modifier = Modifier,
 ) {
+    RenderDiagnostics.active?.let { probe -> SideEffect { probe.count(RenderDiagnostics.Signal.DOCK_COMMIT) } }
     val history = remember { FloatArray(48) }
     var tick by remember { mutableIntStateOf(0) }
     val current by rememberUpdatedState(level)
     LaunchedEffect(Unit) {
         while (true) {
             val v = current
-            if (v > 0f || history.any { it > 0f }) { System.arraycopy(history, 1, history, 0, history.size - 1); history[history.size - 1] = v; tick++ }
+            if (v > 0f || history.any { it > 0f }) {
+                System.arraycopy(history, 1, history, 0, history.size - 1)
+                history[history.size - 1] = v
+                RenderDiagnostics.active?.count(RenderDiagnostics.Signal.WAVEFORM_SHIFT)
+                tick++
+            }
             delay(60)
         }
     }
@@ -57,6 +63,7 @@ fun ConversationDock(
             RadialAnchor(menuOpen, onMenu, onAnchor)
         }
         Canvas(Modifier.fillMaxWidth().height(16.dp).padding(horizontal = 28.dp)) {
+            RenderDiagnostics.active?.count(RenderDiagnostics.Signal.WAVEFORM_DRAW)
             tick.let { }
             val n = history.size; val step = size.width / n; val mid = size.height / 2
             for (i in 0 until n) {

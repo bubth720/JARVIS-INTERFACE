@@ -96,6 +96,7 @@ interface SceneActions {
 @Composable
 fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) {
     val ui = V3Runtime.ui
+    RenderDiagnostics.active?.let { probe -> SideEffect { probe.count(RenderDiagnostics.Signal.SCENE_COMMIT) } }
     val lifecycle by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
     val resumed = lifecycle.isAtLeast(Lifecycle.State.RESUMED)
     LaunchedEffect(resumed) { if (resumed) gov.refresh() }
@@ -273,13 +274,22 @@ private fun KeywordChips(keywords: List<String>, onKeyword: (String) -> Unit) {
 /** Response zone: compact, scrollable, each message shown once (the running answer replaces nothing). */
 @Composable
 private fun Conversation(s: ConvSession, ui: V3UiState, modifier: Modifier) {
+    RenderDiagnostics.active?.let { probe -> SideEffect { probe.count(RenderDiagnostics.Signal.CONVERSATION_COMMIT) } }
     val items = buildList<Any> {
         s.exchanges.forEachIndexed { i, e -> ui.notes.filter { it.afterExchanges == i }.forEach { add(it) }; add(i to e) }
         ui.notes.filter { it.afterExchanges >= s.exchanges.size }.forEach { add(it) }
     }
     val list = rememberLazyListState()
     val streaming = s.busy && s.partial.isNotBlank()
-    LaunchedEffect(items.size, streaming, s.phase) { val n = items.size + (if (s.busy) 1 else 0); if (n > 0) list.animateScrollToItem(n - 1) }
+    LaunchedEffect(items.size, streaming, s.phase) {
+        val n = items.size + (if (s.busy) 1 else 0)
+        if (n > 0) {
+            val probe = RenderDiagnostics.active
+            probe?.count(RenderDiagnostics.Signal.AUTO_SCROLL_START)
+            try { list.animateScrollToItem(n - 1) }
+            finally { probe?.count(RenderDiagnostics.Signal.AUTO_SCROLL_STOP) }
+        }
+    }
     LazyColumn(modifier.glass(active = false).padding(horizontal = 12.dp, vertical = 8.dp), state = list) {
         itemsIndexed(items) { idx, it ->
             when (it) {

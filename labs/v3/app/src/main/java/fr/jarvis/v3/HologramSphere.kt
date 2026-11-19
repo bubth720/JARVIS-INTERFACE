@@ -69,6 +69,10 @@ fun HologramSphere(
     state: HoloState, level: Float, pulseKey: Int, keywords: List<String>, detail: HoloDetail, animate: Boolean,
     motion: SphereMotion, onVsync: (Float) -> Unit, fpsCap: Int = detail.fps, modifier: Modifier = Modifier,
 ) {
+    RenderDiagnostics.active?.let { probe -> SideEffect {
+        probe.count(RenderDiagnostics.Signal.SPHERE_COMMIT)
+        probe.state(state)
+    } }
     val geo = remember(detail) { HoloGeometry(detail) }
     var time by remember { mutableFloatStateOf(motion.sim) }
     val target by rememberUpdatedState(level)
@@ -83,17 +87,24 @@ fun HologramSphere(
     LaunchedEffect(pulseKey) { if (pulseKey > 0) motion.pulseAt = motion.sim }
     LaunchedEffect(animate, fpsCap) {
         if (!animate) { time = motion.sim + 1e-4f; return@LaunchedEffect }
+        val probe = RenderDiagnostics.active
+        probe?.count(RenderDiagnostics.Signal.SPHERE_CLOCK_START)
         var last = 0L; var acc = 0f
-        while (isActive) withFrameNanos { now ->
-            if (last != 0L) {
-                val dtMs = (now - last) / 1e6f; val dt = min(dtMs / 1000f, 0.1f)
-                onVsync(dtMs)
-                motion.sim += dt; acc += dt
-                motion.yaw += 0.18f * dt   // automatic, slow; only runs while JARVIS answers (V3-FIX-01)
-                motion.level = HoloGeometry.smoothLevel(motion.level, target, dt)
-                if (acc >= 1f / fpsCap - 0.002f) { time = motion.sim; acc = 0f }
+        try {
+            while (isActive) withFrameNanos { now ->
+                probe?.count(RenderDiagnostics.Signal.SPHERE_CLOCK_FRAME)
+                if (last != 0L) {
+                    val dtMs = (now - last) / 1e6f; val dt = min(dtMs / 1000f, 0.1f)
+                    onVsync(dtMs)
+                    motion.sim += dt; acc += dt
+                    motion.yaw += 0.18f * dt   // automatic, slow; only runs while JARVIS answers (V3-FIX-01)
+                    motion.level = HoloGeometry.smoothLevel(motion.level, target, dt)
+                    if (acc >= 1f / fpsCap - 0.002f) { time = motion.sim; acc = 0f }
+                }
+                last = now
             }
-            last = now
+        } finally {
+            probe?.count(RenderDiagnostics.Signal.SPHERE_CLOCK_STOP)
         }
     }
 
@@ -112,6 +123,7 @@ fun HologramSphere(
     ) {
         val t = time
         motion.drawnFrames++
+        RenderDiagnostics.active?.count(RenderDiagnostics.Signal.SPHERE_DRAW)
         val lvl = motion.level
         val breath = HoloGeometry.breath(t)
         val cx = size.width / 2f; val cy = size.height * 0.46f

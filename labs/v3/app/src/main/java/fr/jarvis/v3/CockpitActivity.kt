@@ -6,10 +6,13 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.view.View
+import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.ComposeView
 import fr.jarvis.v1.Phase
 import fr.jarvis.v3.conv.ConvApp
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +38,21 @@ class CockpitActivity : ComponentActivity(), SceneActions {
         val gov = V3Runtime.governor ?: PerformanceGovernor(applicationContext).also { V3Runtime.governor = it }
         if (ui.session == null) app.session?.takeIf { !it.closed }?.let { ui.session = it }
         ui.showAvatar = getSharedPreferences("ui", MODE_PRIVATE).getBoolean("avatar", true)
-        setContent { HoloTheme { CockpitScene(app, gov, this) } }
+        val diagnostics = RenderDiagnostics.active
+        if (diagnostics == null) {
+            setContent { HoloTheme { CockpitScene(app, gov, this) } }
+        } else {
+            // Observe invalidations propagated by the Compose view. Window frames are measured separately.
+            val parent = object : FrameLayout(this) {
+                override fun onDescendantInvalidated(child: View, target: View) {
+                    diagnostics.count(RenderDiagnostics.Signal.WINDOW_DESCENDANT_INVALIDATION)
+                    super.onDescendantInvalidated(child, target)
+                }
+            }
+            val content = ComposeView(this).apply { setContent { HoloTheme { CockpitScene(app, gov, this@CockpitActivity) } } }
+            parent.addView(content, FrameLayout.LayoutParams(-1, -1))
+            setContentView(parent)
+        }
     }
 
     override fun onResume() { super.onResume(); V3Runtime.governor?.refresh() }

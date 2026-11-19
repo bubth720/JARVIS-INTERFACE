@@ -72,11 +72,23 @@ class V3CockpitTest {
         return SystemClock.elapsedRealtime() - t0
     }
     private fun obj(res: String, ms: Long = 20_000): UiObject2 = requireNotNull(dev.wait(Until.findObject(By.res(res)), ms)) { "element '$res' not shown" }
+    private var tabTrace: JSONArray? = null
     /** Command Center tab: the tab row scrolls horizontally, so off-screen tabs are reached like a user would (run 43620844372). */
     private fun tab(name: String) {
         for (dir in listOf(androidx.test.uiautomator.Direction.RIGHT, androidx.test.uiautomator.Direction.LEFT)) repeat(6) {
-            if (dev.findObject(By.res("cc-tab-$name")) != null) { tap("cc-tab-$name"); return }
-            obj("cc-tabs").scroll(dir, 0.8f); SystemClock.sleep(300) }
+            val target = dev.findObject(By.res("cc-tab-$name"))
+            if (target != null) {
+                tabTrace?.put(JSONObject().put("target", name).put("found", true))
+                tap("cc-tab-$name")
+                return
+            }
+            val row = obj("cc-tabs")
+            val bounds = row.visibleBounds.flattenToString()
+            val scrolled = row.scroll(dir, 0.8f)
+            tabTrace?.put(JSONObject().put("target", name).put("direction", dir.name)
+                .put("rowBounds", bounds).put("canContinue", scrolled))
+            SystemClock.sleep(300)
+        }
         tap("cc-tab-$name")
     }
     /** Click that survives a recomposition between lookup and click (StaleObjectException, API 35 run 43616811194). */
@@ -116,12 +128,23 @@ class V3CockpitTest {
         requireNotNull(dev.wait(Until.findObject(By.res("send").enabled(true)), 10_000)) { "Send not enabled" }.click()
         return how
     }
-    private fun <A : android.app.Activity> frames(scenario: ActivityScenario<A>, ms: Long): JSONObject {
+    private fun <A : android.app.Activity> frames(scenario: ActivityScenario<A>, ms: Long, trace: GalleryTrace? = null): JSONObject {
         val d = Collections.synchronizedList(ArrayList<Double>()); val th = HandlerThread("fm").also { it.start() }
         val l = Window.OnFrameMetricsAvailableListener { _, m, _ -> d += m.getMetric(FrameMetrics.TOTAL_DURATION) / 1e6 }
-        scenario.onActivity { it.window.addOnFrameMetricsAvailableListener(l, Handler(th.looper)) }
+        trace?.mark("frame-metrics-register")
+        scenario.onActivity {
+            trace?.mark("frame-metrics-register-main")
+            it.window.addOnFrameMetricsAvailableListener(l, Handler(th.looper))
+        }
+        trace?.mark("frame-metrics-sample-$ms")
         SystemClock.sleep(ms)
-        scenario.onActivity { it.window.removeOnFrameMetricsAvailableListener(l) }; th.quitSafely()
+        trace?.mark("frame-metrics-unregister")
+        scenario.onActivity {
+            trace?.mark("frame-metrics-unregister-main")
+            it.window.removeOnFrameMetricsAvailableListener(l)
+        }
+        th.quitSafely()
+        trace?.mark("frame-metrics-unregistered")
         val s = synchronized(d) { d.sorted() }
         if (s.isEmpty()) return JSONObject().put("frames", 0)
         val p99 = s[maxOf(0, (s.size * 99) / 100 - 1)]
@@ -160,6 +183,7 @@ class V3CockpitTest {
         Configurator.getInstance().setWaitForIdleTimeout(0)
         val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("platform", "Android emulator x86_64 (NOT a phone)")
         val captures = JSONArray(); r.put("captures", captures)
+        tabTrace = JSONArray().also { r.put("tabTrace", it) }
         try { ActivityScenario.launch(CockpitActivity::class.java).use { sc ->
             r.put("loadMs", start()); SystemClock.sleep(2_000); captures.put(shot("02-repos"))
             r.put("idleFrames", frames(sc, 5_000)).put("governor", JSONObject(main { V3Runtime.governor!!.stats.summary() }).put("mode", main { V3Runtime.governor!!.effectiveMode.name }))
@@ -522,19 +546,56 @@ class V3CockpitTest {
     @Test fun e_galleryCapturesAndBeforeAfterBench() {
         val r = JSONObject().put("sdk", android.os.Build.VERSION.SDK_INT).put("note", "Emulator x86_64, software GPU (swiftshader): NOT representative of a phone GPU")
         val bench = JSONArray(); r.put("bench", bench)
+        val probe = RenderDiagnostics.Counters()
+        RenderDiagnostics.active = probe
+        val trace = GalleryTrace(File(inst.targetContext.filesDir, "v3-gallery-trace.json"))
+        fun gallery(label: String, intent: Intent, block: (ActivityScenario<StateGalleryActivity>) -> Unit) {
+            trace.mark("$label:launch")
+            val scenario = ActivityScenario.launch<StateGalleryActivity>(intent)
+            try {
+                trace.mark("$label:resumed")
+                block(scenario)
+            } finally {
+                trace.mark("$label:close")
+                scenario.close()
+                trace.mark("$label:closed")
+            }
+        }
+        fun galleryShot(name: String) {
+            trace.mark("$name:take-screenshot")
+            inst.uiAutomation.takeScreenshot()?.let { bitmap ->
+                trace.mark("$name:write-png")
+                File(shots, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            }
+            trace.mark("$name:screenshot-finished")
+        }
         try {
             for (st in HoloState.entries) {
                 val i = Intent(inst.targetContext, StateGalleryActivity::class.java).putExtra("state", st.name).putExtra("renderer", "v3")
-                ActivityScenario.launch<StateGalleryActivity>(i).use { SystemClock.sleep(1_800); shot("g-${st.name.lowercase()}") }
+                val label = "g-${st.name.lowercase()}"
+                gallery(label, i) { SystemClock.sleep(1_800); galleryShot(label) }
             }
-            ActivityScenario.launch<StateGalleryActivity>(Intent(inst.targetContext, StateGalleryActivity::class.java).putExtra("renderer", "m55d")).use { SystemClock.sleep(1_800); shot("g-avant-v1-m55d") }
+            gallery("g-avant-v1-m55d", Intent(inst.targetContext, StateGalleryActivity::class.java).putExtra("renderer", "m55d")) {
+                SystemClock.sleep(1_800)
+                galleryShot("g-avant-v1-m55d")
+            }
             for (mode in RenderMode.entries) for (st in listOf(HoloState.IDLE, HoloState.THINKING)) for (renderer in listOf("m55d", "v3")) {
                 val i = Intent(inst.targetContext, StateGalleryActivity::class.java).putExtra("bench", true).putExtra("renderer", renderer)
                     .putExtra("state", st.name).putExtra("mode", mode.name)
-                ActivityScenario.launch<StateGalleryActivity>(i).use { sc -> SystemClock.sleep(1_500)
-                    bench.put(frames(sc, 5_000).put("renderer", if (renderer == "v3") "V3" else "V1 (M55-D)").put("mode", mode.name).put("state", st.name)) }
+                gallery("bench-$renderer-$mode-$st", i) { sc ->
+                    SystemClock.sleep(1_500)
+                    bench.put(frames(sc, 5_000, trace).put("renderer", if (renderer == "v3") "V3" else "V1 (M55-D)").put("mode", mode.name).put("state", st.name))
+                }
             }
-        } finally { write("v3-bench.json", r) }
+        } finally {
+            try {
+                trace.mark("report:write")
+                write("v3-bench.json", r)
+                trace.mark("report:written")
+            } finally {
+                try { trace.close() } finally { RenderDiagnostics.active = null }
+            }
+        }
     }
 }
 
