@@ -9,7 +9,6 @@ mkdir -p "$out"
 "$build_tools/aapt" dump badging "$apk" > "$out/badging.txt"
 "$build_tools/aapt" dump permissions "$apk" > "$out/permissions.txt"
 "$build_tools/aapt" dump xmltree "$apk" AndroidManifest.xml > "$out/manifest.txt"
-"$build_tools/aapt" dump xmltree "$apk" res/xml/data_extraction_rules.xml > "$out/extraction-rules.txt"
 sha256sum "$apk" > "$out/sha256.txt"
 
 grep -q "^package: name='fr.jarvis.v3' " "$out/badging.txt"
@@ -18,8 +17,18 @@ permissions=$(grep '^uses-permission:' "$out/permissions.txt" |
     grep -v "^uses-permission: name='fr.jarvis.v3.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'$")
 test "$permissions" = "uses-permission: name='android.permission.RECORD_AUDIO'"
 grep -q 'android:allowBackup.*=(type 0x12)0x0$' "$out/manifest.txt"
-grep -q 'android:dataExtractionRules.*=@0x' "$out/manifest.txt"
 grep -q 'android:usesCleartextTraffic.*=(type 0x12)0x0$' "$out/manifest.txt"
+
+# Release packaging can shorten resource paths. Inspect the file actually linked by the manifest.
+rules_id=$(sed -nE 's/.*android:dataExtractionRules\([^)]*\)=@(0x[[:xdigit:]]+).*/\1/p' "$out/manifest.txt")
+test -n "$rules_id"
+"$build_tools/aapt2" dump resources "$apk" > "$out/resources.txt"
+mapfile -t rule_paths < <(awk -v id="$rules_id" '
+    $1 == "resource" { rule = ($2 == id) }
+    rule && $2 == "(file)" && $4 == "type=XML" { print $3 }
+' "$out/resources.txt")
+test "${#rule_paths[@]}" -eq 1
+"$build_tools/aapt" dump xmltree "$apk" "${rule_paths[0]}" > "$out/extraction-rules.txt"
 
 case "$expected" in
     debug) grep -q '^application-debuggable' "$out/badging.txt" ;;
