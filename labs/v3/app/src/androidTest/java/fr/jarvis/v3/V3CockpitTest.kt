@@ -13,6 +13,9 @@ import android.view.Window
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleCallback
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
@@ -25,11 +28,15 @@ import fr.jarvis.v1.SpeechCapture
 import fr.jarvis.v3.conv.ConvApp
 import fr.jarvis.v3.conv.ConvSession
 import fr.jarvis.v3.model.CardFactory
+import fr.jarvis.v3.model.CommandModule
 import fr.jarvis.v3.model.HoloState
 import java.io.File
 import java.util.Collections
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.*
@@ -73,23 +80,30 @@ class V3CockpitTest {
     }
     private fun obj(res: String, ms: Long = 20_000): UiObject2 = requireNotNull(dev.wait(Until.findObject(By.res(res)), ms)) { "element '$res' not shown" }
     private var tabTrace: JSONArray? = null
-    /** Command Center tab: the tab row scrolls horizontally, so off-screen tabs are reached like a user would (run 43620844372). */
-    private fun tab(name: String) {
-        for (dir in listOf(androidx.test.uiautomator.Direction.RIGHT, androidx.test.uiautomator.Direction.LEFT)) repeat(6) {
-            val target = dev.findObject(By.res("cc-tab-$name"))
+    /** Scroll a clipped row by touch, then verify the rendered module rather than setting its state. */
+    private fun tab(module: CommandModule) {
+        val name = module.name.lowercase()
+        val resource = "cc-tab-$name"
+        val selected = By.res("cc-module-status").textStartsWith("${module.label} · ")
+        for (towardEnd in listOf(true, false)) repeat(6) {
+            val target = dev.wait(Until.findObject(By.res(resource).enabled(true)), 1_000)
             if (target != null) {
                 tabTrace?.put(JSONObject().put("target", name).put("found", true))
-                tap("cc-tab-$name")
+                tap(resource)
+                assertNotNull("Tab $name did not open the expected module", dev.wait(Until.findObject(selected), 10_000))
                 return
             }
-            val row = obj("cc-tabs")
-            val bounds = row.visibleBounds.flattenToString()
-            val scrolled = row.scroll(dir, 0.8f)
-            tabTrace?.put(JSONObject().put("target", name).put("direction", dir.name)
-                .put("rowBounds", bounds).put("canContinue", scrolled))
-            SystemClock.sleep(300)
+            val bounds = obj("cc-tabs").visibleBounds
+            val left = bounds.left + bounds.width() / 6
+            val right = bounds.right - bounds.width() / 6
+            val y = bounds.centerY()
+            val swiped = if (towardEnd) dev.swipe(right, y, left, y, 48) else dev.swipe(left, y, right, y, 48)
+            tabTrace?.put(JSONObject().put("target", name).put("towardEnd", towardEnd)
+                .put("rowBounds", bounds.flattenToString()).put("swipeInjected", swiped))
+            assertTrue("Could not swipe the Command Center row", swiped)
         }
-        tap("cc-tab-$name")
+        tap(resource) // also observes the result of the last gesture
+        assertNotNull("Tab $name did not open the expected module", dev.wait(Until.findObject(selected), 10_000))
     }
     /** Click that survives a recomposition between lookup and click (StaleObjectException, API 35 run 43616811194). */
     private fun tap(res: String) {
@@ -128,22 +142,33 @@ class V3CockpitTest {
         requireNotNull(dev.wait(Until.findObject(By.res("send").enabled(true)), 10_000)) { "Send not enabled" }.click()
         return how
     }
-    private fun <A : android.app.Activity> frames(scenario: ActivityScenario<A>, ms: Long, trace: GalleryTrace? = null): JSONObject {
+    private fun frames(ms: Long, trace: GalleryTrace? = null, onWindow: ((Window) -> Unit) -> Unit): JSONObject {
         val d = Collections.synchronizedList(ArrayList<Double>()); val th = HandlerThread("fm").also { it.start() }
         val l = Window.OnFrameMetricsAvailableListener { _, m, _ -> d += m.getMetric(FrameMetrics.TOTAL_DURATION) / 1e6 }
-        trace?.mark("frame-metrics-register")
-        scenario.onActivity {
-            trace?.mark("frame-metrics-register-main")
-            it.window.addOnFrameMetricsAvailableListener(l, Handler(th.looper))
+        var registered = false
+        try {
+            trace?.mark("frame-metrics-register")
+            onWindow {
+                trace?.mark("frame-metrics-register-main")
+                it.addOnFrameMetricsAvailableListener(l, Handler(th.looper))
+                registered = true
+            }
+            trace?.mark("frame-metrics-sample-$ms")
+            SystemClock.sleep(ms)
+        } finally {
+            try {
+                if (registered) {
+                    trace?.mark("frame-metrics-unregister")
+                    onWindow {
+                        trace?.mark("frame-metrics-unregister-main")
+                        it.removeOnFrameMetricsAvailableListener(l)
+                    }
+                }
+            } finally {
+                th.quitSafely()
+                th.join(2_000)
+            }
         }
-        trace?.mark("frame-metrics-sample-$ms")
-        SystemClock.sleep(ms)
-        trace?.mark("frame-metrics-unregister")
-        scenario.onActivity {
-            trace?.mark("frame-metrics-unregister-main")
-            it.window.removeOnFrameMetricsAvailableListener(l)
-        }
-        th.quitSafely()
         trace?.mark("frame-metrics-unregistered")
         val s = synchronized(d) { d.sorted() }
         if (s.isEmpty()) return JSONObject().put("frames", 0)
@@ -186,7 +211,8 @@ class V3CockpitTest {
         tabTrace = JSONArray().also { r.put("tabTrace", it) }
         try { ActivityScenario.launch(CockpitActivity::class.java).use { sc ->
             r.put("loadMs", start()); SystemClock.sleep(2_000); captures.put(shot("02-repos"))
-            r.put("idleFrames", frames(sc, 5_000)).put("governor", JSONObject(main { V3Runtime.governor!!.stats.summary() }).put("mode", main { V3Runtime.governor!!.effectiveMode.name }))
+            val idle = frames(5_000) { read -> sc.onActivity { read(it.window) } }
+            r.put("idleFrames", idle).put("governor", JSONObject(main { V3Runtime.governor!!.stats.summary() }).put("mode", main { V3Runtime.governor!!.effectiveMode.name }))
             // V3-FIX-01: still at rest (animations ON) and NOT manipulable: a real swipe changes nothing.
             val restFrames = drawnDuring(2_000); r.put("restFrames2s", restFrames)
             assertTrue("sphere must be still at rest ($restFrames frames)", restFrames <= 1)
@@ -249,11 +275,11 @@ class V3CockpitTest {
             // Command Center V2: real AI CORE data, and an unconnected module shown "à connecter" (never simulated).
             obj("dest-command").click(); SystemClock.sleep(900)
             assertTrue(obj("cc-model").text.startsWith("Qwen3-0.6B"))
-            tab("security"); SystemClock.sleep(500); assertTrue(obj("cc-internet").text.startsWith("aucun"))
+            tab(CommandModule.SECURITY); assertTrue(obj("cc-internet").text.startsWith("aucun"))
             captures.put(shot("12-command-center")); assertTextsFit("command center")
-            tab("missions"); SystemClock.sleep(500)
+            tab(CommandModule.MISSIONS)
             assertEquals("MISSIONS · À CONNECTER", obj("cc-module-status").text); obj("cc-to-connect"); captures.put(shot("12b-module-a-connecter"))
-            tab("blueprint"); SystemClock.sleep(500); obj("cc-node-nexus"); captures.put(shot("12c-blueprint"))
+            tab(CommandModule.BLUEPRINT); obj("cc-node-nexus"); captures.put(shot("12c-blueprint"))
             // The panel leaves with an exit animation: wait for it to be gone (slow API 35 emulator).
             dev.pressBack(); dev.wait(Until.gone(By.res("panel-command")), 3_000); assertNull("Android back must close the panel", dev.findObject(By.res("panel-command")))
             // Command Palette: real commands only; an unavailable one says why.
@@ -549,23 +575,56 @@ class V3CockpitTest {
         val probe = RenderDiagnostics.Counters()
         RenderDiagnostics.active = probe
         val trace = GalleryTrace(File(inst.targetContext.filesDir, "v3-gallery-trace.json"))
-        fun gallery(label: String, intent: Intent, block: (ActivityScenario<StateGalleryActivity>) -> Unit) {
-            trace.mark("$label:launch")
-            val scenario = ActivityScenario.launch<StateGalleryActivity>(intent)
+        fun gallery(label: String, intent: Intent, block: (StateGalleryActivity) -> Unit) {
+            // ActivityScenario.close and onActivity wait for global main-loop idleness. The benchmark
+            // keeps drawing while they wait. Observe this activity's lifecycle and bound each wait instead.
+            val monitor = ActivityLifecycleMonitorRegistry.getInstance()
+            val resumed = CompletableDeferred<StateGalleryActivity>()
+            val destroyed = CompletableDeferred<Unit>()
+            val callback = ActivityLifecycleCallback { activity, stage ->
+                if (activity is StateGalleryActivity && activity.intent.identifier == label) {
+                    when (stage) {
+                        Stage.RESUMED -> resumed.complete(activity)
+                        Stage.DESTROYED -> destroyed.complete(Unit)
+                        else -> Unit
+                    }
+                }
+            }
+            var activity: StateGalleryActivity? = null
+            monitor.addLifecycleCallback(callback)
             try {
+                trace.mark("$label:launch")
+                intent.setIdentifier(label).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                inst.targetContext.startActivity(intent)
+                val current = runBlocking { withTimeout(30_000) { resumed.await() } }
+                activity = current
                 trace.mark("$label:resumed")
-                block(scenario)
+                block(current)
             } finally {
-                trace.mark("$label:close")
-                scenario.close()
-                trace.mark("$label:closed")
+                try {
+                    activity?.let { closing ->
+                        trace.mark("$label:close")
+                        runBlocking {
+                            withTimeout(30_000) {
+                                withContext(Dispatchers.Main) { closing.finish() }
+                                destroyed.await()
+                            }
+                        }
+                        trace.mark("$label:closed")
+                    }
+                } finally {
+                    monitor.removeLifecycleCallback(callback)
+                }
             }
         }
         fun galleryShot(name: String) {
             trace.mark("$name:take-screenshot")
-            inst.uiAutomation.takeScreenshot()?.let { bitmap ->
+            val bitmap = checkNotNull(inst.uiAutomation.takeScreenshot()) { "Missing gallery capture $name" }
+            try {
                 trace.mark("$name:write-png")
-                File(shots, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                File(shots, "$name.png").outputStream().use { check(bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)) }
+            } finally {
+                bitmap.recycle()
             }
             trace.mark("$name:screenshot-finished")
         }
@@ -582,9 +641,12 @@ class V3CockpitTest {
             for (mode in RenderMode.entries) for (st in listOf(HoloState.IDLE, HoloState.THINKING)) for (renderer in listOf("m55d", "v3")) {
                 val i = Intent(inst.targetContext, StateGalleryActivity::class.java).putExtra("bench", true).putExtra("renderer", renderer)
                     .putExtra("state", st.name).putExtra("mode", mode.name)
-                gallery("bench-$renderer-$mode-$st", i) { sc ->
+                gallery("bench-$renderer-$mode-$st", i) { activity ->
                     SystemClock.sleep(1_500)
-                    bench.put(frames(sc, 5_000, trace).put("renderer", if (renderer == "v3") "V3" else "V1 (M55-D)").put("mode", mode.name).put("state", st.name))
+                    val sample = frames(5_000, trace) { read ->
+                        runBlocking { withTimeout(30_000) { withContext(Dispatchers.Main) { read(activity.window) } } }
+                    }
+                    bench.put(sample.put("renderer", if (renderer == "v3") "V3" else "V1 (M55-D)").put("mode", mode.name).put("state", st.name))
                 }
             }
         } finally {

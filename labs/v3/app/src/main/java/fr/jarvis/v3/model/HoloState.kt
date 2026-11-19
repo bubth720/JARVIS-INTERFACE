@@ -24,6 +24,9 @@ object SphereStateAdapter {
     fun animates(state: HoloState): Boolean = state == HoloState.STREAMING || state == HoloState.SPEAKING || state == HoloState.RESPONDING
     fun fpsCap(state: HoloState, profileFps: Int): Int = if (state == HoloState.STREAMING) minOf(STREAMING_FPS, profileFps) else profileFps
 
+    fun revealsWrittenAnswer(answer: String, spokenSamples: Long, interrupted: Boolean, error: String?): Boolean =
+        !interrupted && error == null && spokenSamples == 0L && answer.isNotBlank()
+
     /**
      * @param phase name of the V1 session phase (LOADING, READY, LISTENING, TRANSCRIBING, THINKING, SPEAKING, ERROR, CLOSED), null without session
      * @param streaming true when real answer text has already arrived for the running turn

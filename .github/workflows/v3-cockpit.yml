@@ -19,8 +19,13 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+    name: ${{ matrix.api == 0 && 'build' || format('S04 API {0}', matrix.api) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 300   # AUDIT-GLOBAL-01 campaigns T1-T3 run with the qualification on both API levels
+    strategy:
+      fail-fast: false
+      matrix:
+        api: ${{ fromJSON(github.ref_name == 'codex/global-01-s04-20261119' && '[29,35]' || '[0]') }}
     permissions:
       contents: write   # only to commit the downscaled review captures ([skip ci]) to this development branch
     env:
@@ -84,6 +89,19 @@ jobs:
           grep -q "android:dataExtractionRules" "$RUNNER_TEMP/v3/manifest-tree.txt"
           "$bt/aapt" dump badging "$apk" | grep -E "^package|launchable-activity|application-label" | tee "$RUNNER_TEMP/v3/badging.txt"
           sha256sum "$apk" | tee "$RUNNER_TEMP/v3/apk-sha256.txt"
+      - name: S04 — static A-038/A-039 APK audit
+        id: apk_audit
+        if: matrix.api == 29
+        continue-on-error: true
+        run: |
+          tools=interface/labs/v3/tools
+          apk=interface/labs/v3/app/build/outputs/apk
+          bt="$ANDROID_HOME/build-tools/35.0.0"
+          bash "$tools/inspect_s04_apk.sh" "$apk/debug/app-debug.apk" "$bt" "$RUNNER_TEMP/v3/apk-audit/debug" debug
+          gradle -p interface/labs/v3 -PlabSources="$RUNNER_TEMP/v1-sources/kotlin" -Pa02Root="$GITHUB_WORKSPACE/llm" -PvoiceRoot="$GITHUB_WORKSPACE/voice" -PnexusRoot="$GITHUB_WORKSPACE/nexus" -PcoreMemorySources="$RUNNER_TEMP/v3-core-memory" \
+            -PwhisperSource="$GITHUB_WORKSPACE/interface/labs/v1/.deps/whisper.cpp" -Pv1Abis=arm64-v8a,x86_64 \
+            :app:assembleRelease --no-daemon --max-workers=2 --console=plain
+          bash "$tools/inspect_s04_apk.sh" "$apk/release/app-release-unsigned.apk" "$bt" "$RUNNER_TEMP/v3/apk-audit/release" release
       - name: Publish JARVIS V3 demo APK (installable, arm64-v8a + x86_64; resources NOT bundled)
         if: ${{ !startsWith(github.ref_name, 'codex/global-01-s04-') }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -109,7 +127,7 @@ jobs:
         run: test -e /dev/kvm && sudo chmod a+rw /dev/kvm
       - name: API29 — V3 states, cards, menu, regression, bench (airplane mode, pixel_6)
         id: api29
-        if: github.ref_name != 'codex/global-01-s04-diagnostic-20261119'
+        if: github.ref_name != 'codex/global-01-s04-diagnostic-20261119' && (matrix.api == 0 || matrix.api == 29)
         continue-on-error: true
         timeout-minutes: 145   # A-029: hard stop per API level (the script itself stops at 130 min or at a lost device)
         uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
@@ -122,10 +140,15 @@ jobs:
           cores: 4
           disable-animations: true
           emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim
-          script: bash interface/labs/v3/tools/run_emulator.sh 29 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api29"
+          script: |
+            if [ '${{ matrix.api }}' = '29' ]; then
+              bash interface/labs/v3/tools/run_s04_campaign.sh 29 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api29"
+            else
+              bash interface/labs/v3/tools/run_emulator.sh 29 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api29"
+            fi
       - name: API35 — V3 states, cards, menu, regression, bench (airplane mode, pixel_6)
         id: api35
-        if: github.ref_name != 'codex/global-01-s04-diagnostic-20261119'
+        if: github.ref_name != 'codex/global-01-s04-diagnostic-20261119' && (matrix.api == 0 || matrix.api == 35)
         continue-on-error: true
         timeout-minutes: 145   # A-029: hard stop per API level (the script itself stops at 130 min or at a lost device)
         uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808
@@ -138,7 +161,12 @@ jobs:
           cores: 4
           disable-animations: true
           emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim -noaudio
-          script: bash interface/labs/v3/tools/run_emulator.sh 35 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api35"
+          script: |
+            if [ '${{ matrix.api }}' = '35' ]; then
+              bash interface/labs/v3/tools/run_s04_campaign.sh 35 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api35"
+            else
+              bash interface/labs/v3/tools/run_emulator.sh 35 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api35"
+            fi
       - name: S04 diagnostic — API35 (c, e, K and P)
         if: github.ref_name == 'codex/global-01-s04-diagnostic-20261119'
         timeout-minutes: 55
@@ -156,7 +184,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: v3-evidence-${{ github.sha }}
+          name: v3-evidence-${{ github.sha }}${{ matrix.api != 0 && format('-api{0}', matrix.api) || '' }}
           retention-days: 30
           path: |
             ${{ runner.temp }}/v3/
@@ -190,4 +218,9 @@ jobs:
           echo "API29 step: ${{ steps.api29.outcome }} / API35 step: ${{ steps.api35.outcome }}"
       - name: Qualification verdict (both API levels must pass every required test)
         if: github.ref_name != 'codex/global-01-s04-diagnostic-20261119'
-        run: test "${{ steps.api29.outcome }}" = success && test "${{ steps.api35.outcome }}" = success
+        run: |
+          case '${{ matrix.api }}' in
+            29) test "${{ steps.api29.outcome }}" = success && test "${{ steps.apk_audit.outcome }}" = success ;;
+            35) test "${{ steps.api35.outcome }}" = success ;;
+            0) test "${{ steps.api29.outcome }}" = success && test "${{ steps.api35.outcome }}" = success ;;
+          esac

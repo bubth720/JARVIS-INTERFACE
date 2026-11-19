@@ -18,6 +18,8 @@ internal class GalleryTrace(private val file: File) : AutoCloseable {
     private val watchdog = Executors.newSingleThreadScheduledExecutor { task ->
         Thread(task, "s04-gallery-watchdog").apply { isDaemon = true }
     }
+    private var longestWait = 0L
+    private var stall: JSONObject? = null
 
     init {
         watchdog.scheduleWithFixedDelay({
@@ -39,15 +41,18 @@ internal class GalleryTrace(private val file: File) : AutoCloseable {
             .put("lastEvent", entries.last().name).put("eventAgeMs", age)
             .put("events", JSONArray(entries.map { JSONObject().put("event", it.name).put("elapsedMs", it.atMs - start) }))
             .put("coroutineSignals", JSONObject(RenderDiagnostics.active?.counts().orEmpty()))
-        if (age >= 30_000) {
+        if (age >= 10_000 && age > longestWait) {
+            longestWait = age
             val threads = Thread.getAllStackTraces().entries
                 .sortedBy { (t, _) -> if (t == testThread || t.name == "main") "" else t.name }
                 .take(48)
-            report.put("threads", JSONArray(threads.map { (thread, stack) ->
-                JSONObject().put("name", thread.name).put("state", thread.state.name)
-                    .put("stack", JSONArray(stack.take(24).map { it.toString() }))
-            }))
+            stall = JSONObject().put("event", entries.last().name).put("ageMs", age)
+                .put("threads", JSONArray(threads.map { (thread, stack) ->
+                    JSONObject().put("name", thread.name).put("state", thread.state.name)
+                        .put("stack", JSONArray(stack.take(24).map { it.toString() }))
+                }))
         }
+        stall?.let { report.put("longestWait", it) }
         val pending = File(file.parentFile, "${file.name}.tmp")
         pending.writeText(report.toString(2))
         check(pending.renameTo(file)) { "Cannot replace gallery trace" }

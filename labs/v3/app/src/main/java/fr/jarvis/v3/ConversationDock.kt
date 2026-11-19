@@ -27,13 +27,14 @@ import kotlinx.coroutines.delay
 fun ConversationDock(
     text: String, onText: (String) -> Unit, onSend: () -> Unit, sendEnabled: Boolean,
     micEnabled: Boolean, listening: Boolean, onMic: () -> Unit, busy: Boolean, onStop: () -> Unit,
-    level: Float, menuOpen: Boolean, onMenu: () -> Unit, onAnchor: (Offset) -> Unit, modifier: Modifier = Modifier,
+    level: Float, meterActive: Boolean, menuOpen: Boolean, onMenu: () -> Unit, onAnchor: (Offset) -> Unit, modifier: Modifier = Modifier,
 ) {
     RenderDiagnostics.active?.let { probe -> SideEffect { probe.count(RenderDiagnostics.Signal.DOCK_COMMIT) } }
-    val history = remember { FloatArray(48) }
-    var tick by remember { mutableIntStateOf(0) }
+    // A finished capture or playback resets the trace once, without scheduling a silent tail.
+    val history = remember(meterActive) { FloatArray(48) }
+    var tick by remember(history) { mutableIntStateOf(0) }
     val current by rememberUpdatedState(level)
-    LaunchedEffect(Unit) {
+    if (meterActive) LaunchedEffect(history) {
         while (true) {
             val v = current
             if (v > 0f || history.any { it > 0f }) {

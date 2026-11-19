@@ -23,6 +23,7 @@ fail=0
 run() {
     local class=$1 name=$2 limit=$3 report=$4
     shift 4
+    A shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS > /dev/null 2>&1 || true
     A logcat -c
     local result=0
     timeout "$limit" adb shell am instrument -w -r -e class "fr.jarvis.v3.$class#$name" "$@" \
@@ -34,6 +35,7 @@ run() {
         echo "PASS $name"
     else
         echo "FAIL $name (instrumentation exit $result)"
+        tail -n 25 "$out/$name.txt"
         fail=1
         A exec-out screencap -p > "$out/$name.png" || true
         A logcat -d -t 800 > "$out/$name.logcat" || true
@@ -45,6 +47,10 @@ run V3CockpitTest a_manifestSinglePermissionNoNetworkInstallable 120 ''
 run V3CockpitTest b_firstLaunchThenVerifiedImport 600 v3-first-launch.json -e llmPath /data/local/tmp/v3-llm.gguf \
     -e sttPath /data/local/tmp/v3-stt.bin -e ttsZip /data/local/tmp/v3-tts.zip
 run V3CockpitTest e_galleryCapturesAndBeforeAfterBench 360 v3-gallery-trace.json
+if ! grep -q '^OK (1 test)' "$out/b_firstLaunchThenVerifiedImport.txt"; then
+    echo "NOT_RUN c, K, P (verified import failed)"
+    exit 1
+fi
 run V3CockpitTest c_realEngineStatesCardsMenuLandscapeBackground 600 v3-states.json -e afterImport 1 -e wav1 /data/local/tmp/v3-utt1.wav
 A shell pm grant fr.jarvis.v3 android.permission.RECORD_AUDIO
 run AuditCampaignT3Test k_sphereStillAtEveryNonAnswerTransition 420 audit-k.json -e afterImport 1

@@ -69,6 +69,14 @@ class V3UiState {
     var errorSince by mutableStateOf<Long?>(null)
     /** When the last written answer appeared without speech (drives the short answer animation). */
     var answeredAt by mutableStateOf<Long?>(null)
+    private var animatedExchange: Exchange? = null
+    fun updateWrittenReveal(exchange: Exchange) {
+        if (animatedExchange === exchange) return
+        animatedExchange = exchange
+        answeredAt = if (SphereStateAdapter.revealsWrittenAnswer(exchange.answer, exchange.ttsSamples, exchange.interrupted, exchange.error)) {
+            SystemClock.elapsedRealtime()
+        } else null
+    }
     var anchor by mutableStateOf(Offset.Zero)
     /** Conversation to resume once the previous native engine is released (one engine per process). */
     var resumeRequest by mutableStateOf<String?>(null)
@@ -114,12 +122,17 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
     LaunchedEffect(cockpitState) { if (cockpitState == CockpitState.ERROR) ui.errorSince = SystemClock.elapsedRealtime() else if (cockpitState != null) ui.errorSince = null }
     var clockTick by remember { mutableIntStateOf(0) }
     LaunchedEffect(ui.errorSince) { if (ui.errorSince != null) { delay(SphereStateAdapter.ERROR_ACCENT_MS + 50); clockTick++ } }
-    LaunchedEffect(ui.answeredAt) { if (ui.answeredAt != null) { delay(SphereStateAdapter.REVEAL_MS + 50); clockTick++ } }
+    val revealStartedAt = ui.answeredAt
+    LaunchedEffect(revealStartedAt) {
+        val start = revealStartedAt ?: return@LaunchedEffect
+        delay((start + SphereStateAdapter.REVEAL_MS - SystemClock.elapsedRealtime()).coerceAtLeast(0))
+        ui.answeredAt = null
+    }
     clockTick.let { }
     val now = SystemClock.elapsedRealtime()
     val errorAge = ui.errorSince?.let { now - it }
     val holo = SphereStateAdapter.resolve(s?.phase?.name, s != null && s.phase == Phase.THINKING && s.partial.isNotBlank(), errorAge,
-        ui.answeredAt?.let { now - it })
+        revealStartedAt?.let { now - it })
     // Owner rule (14/11): the sphere is still while listening. The microphone level is read ONLY inside the dock
     // (deferred read): reading it here recomposed the whole scene, sphere included, 10 times per second (run 43609210897).
     val level = if (holo == HoloState.SPEAKING) (s?.cockpit?.level ?: 0f) else 0f
@@ -130,11 +143,14 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
 
     // A spoken device question: the model is not a measurement, so the real measure is added as a card.
     val exchangeCount = s?.exchanges?.size ?: 0
-    LaunchedEffect(exchangeCount) {
+    LaunchedEffect(s, exchangeCount) {
         ui.pending = null                                   // the finished turn is now in the history: never shown twice
-        val e = s?.exchanges?.lastOrNull() ?: return@LaunchedEffect
-        if (exchangeCount <= s.restoredCount) return@LaunchedEffect    // restored from the journal: not a new answer
-        if (e.ttsSamples == 0L && e.answer.isNotBlank()) ui.answeredAt = SystemClock.elapsedRealtime()   // written answer: brief animation
+        if (s == null || exchangeCount <= s.restoredCount) {
+            ui.answeredAt = null                         // empty session or history restored from disk
+            return@LaunchedEffect
+        }
+        val e = s.exchanges.lastOrNull() ?: return@LaunchedEffect
+        ui.updateWrittenReveal(e)
         val topic = if (e.viaVoice) Intents.systemTopic(e.user) else null
         if (topic != null) {
             val card = CardFactory.system(ui.nextId(), topic, PerformanceGovernor.measure(app))
@@ -183,7 +199,9 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
         ConversationDock(ui.typed, { ui.typed = it }, { keyboard?.hide(); send() }, sendEnabled = ui.typed.isNotBlank() && s?.phase == Phase.READY,
             micEnabled = s != null && s.voiceInputAvailable && (s.phase == Phase.READY || s.phase == Phase.SPEAKING), listening = s?.phase == Phase.LISTENING,
             onMic = { if (s != null && s.phase == Phase.LISTENING) s.interrupt() else actions.requestMicThenTalk() }, busy = s?.busy == true, onStop = { s?.interrupt() },
-            level = if (holo == HoloState.LISTENING) (s?.cockpit?.level ?: 0f) else level, menuOpen = ui.menuOpen, onMenu = { ui.menuOpen = !ui.menuOpen }, onAnchor = { ui.anchor = it }, modifier = m)
+            level = if (holo == HoloState.LISTENING) (s?.cockpit?.level ?: 0f) else level,
+            meterActive = resumed && (holo == HoloState.LISTENING || holo == HoloState.SPEAKING),
+            menuOpen = ui.menuOpen, onMenu = { ui.menuOpen = !ui.menuOpen }, onAnchor = { ui.anchor = it }, modifier = m)
     }
     val openCard = ui.card(ui.openCard)
     val cardView: @Composable (Modifier) -> Unit = { m ->

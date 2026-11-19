@@ -2,7 +2,6 @@ package fr.jarvis.v3
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -34,6 +33,7 @@ import fr.jarvis.m55d.SphereModel
 import fr.jarvis.v3.model.HoloDetail
 import fr.jarvis.v3.model.HoloGeometry
 import fr.jarvis.v3.model.HoloState
+import fr.jarvis.v3.model.SphereStateAdapter
 import kotlinx.coroutines.isActive
 import kotlin.math.PI
 import kotlin.math.abs
@@ -76,17 +76,18 @@ fun HologramSphere(
     val geo = remember(detail) { HoloGeometry(detail) }
     var time by remember { mutableFloatStateOf(motion.sim) }
     val target by rememberUpdatedState(level)
-    // Owner rule (14/11): outside an answer every state change is INSTANT (one redraw). A 320 ms colour/overlay fade
-    // redrew the sphere ~11 times when listening started (audit run 43627862972, test c, API 29 and 35).
-    val answering = fr.jarvis.v3.model.SphereStateAdapter.animates(state)
-    val color by animateColorAsState(Holo.stateColor(state), if (answering) tween(Holo.Motion.MENU) else snap(), label = "stateColor")
-    val thinking by animateFloatAsState(if (state == HoloState.THINKING || state == HoloState.STREAMING) 1f else 0f, if (answering) tween(Holo.Motion.MENU) else snap(), label = "thinking")
+    // A snap still updates animation state via a coroutine. Apply all static targets in the same drawing pass.
+    val interpolate = animate && SphereStateAdapter.animates(state)
+    val stateColor = Holo.stateColor(state)
+    val thinkingTarget = if (state == HoloState.THINKING || state == HoloState.STREAMING) 1f else 0f
+    val transcribingTarget = if (state == HoloState.TRANSCRIBING) 1f else 0f
+    val colorAnimation = if (interpolate) animateColorAsState(stateColor, tween(Holo.Motion.MENU), label = "stateColor") else null
+    val thinkingAnimation = if (interpolate) animateFloatAsState(thinkingTarget, tween(Holo.Motion.MENU), label = "thinking") else null
+    val transcriptionAnimation = if (interpolate) animateFloatAsState(transcribingTarget, tween(Holo.Motion.NORMAL), label = "transcribing") else null
     val expansion = 1f   // V3-FIX-01: no size change while listening (the sphere stays still)
-    val transcribing by animateFloatAsState(if (state == HoloState.TRANSCRIBING) 1f else 0f, if (answering) tween(Holo.Motion.NORMAL) else snap(), label = "transcribing")
 
     LaunchedEffect(pulseKey) { if (pulseKey > 0) motion.pulseAt = motion.sim }
-    LaunchedEffect(animate, fpsCap) {
-        if (!animate) { time = motion.sim + 1e-4f; return@LaunchedEffect }
+    if (animate) LaunchedEffect(fpsCap) {
         val probe = RenderDiagnostics.active
         probe?.count(RenderDiagnostics.Signal.SPHERE_CLOCK_START)
         var last = 0L; var acc = 0f
@@ -121,6 +122,9 @@ fun HologramSphere(
             .testTag("sphere")
             .semantics { contentDescription = "Sphère holographique de JARVIS (affichage, non interactive)"; stateDescription = state.label }
     ) {
+        val color = colorAnimation?.value ?: stateColor
+        val thinking = thinkingAnimation?.value ?: thinkingTarget
+        val transcribing = transcriptionAnimation?.value ?: transcribingTarget
         val t = time
         motion.drawnFrames++
         RenderDiagnostics.active?.count(RenderDiagnostics.Signal.SPHERE_DRAW)

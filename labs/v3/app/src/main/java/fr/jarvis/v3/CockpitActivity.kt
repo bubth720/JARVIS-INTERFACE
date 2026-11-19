@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.View
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -50,7 +51,7 @@ class CockpitActivity : ComponentActivity(), SceneActions {
                 }
             }
             val content = ComposeView(this).apply { setContent { HoloTheme { CockpitScene(app, gov, this@CockpitActivity) } } }
-            parent.addView(content, FrameLayout.LayoutParams(-1, -1))
+            parent.addView(content, FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT))
             setContentView(parent)
         }
     }

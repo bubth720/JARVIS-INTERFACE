@@ -52,6 +52,14 @@ class V3ModelTest {
         assertEquals(30, SphereStateAdapter.fpsCap(HoloState.SPEAKING, 30))
     }
 
+    @Test fun onlySuccessfulWrittenAnswersTriggerTheReveal() {
+        assertTrue(SphereStateAdapter.revealsWrittenAnswer("Réponse", 0, interrupted = false, error = null))
+        assertFalse(SphereStateAdapter.revealsWrittenAnswer("Partiel", 0, interrupted = true, error = null))
+        assertFalse(SphereStateAdapter.revealsWrittenAnswer("Erreur", 0, interrupted = false, error = "TTS"))
+        assertFalse(SphereStateAdapter.revealsWrittenAnswer("Prononcé", 500, interrupted = false, error = null))
+        assertFalse(SphereStateAdapter.revealsWrittenAnswer(" ", 0, interrupted = false, error = null))
+    }
+
     /** V3-FIX-01: the lowest radial item and its label stay above the dock (anchor centre − 30 dp). */
     @Test fun radialMenuNeverCoversTheInputField() {
         val ys = RadialGeometry.positions(5, RadialGeometry.RADIUS_DP).map { it.second - RadialGeometry.LIFT_DP }
