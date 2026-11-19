@@ -55,4 +55,11 @@ run V3CockpitTest c_realEngineStatesCardsMenuLandscapeBackground 600 v3-states.j
 A shell pm grant fr.jarvis.v3 android.permission.RECORD_AUDIO
 run AuditCampaignT3Test k_sphereStillAtEveryNonAnswerTransition 420 audit-k.json -e afterImport 1
 run AuditCampaignT5Test p_sphereStillAndCheapOutsideTheAnswer 600 audit-p.json -e afterImport 1
+for report in audit-k.json audit-p.json; do
+    if [[ -s "$out/$report" ]]; then jq -c . "$out/$report"; fi
+done
+if [[ -s "$out/v3-states.json" ]]; then jq -c '{tabTrace}' "$out/v3-states.json"; fi
+if [[ -s "$out/v3-gallery-trace.json" ]]; then
+    jq -c '{lastEvent, durationMs: .events[-1].elapsedMs, longestWait, coroutineSignals}' "$out/v3-gallery-trace.json"
+fi
 exit "$fail"
