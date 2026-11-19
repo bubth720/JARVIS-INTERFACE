@@ -19,6 +19,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+private const val WAVEFORM_SAMPLE_PERIOD_MS = 80L
+
 /**
  * Bottom of the screen (§03): persistent input, microphone, send (or stop while busy) and radial access.
  * The waveform shows only REAL levels (microphone RMS / Pocket PCM) and stays flat otherwise.
@@ -43,7 +45,8 @@ fun ConversationDock(
                 RenderDiagnostics.active?.count(RenderDiagnostics.Signal.WAVEFORM_SHIFT)
                 tick++
             }
-            delay(60)
+            // Leave room in the 15 FPS listening budget for the other window updates.
+            delay(WAVEFORM_SAMPLE_PERIOD_MS)
         }
     }
     Column(modifier) {
