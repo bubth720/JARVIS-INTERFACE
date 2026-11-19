@@ -15,6 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Configurator
+import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
@@ -107,8 +108,16 @@ class V3CockpitTest {
     private fun assertTextsFit(where: String) { SystemClock.sleep(300); assertTrue("truncated texts $where: ${TextFit.overflowing}", TextFit.overflowing.isEmpty()) }
     private fun write(name: String, o: JSONObject) = File(inst.targetContext.filesDir, name).writeText(o.toString(2))
 
+    private fun startupButton(): UiObject2 {
+        repeat(6) {
+            dev.wait(Until.findObject(By.res("start")), 1_500)?.let { return it }
+            dev.findObject(By.scrollable(true))?.scroll(Direction.DOWN, 0.8f)
+        }
+        return obj("start", 5_000)
+    }
+
     private fun start(): Long {
-        obj("start", 30_000).click()
+        startupButton().click()
         val ms = waitUntil(360_000, "session ready") { ui.session?.phase == Phase.READY || ui.session?.phase == Phase.ERROR }
         assertEquals("load: ${main { ui.session?.status }}", Phase.READY, phase())
         return ms
@@ -167,7 +176,7 @@ class V3CockpitTest {
         val r = JSONObject()
         ActivityScenario.launch(CockpitActivity::class.java).use {
             assertFalse(main { app.missing() }.isEmpty())
-            obj("start"); SystemClock.sleep(2_500); r.put("capture", shot("01-premier-lancement"))
+            startupButton(); SystemClock.sleep(2_500); r.put("capture", shot("01-premier-lancement"))
         }
         val t0 = SystemClock.elapsedRealtime()
         File(args.getString("llmPath")!!).inputStream().use { app.assets.importLlm(it) }

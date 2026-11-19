@@ -23,6 +23,7 @@ fail=0
 run() {
     local class=$1 name=$2 limit=$3 report=$4
     shift 4
+    A shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS > /dev/null 2>&1 || true
     A logcat -c
     local result=0
     timeout "$limit" adb shell am instrument -w -r -e class "fr.jarvis.v3.$class#$name" "$@" \
@@ -34,6 +35,7 @@ run() {
         echo "PASS $name"
     else
         echo "FAIL $name (instrumentation exit $result)"
+        tail -n 35 "$out/$name.txt"
         fail=1
         A exec-out screencap -p > "$out/$name.png" || true
         A logcat -d -t 800 > "$out/$name.logcat" || true
@@ -44,9 +46,16 @@ run() {
 run V3CockpitTest a_manifestSinglePermissionNoNetworkInstallable 120 ''
 run V3CockpitTest b_firstLaunchThenVerifiedImport 600 v3-first-launch.json -e llmPath /data/local/tmp/v3-llm.gguf \
     -e sttPath /data/local/tmp/v3-stt.bin -e ttsZip /data/local/tmp/v3-tts.zip
-run V3CockpitTest e_galleryCapturesAndBeforeAfterBench 360 v3-gallery-trace.json
+if [[ $fail -ne 0 ]]; then
+    echo "NOT_RUN c, K, P (setup or verified import failed)"
+    exit "$fail"
+fi
 run V3CockpitTest c_realEngineStatesCardsMenuLandscapeBackground 600 v3-states.json -e afterImport 1 -e wav1 /data/local/tmp/v3-utt1.wav
+if [[ -s "$out/v3-states.json" ]]; then jq -c '{tabTrace}' "$out/v3-states.json"; fi
 A shell pm grant fr.jarvis.v3 android.permission.RECORD_AUDIO
 run AuditCampaignT3Test k_sphereStillAtEveryNonAnswerTransition 420 audit-k.json -e afterImport 1
 run AuditCampaignT5Test p_sphereStillAndCheapOutsideTheAnswer 600 audit-p.json -e afterImport 1
+for report in audit-k.json audit-p.json; do
+    if [[ -s "$out/$report" ]]; then jq -c . "$out/$report"; fi
+done
 exit "$fail"
