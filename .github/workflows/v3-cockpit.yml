@@ -9,6 +9,10 @@ on:
         description: 'Real screenshots of every screen only (ScreenTourTest), no campaign'
         type: boolean
         default: false
+      s04_candidate_evidence:
+        description: 'Read the two S04 emulator reports'
+        type: boolean
+        default: false
 permissions:
   contents: read
 defaults:
@@ -194,7 +198,7 @@ jobs:
         run: test "${{ steps.api29.outcome }}" = success && test "${{ steps.api35.outcome }}" = success
 
   evidence:
-    if: github.ref_name == 'codex/global-01-s04-preuves-20261119'
+    if: github.ref_name == 'codex/global-01-s04-preuves-20261119' && !inputs.s04_candidate_evidence
     permissions:
       actions: read
       contents: read
@@ -260,4 +264,65 @@ jobs:
           for p in root.rglob("s04-api35/b_firstLaunchThenVerifiedImport.txt"):
               print("b instrumentation")
               print("\n".join(p.read_text().splitlines()[-55:]))
+          PY
+  candidate-evidence:
+    if: github.ref_name == 'codex/global-01-s04-preuves-20261119' && inputs.s04_candidate_evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          run-id: 44626646025
+          github-token: ${{ github.token }}
+          pattern: v3-evidence-8d084494bf23563ff1a2d9538553d95f82136144-api*
+          path: ${{ runner.temp }}/candidate
+      - name: Read the exact candidate receipts
+        run: |
+          python3 - "$RUNNER_TEMP/candidate" <<'PY'
+          import json
+          import re
+          import sys
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+
+          root = Path(sys.argv[1])
+          for api in (29, 35):
+              print(f"API {api}")
+              artifact = next(iter(root.glob(f"*-api{api}")), None)
+              if artifact is None:
+                  print("Evidence artifact missing")
+                  continue
+              device = next(iter(artifact.rglob(f"v3/api{api}")), artifact)
+              def report(name):
+                  src = device / name
+                  if not src.is_file():
+                      return None
+                  try:
+                      return json.loads(src.read_text())
+                  except ValueError:
+                      return None
+              for name in ("results.txt", "audit-results.txt", "s04-verdict.txt"):
+                  src = device / name
+                  if src.is_file():
+                      print(name, "\n".join(line for line in src.read_text().splitlines()
+                            if name == "s04-verdict.txt" or re.fullmatch(r"(PASS|FAIL) \w+", line)))
+              print("K", json.dumps(report("audit-k.json")))
+              print("P", json.dumps(report("audit-p.json")))
+              state = report("v3-states.json") or {}
+              print("c", json.dumps({key: state.get(key) for key in ("tabTrace", "landscapeSameSession", "background")}))
+              trace = report("v3-gallery-trace.json") or {}
+              print("e", json.dumps({
+                  "last": trace.get("lastEvent"),
+                  "lastElapsedMs": (trace.get("events") or [{}])[-1].get("elapsedMs"),
+                  "longestWait": trace.get("longestWait"),
+                  "coroutineSignals": trace.get("coroutineSignals"),
+                  "screenshots": len(list((device / "shots").glob(f"api{api}-g-*.png"))),
+                  "benchCases": len((report("v3-bench.json") or {}).get("bench", [])),
+              }))
+              suites = [ET.parse(p).getroot() for p in artifact.rglob("testDebugUnitTest/TEST-*.xml")]
+              print("JVM", {name: sum(int(s.attrib.get(name, 0)) for s in suites)
+                            for name in ("tests", "failures", "errors", "skipped")})
           PY
