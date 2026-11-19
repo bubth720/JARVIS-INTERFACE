@@ -28,6 +28,13 @@ class S04CampaignTest(unittest.TestCase):
             text=True, capture_output=True, check=False,
         )
 
+    def test_emulator_runner_receives_one_command_per_api(self):
+        workflow = TOOLS.parents[2] / ".github" / "workflows" / "v3-cockpit.yml"
+        scripts = [line.strip() for line in workflow.read_text().splitlines() if line.lstrip().startswith("script: ")]
+        for api in (29, 35):
+            expected = f"bash interface/labs/v3/tools/${{{{ matrix.api == {api} && 'run_s04_campaign.sh' || 'run_emulator.sh' }}}} {api}"
+            self.assertTrue(any(line.startswith("script: " + expected) for line in scripts))
+
     def test_the_red_campaign_is_refused_on_both_apis(self):
         for api, qual in ((29, 11), (35, 9)):
             self.write_fixture(api)

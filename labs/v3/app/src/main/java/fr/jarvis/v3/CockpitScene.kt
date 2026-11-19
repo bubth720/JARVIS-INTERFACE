@@ -126,7 +126,7 @@ fun CockpitScene(app: ConvApp, gov: PerformanceGovernor, actions: SceneActions) 
     LaunchedEffect(revealStartedAt) {
         val start = revealStartedAt ?: return@LaunchedEffect
         delay((start + SphereStateAdapter.REVEAL_MS - SystemClock.elapsedRealtime()).coerceAtLeast(0))
-        ui.answeredAt = null
+        if (ui.answeredAt == start) ui.answeredAt = null
     }
     clockTick.let { }
     val now = SystemClock.elapsedRealtime()

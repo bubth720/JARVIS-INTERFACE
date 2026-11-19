@@ -140,12 +140,7 @@ jobs:
           cores: 4
           disable-animations: true
           emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim
-          script: |
-            if [ '${{ matrix.api }}' = '29' ]; then
-              bash interface/labs/v3/tools/run_s04_campaign.sh 29 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api29"
-            else
-              bash interface/labs/v3/tools/run_emulator.sh 29 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api29"
-            fi
+          script: bash interface/labs/v3/tools/${{ matrix.api == 29 && 'run_s04_campaign.sh' || 'run_emulator.sh' }} 29 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api29"
       - name: API35 — V3 states, cards, menu, regression, bench (airplane mode, pixel_6)
         id: api35
         if: github.ref_name != 'codex/global-01-s04-diagnostic-20261119' && (matrix.api == 0 || matrix.api == 35)
@@ -161,12 +156,7 @@ jobs:
           cores: 4
           disable-animations: true
           emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim -noaudio
-          script: |
-            if [ '${{ matrix.api }}' = '35' ]; then
-              bash interface/labs/v3/tools/run_s04_campaign.sh 35 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api35"
-            else
-              bash interface/labs/v3/tools/run_emulator.sh 35 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api35"
-            fi
+          script: bash interface/labs/v3/tools/${{ matrix.api == 35 && 'run_s04_campaign.sh' || 'run_emulator.sh' }} 35 "$RUNNER_TEMP/v3-res" "$RUNNER_TEMP/v3/api35"
       - name: S04 diagnostic — API35 (c, e, K and P)
         if: github.ref_name == 'codex/global-01-s04-diagnostic-20261119'
         timeout-minutes: 55
