@@ -14,7 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,11 +69,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     private fun Screen() {
         val s = session
-        Column(Modifier.fillMaxSize().background(Palette.background).padding(12.dp)) {
-            Row { Text("JARVIS V1", color = Palette.text, fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+        // testTagsAsResourceId: the controls are reachable by accessibility/UiAutomator (no extra permission).
+        Column(Modifier.fillMaxSize().semantics { testTagsAsResourceId = true }.background(Palette.background).padding(12.dp)) {
+            Row { Text("JARVIS", color = Palette.text, fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                 Text("HORS LIGNE · local", color = Palette.of(fr.jarvis.m55d.CockpitState.LISTENING), fontSize = 12.sp) }
             if (s == null) Setup() else Conversation(s)
         }
@@ -79,7 +86,8 @@ class MainActivity : ComponentActivity() {
         refresh.let { }
         val missing = app.missing()
         Text("Ressources locales (vérifiées par empreinte SHA-256, jamais téléchargées par l'app) :", color = Palette.muted, fontSize = 13.sp)
-        listOf("Modèle de langage" to app.assets.llmReady(), "Reconnaissance vocale" to (app.assets.sttFile() != null), "Voix Pocket" to app.assets.ttsPresent()).forEach { (n, ok) ->
+        listOf("Modèle de langage (obligatoire)" to app.assets.llmReady(), "Reconnaissance vocale (optionnelle : micro)" to (app.assets.sttFile() != null),
+            "Voix Pocket (optionnelle : réponse parlée)" to app.assets.ttsPresent()).forEach { (n, ok) ->
             Text((if (ok) "✓ " else "✗ ") + n, color = if (ok) Palette.of(fr.jarvis.m55d.CockpitState.LISTENING) else Palette.muted)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -91,6 +99,8 @@ class MainActivity : ComponentActivity() {
         }
         Text("Dossier d'import : ${app.importFolder()}", color = Palette.muted, fontSize = 11.sp)
         if (importMessage.isNotBlank()) Text(importMessage, color = Palette.text, fontSize = 12.sp)
+        if (missing.isEmpty() && app.optionalMissing().isNotEmpty())
+            Text("Sans ces fichiers optionnels, JARVIS répond par écrit : " + app.optionalMissing().joinToString(), color = Palette.muted, fontSize = 12.sp)
         Button(onClick = { runCatching { app.startSession() }.onSuccess { session = it; startError = "" }.onFailure { startError = it.message ?: "Erreur" } },
             enabled = missing.isEmpty(), modifier = Modifier.testTag("start")) { Text("Démarrer JARVIS") }
         if (startError.isNotBlank()) Text(startError, color = Palette.of(fr.jarvis.m55d.CockpitState.ERROR))
@@ -99,17 +109,26 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun ColumnScope.Conversation(s: V1Session) {
         val vm = s.cockpit
-        Row(Modifier.fillMaxWidth().height(220.dp)) {
+        val keyboard = LocalSoftwareKeyboardController.current
+        // Cockpit proportional to the screen so the conversation stays visible on small screens / with the keyboard open.
+        val cockpitHeight = (LocalConfiguration.current.screenHeightDp * 0.28f).dp.coerceIn(110.dp, 220.dp)
+        Row(Modifier.fillMaxWidth().height(cockpitHeight)) {
             KnowledgeSphere(vm.state, vm.level, vm.regulator.mode, vm.rotation, vm.stats, vm.regulator, vm.thermal, Modifier.weight(0.62f).fillMaxHeight())
             Avatar25D(vm.state, vm.level, vm.atlas, Modifier.weight(0.38f).fillMaxHeight())
         }
         Text(s.status, color = Palette.text, modifier = Modifier.testTag("status"))
+        listOfNotNull(s.sttUnavailable, s.ttsUnavailable).forEach { Text(it, color = Palette.muted, fontSize = 11.sp) }
+        // Latest exchange always shown right under the status (the history below may be scrolled or squeezed).
+        val last = s.exchanges.lastOrNull()
+        if (s.partial.isNotBlank() && s.busy) Text("JARVIS : ${s.partial}", color = Palette.text, modifier = Modifier.testTag("partial"))
+        else if (last != null) Text("JARVIS : ${last.answer.ifBlank { last.error ?: "(interrompu)" }}", color = Palette.text,
+            maxLines = 6, modifier = Modifier.testTag("answer"))
         if (startError.isNotBlank()) Text(startError, color = Palette.of(fr.jarvis.m55d.CockpitState.ERROR), fontSize = 12.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = {
                 if (s.phase == Phase.LISTENING) s.interrupt()
                 else if (micGranted) { if (s.busy) s.interrupt(); s.voiceTurn() } else micPermission.launch(Manifest.permission.RECORD_AUDIO)
-            }, enabled = s.phase == Phase.READY || s.phase == Phase.LISTENING || s.phase == Phase.SPEAKING, modifier = Modifier.testTag("talk")) {
+            }, enabled = s.voiceInputAvailable && (s.phase == Phase.READY || s.phase == Phase.LISTENING || s.phase == Phase.SPEAKING), modifier = Modifier.testTag("talk")) {
                 Text(if (s.phase == Phase.LISTENING) "Terminer" else "🎤 Parler")
             }
             OutlinedButton(onClick = { s.interrupt() }, enabled = s.busy, modifier = Modifier.testTag("interrupt")) { Text("Interrompre") }
@@ -118,12 +137,11 @@ class MainActivity : ComponentActivity() {
         var typed by remember { mutableStateOf("") }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(typed, { typed = it }, Modifier.weight(1f).testTag("input"), singleLine = true, label = { Text("Ou écrivez") })
-            Button(onClick = { s.textTurn(typed); typed = "" }, enabled = typed.isNotBlank() && s.phase == Phase.READY) { Text("Envoyer") }
+            Button(onClick = { keyboard?.hide(); s.textTurn(typed); typed = "" }, enabled = typed.isNotBlank() && s.phase == Phase.READY, modifier = Modifier.testTag("send")) { Text("Envoyer") }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             RenderMode.entries.forEach { m -> FilterChip(selected = vm.regulator.mode == m, onClick = { vm.forceMode(m) }, label = { Text(m.name.lowercase(), fontSize = 11.sp) }) }
         }
-        if (s.partial.isNotBlank() && s.busy) Text("JARVIS : ${s.partial}", color = Palette.text)
         LazyColumn(Modifier.weight(1f)) {
             items(s.exchanges.reversed()) { e ->
                 Text("Vous${if (e.viaVoice) " 🎤" else ""} : ${e.user}", color = Palette.muted, fontSize = 13.sp)

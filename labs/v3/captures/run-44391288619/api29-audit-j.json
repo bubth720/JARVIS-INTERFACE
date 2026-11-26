@@ -1,0 +1,6 @@
+{
+  "afterTripleClose": true,
+  "closeDuringGeneration": "released",
+  "immediateRestart": "Libération de la session précédente en cours : réessaie dans un instant",
+  "finalAnswer": "Je ne sais pas, mais je peux t'offrir une réponse en français. Combien font 2 plus 3 ?"
+}

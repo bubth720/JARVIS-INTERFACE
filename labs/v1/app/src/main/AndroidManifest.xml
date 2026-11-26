@@ -1,9 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- JARVIS V1 (testOnly lab build). ONE permission: the microphone, requested at first use.
+    <!-- JARVIS V1 (installable delivery build; no longer testOnly so it installs by tapping the APK).
+         ONE permission: the microphone, requested at first use.
          No INTERNET: the conversation cannot reach any network. Resources are imported by the owner. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <application android:name="fr.jarvis.v1.V1App" android:label="JARVIS V1"
-        android:allowBackup="false" android:testOnly="true" android:usesCleartextTraffic="false"
+    <application android:name="fr.jarvis.v1.V1App" android:label="JARVIS"
+        android:allowBackup="false" android:usesCleartextTraffic="false"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity android:name="fr.jarvis.v1.MainActivity" android:exported="true"

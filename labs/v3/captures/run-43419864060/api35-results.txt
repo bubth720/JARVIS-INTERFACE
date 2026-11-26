@@ -1,0 +1,16 @@
+PASS a_manifestSinglePermissionNoNetworkInstallable
+FAIL b_firstLaunchThenVerifiedImport
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalArgumentException: element 'start' not shown
+java.lang.IllegalArgumentException: element 'start' not shown
+java.lang.IllegalArgumentException: element 'start' not shown
+FAIL c_realEngineStatesCardsMenuLandscapeBackground
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalArgumentException: element 'start' not shown
+java.lang.IllegalArgumentException: element 'start' not shown
+java.lang.IllegalArgumentException: element 'start' not shown
+FAIL d_reducedMotionStaticSphereAndFirstText
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalArgumentException: element 'start' not shown
+java.lang.IllegalArgumentException: element 'start' not shown
+java.lang.IllegalArgumentException: element 'start' not shown
+PASS e_galleryCapturesAndBeforeAfterBench
+PASS reopen_after_force_stop
+PASS no_crash

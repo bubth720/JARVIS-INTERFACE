@@ -1,0 +1,36 @@
+{
+  "sphereBounds": "32 221 1048 1181",
+  "rest": {
+    "ms": 3000,
+    "sphereDraws": 0,
+    "windowFrames": 0,
+    "visibleChange": 0
+  },
+  "listening": {
+    "ms": 3000,
+    "sphereDraws": 0,
+    "windowFrames": 38,
+    "visibleChange": 0,
+    "stillListening": true
+  },
+  "thinking": {
+    "ms": 2000,
+    "sphereDraws": 0,
+    "windowFrames": 24,
+    "visibleChange": 0,
+    "stillThinkingAfterWindows": true
+  },
+  "answering": {
+    "ms": 2000,
+    "sphereDraws": 26,
+    "windowFrames": 23,
+    "visibleChange": 0.20919968011811024,
+    "measuredWhileStreaming": true
+  },
+  "restAfterAnswer": {
+    "ms": 3000,
+    "sphereDraws": 12,
+    "windowFrames": 12,
+    "visibleChange": 0
+  }
+}

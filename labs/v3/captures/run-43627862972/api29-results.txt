@@ -1,0 +1,63 @@
+PASS a_manifestSinglePermissionNoNetworkInstallable
+PASS b_firstLaunchThenVerifiedImport
+FAIL c_realEngineStatesCardsMenuLandscapeBackground
+--- instrumentation (tail)
+
+INSTRUMENTATION_STATUS: stream=
+Error in c_realEngineStatesCardsMenuLandscapeBackground(fr.jarvis.v3.V3CockpitTest):
+java.lang.AssertionError: sphere must be still while listening (11 frames)
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at fr.jarvis.v3.V3CockpitTest.c_realEngineStatesCardsMenuLandscapeBackground(V3CockpitTest.kt:260)
+
+INSTRUMENTATION_STATUS: test=c_realEngineStatesCardsMenuLandscapeBackground
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 183.512
+There was 1 failure:
+1) c_realEngineStatesCardsMenuLandscapeBackground(fr.jarvis.v3.V3CockpitTest)
+java.lang.AssertionError: sphere must be still while listening (11 frames)
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at fr.jarvis.v3.V3CockpitTest.c_realEngineStatesCardsMenuLandscapeBackground(V3CockpitTest.kt:260)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1
+--- logcat errors
+11-14 18:54:01.246  6101  6122 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:68)
+11-14 18:54:01.246  6101  6122 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+11-14 18:54:01.246  6101  6122 E TestRunner: 	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:463)
+11-14 18:54:01.246  6101  6122 E TestRunner: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2189)
+11-14 18:54:01.246  6101  6122 E TestRunner: ----- end exception -----
+11-14 18:54:01.742  1751  1751 E Layer   : [Surface(name=AppWindowToken{79b630b token=Token{c31f485 ActivityRecord{ddb07ce u0 com.google.android.apps.nexuslauncher/.NexusLauncherActivity t5}}})/@0x1432b5 - animation-leash#0] No local sync point found
+11-14 18:54:01.742  1751  1751 E Layer   : [Surface(name=AppWindowToken{2f37417 token=Token{8b49096 ActivityRecord{cd463b1 u0 fr.jarvis.v3.test/androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity t9}}})/@0x537c356 - animation-leash#0] No local sync point found
+11-14 18:54:02.572  2108  6373 E cklt    : *~*~*~ Channel {0} was not shutdown properly!!! ~*~*~*
+11-14 18:54:02.572  2108  6373 E cklt    :     Make sure to call shutdown()/shutdownNow() and wait until awaitTermination() returns true.
+11-14 18:54:02.572  2108  6373 E cklt    : java.lang.RuntimeException: ManagedChannel allocation site
+11-14 18:54:02.572  2108  6373 E cklt    : 	at ckls.<init>(:com.google.android.gms@202414023@20.24.14 (040800-319035315):3)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at cklt.<init>(:com.google.android.gms@202414023@20.24.14 (040800-319035315):2)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at ckfk.b(:com.google.android.gms@202414023@20.24.14 (040800-319035315):21)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at sjo.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):29)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at sjo.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):52)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at bjxj.call(:com.google.android.gms@202414023@20.24.14 (040800-319035315):0)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at bjvu.run(:com.google.android.gms@202414023@20.24.14 (040800-319035315):1)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at soy.b(:com.google.android.gms@202414023@20.24.14 (040800-319035315):12)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at soy.run(:com.google.android.gms@202414023@20.24.14 (040800-319035315):7)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at sux.run(:com.google.android.gms@202414023@20.24.14 (040800-319035315):0)
+11-14 18:54:02.572  2108  6373 E cklt    : 	at java.lang.Thread.run(Thread.java:919)
+11-14 18:54:02.609  2108  2108 E BeaconBle: Missing BluetoothAdapter [CONTEXT service_id=111 ]
+11-14 18:54:02.624  2108  2108 E BeaconBle: Scan couldn't start for Places [CONTEXT service_id=111 ]
+PASS f_conversationContextPersonaResume
+PASS g_localKnowledgeCitedAnswer
+PASS h_consentedMemoryProposeConfirmRecallDelete
+PASS i_longConversationStaysCoherentAndBounded
+PASS d_reducedMotionStaticSphereAndFirstText
+PASS e_galleryCapturesAndBeforeAfterBench
+PASS reopen_after_force_stop
+PASS no_crash

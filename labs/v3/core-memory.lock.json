@@ -1,0 +1,36 @@
+{
+ "repository": "bubth720/JAVIS-Local-v2",
+ "commit": "5da98383ed12cb5a54e896fbe57560bacc432fb5",
+ "files": [
+  {
+   "path": "app/src/main/java/com/stark/jarvislocal/identity/IdentityCodec.kt",
+   "blob": "281b6d2439b1f07f14c51daeea8c21b59f6fe8ea",
+   "size": 6797
+  },
+  {
+   "path": "app/src/main/java/com/stark/jarvislocal/memory/ConfirmedMemoryStore.kt",
+   "blob": "e9233277f07190d9bbe75e1a15fb3762d5be40db",
+   "size": 8313
+  },
+  {
+   "path": "app/src/main/java/com/stark/jarvislocal/memory/MemoryApprovalWorkflow.kt",
+   "blob": "1743a73d41c8124dc4b8eda9b07f37fb29676ce3",
+   "size": 7248
+  },
+  {
+   "path": "app/src/main/java/com/stark/jarvislocal/memory/MemoryContextAssembler.kt",
+   "blob": "d0611e72ac46767c81016488fde69bdda4394a11",
+   "size": 1925
+  },
+  {
+   "path": "app/src/main/java/com/stark/jarvislocal/memory/MemoryExportService.kt",
+   "blob": "58ad08a1af4ab3c24948092ce6fb5b8ebe949a16",
+   "size": 12336
+  },
+  {
+   "path": "app/src/main/java/com/stark/jarvislocal/memory/MemoryRecallIndex.kt",
+   "blob": "8215906136f4144ce63c531c2189a889dc8d1d15",
+   "size": 5102
+  }
+ ]
+}

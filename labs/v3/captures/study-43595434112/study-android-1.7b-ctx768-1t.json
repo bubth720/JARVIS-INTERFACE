@@ -1,0 +1,3463 @@
+{
+ "label": "android-1.7b-ctx768-1t",
+ "platform": "Android 35 x86_64 sdk_gphone64_x86_64 (emulator figures are NOT phone figures)",
+ "config": {
+  "small": false,
+  "context": 768,
+  "threads": 1,
+  "ceiling": 128,
+  "instruction": "app ConversationContext(ATHENA compact) = persona + working memory"
+ },
+ "bench": [
+  {
+   "id": "F01",
+   "turns": [
+    {
+     "question": "Quelle est la capitale de la France ?",
+     "answer": "La capitale de la France est Paris.",
+     "firstTokenMs": 58278,
+     "totalMs": 62460,
+     "decodeTokensPerSecond": 1.9,
+     "promptTokens": 174,
+     "generatedTokens": 9
+    }
+   ]
+  },
+  {
+   "id": "F02",
+   "turns": [
+    {
+     "question": "Combien font 7 fois 8 ?",
+     "answer": "7 fois 8 est égal à 56.",
+     "firstTokenMs": 57851,
+     "totalMs": 63496,
+     "decodeTokensPerSecond": 1.9,
+     "promptTokens": 173,
+     "generatedTokens": 12
+    }
+   ]
+  },
+  {
+   "id": "F03",
+   "turns": [
+    {
+     "question": "Quelle est la capitale de l'Italie ?",
+     "answer": "La capitale de l'Italie est Rome.",
+     "firstTokenMs": 58737,
+     "totalMs": 63396,
+     "decodeTokensPerSecond": 1.9,
+     "promptTokens": 175,
+     "generatedTokens": 10
+    }
+   ]
+  },
+  {
+   "id": "F04",
+   "turns": [
+    {
+     "question": "En quelle année a eu lieu la prise de la Bastille ?",
+     "answer": "La prise de la Bastille a eu lieu en 1789.",
+     "firstTokenMs": 59251,
+     "totalMs": 66661,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 177,
+     "generatedTokens": 16
+    }
+   ]
+  },
+  {
+   "id": "F05",
+   "turns": [
+    {
+     "question": "Quel est le plus grand océan du monde ?",
+     "answer": "Le plus grand océan du monde est l'océan Pacifique.",
+     "firstTokenMs": 58796,
+     "totalMs": 66665,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 176,
+     "generatedTokens": 17
+    }
+   ]
+  },
+  {
+   "id": "F06",
+   "turns": [
+    {
+     "question": "Combien y a-t-il de jours dans une semaine ?",
+     "answer": "Il y a 7 jours dans une semaine.",
+     "firstTokenMs": 58961,
+     "totalMs": 63589,
+     "decodeTokensPerSecond": 1.9,
+     "promptTokens": 176,
+     "generatedTokens": 10
+    }
+   ]
+  },
+  {
+   "id": "F07",
+   "turns": [
+    {
+     "question": "Traduis le mot « bonjour » en anglais.",
+     "answer": "« bonjour » en anglais est « hello ».",
+     "firstTokenMs": 58628,
+     "totalMs": 63243,
+     "decodeTokensPerSecond": 1.9,
+     "promptTokens": 175,
+     "generatedTokens": 10
+    }
+   ]
+  },
+  {
+   "id": "F08",
+   "turns": [
+    {
+     "question": "Quelle est la formule chimique de l'eau ?",
+     "answer": "La formule chimique de l'eau est H₂O.",
+     "firstTokenMs": 58925,
+     "totalMs": 64981,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 176,
+     "generatedTokens": 13
+    }
+   ]
+  },
+  {
+   "id": "F09",
+   "turns": [
+    {
+     "question": "Qui a écrit Les Misérables ?",
+     "answer": "*Les Misérables* a été écrit par Victor Hugo.",
+     "firstTokenMs": 57628,
+     "totalMs": 63687,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 172,
+     "generatedTokens": 13
+    }
+   ]
+  },
+  {
+   "id": "F10",
+   "turns": [
+    {
+     "question": "Quelle planète est la plus proche du Soleil ?",
+     "answer": "La planète la plus proche du Soleil est la Terre.",
+     "firstTokenMs": 59543,
+     "totalMs": 66490,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 177,
+     "generatedTokens": 15
+    }
+   ]
+  },
+  {
+   "id": "R01",
+   "turns": [
+    {
+     "question": "Reformule plus poliment : « Donne-moi ça. »",
+     "answer": "Je ne peux pas exécuter d'actions, mais je peux te fournir des informations. Qu'as-tu besoin ?",
+     "firstTokenMs": 59950,
+     "totalMs": 72976,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 178,
+     "generatedTokens": 28
+    }
+   ]
+  },
+  {
+   "id": "R02",
+   "turns": [
+    {
+     "question": "Résume en une phrase : le chat dort sur le canapé pendant que la pluie tombe dehors.",
+     "answer": "Le chat dort sur le canapé pendant que la pluie tombe dehors.",
+     "firstTokenMs": 63699,
+     "totalMs": 73056,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 190,
+     "generatedTokens": 20
+    }
+   ]
+  },
+  {
+   "id": "R03",
+   "turns": [
+    {
+     "question": "Cite trois couleurs primaires.",
+     "answer": "Les trois couleurs primaires sont le rouge, le vert et le bleu.",
+     "firstTokenMs": 57424,
+     "totalMs": 65324,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 172,
+     "generatedTokens": 17
+    }
+   ]
+  },
+  {
+   "id": "R04",
+   "turns": [
+    {
+     "question": "Écris une phrase courte sur la mer.",
+     "answer": "La mer est un océan qui couvre une grande partie de la planète, où les vagues se forment et les poissons vivent.",
+     "firstTokenMs": 58302,
+     "totalMs": 73060,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 174,
+     "generatedTokens": 32
+    }
+   ]
+  },
+  {
+   "id": "L01",
+   "turns": [
+    {
+     "question": "Si j'ai 3 pommes et que j'en mange une, combien m'en reste-t-il ?",
+     "answer": "Il reste 2 pommes.",
+     "firstTokenMs": 62214,
+     "totalMs": 65458,
+     "decodeTokensPerSecond": 1.8,
+     "promptTokens": 186,
+     "generatedTokens": 7
+    }
+   ]
+  },
+  {
+   "id": "L02",
+   "turns": [
+    {
+     "question": "Marie est plus grande que Paul, et Paul est plus grand que Léa. Qui est la plus petite ?",
+     "answer": "Marie est la plus grande, Paul est le milieu, et Léa la plus petite. Donc, Léa est la plus petite.",
+     "firstTokenMs": 63120,
+     "totalMs": 77497,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 188,
+     "generatedTokens": 31
+    }
+   ]
+  },
+  {
+   "id": "L03",
+   "turns": [
+    {
+     "question": "Quel nombre vient juste après 99 ?",
+     "answer": "Le nombre qui vient juste après 99 est 100.",
+     "firstTokenMs": 58292,
+     "totalMs": 65263,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 174,
+     "generatedTokens": 15
+    }
+   ]
+  },
+  {
+   "id": "L04",
+   "turns": [
+    {
+     "question": "Un train part à 14 h et roule pendant 2 heures. À quelle heure arrive-t-il ?",
+     "answer": "14 h + 2 heures = 16 h. Le train arrive à 16 h.",
+     "firstTokenMs": 62762,
+     "totalMs": 73048,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 187,
+     "generatedTokens": 22
+    }
+   ]
+  },
+  {
+   "id": "L05",
+   "turns": [
+    {
+     "question": "Le nombre 17 est-il pair ou impair ?",
+     "answer": "17 est impair.",
+     "firstTokenMs": 58420,
+     "totalMs": 60733,
+     "decodeTokensPerSecond": 1.7,
+     "promptTokens": 175,
+     "generatedTokens": 5
+    }
+   ]
+  },
+  {
+   "id": "M01",
+   "turns": [
+    {
+     "question": "Je m'appelle Thomas.",
+     "answer": "Tu t'appelles Thomas.",
+     "firstTokenMs": 75780,
+     "totalMs": 78581,
+     "decodeTokensPerSecond": 1.8,
+     "promptTokens": 225,
+     "generatedTokens": 6
+    },
+    {
+     "question": "Comment je m'appelle ?",
+     "answer": "Je ne sais pas comment vous appelez-vous. Pour savoir, je devrais être informé de votre prénom.",
+     "firstTokenMs": 64168,
+     "totalMs": 75246,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 192,
+     "generatedTokens": 24
+    }
+   ]
+  },
+  {
+   "id": "M02",
+   "turns": [
+    {
+     "question": "J'aime beaucoup le chocolat.",
+     "answer": "Ah, le chocolat, c'est un plaisir ! Je suis content que tu aimes ça. Si tu veux, je peux même te proposer une recette de chocolat !",
+     "firstTokenMs": 67246,
+     "totalMs": 84983,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 201,
+     "generatedTokens": 38
+    },
+    {
+     "question": "Qu'est-ce que j'aime ?",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    }
+   ]
+  },
+  {
+   "id": "M03",
+   "turns": [
+    {
+     "question": "Quelle est la capitale de l'Espagne ?",
+     "answer": "La capitale de l'Espagne est Madrid.",
+     "firstTokenMs": 58838,
+     "totalMs": 63902,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 176,
+     "generatedTokens": 11
+    },
+    {
+     "question": "Et quelle langue y parle-t-on ?",
+     "answer": "La langue principale dans la capitale de l'Espagne, Madrid, est le français.",
+     "firstTokenMs": 69202,
+     "totalMs": 78465,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 206,
+     "generatedTokens": 20
+    }
+   ]
+  },
+  {
+   "id": "M04",
+   "turns": [
+    {
+     "question": "Je m'appelle Thomas.",
+     "answer": "Tu t'appelles Thomas.",
+     "firstTokenMs": 76059,
+     "totalMs": 78867,
+     "decodeTokensPerSecond": 1.8,
+     "promptTokens": 225,
+     "generatedTokens": 6
+    },
+    {
+     "question": "En fait non, je m'appelle Julien.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    },
+    {
+     "question": "Comment je m'appelle ?",
+     "answer": "Je ne sais pas comment vous appelez-vous. Pour savoir, je devrais être informé de votre prénom.",
+     "firstTokenMs": 64787,
+     "totalMs": 75997,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 192,
+     "generatedTokens": 24
+    }
+   ]
+  },
+  {
+   "id": "M05",
+   "turns": [
+    {
+     "question": "Parlons de cuisine.",
+     "answer": "Je ne suis pas un expert en cuisine, mais je peux te dire que la cuisine est un art et une science qui combine les saveurs, les textures et les textures. Si tu as une question spécifique, je suis ici pour t'aider !",
+     "firstTokenMs": 56717,
+     "totalMs": 79591,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 170,
+     "generatedTokens": 50
+    },
+    {
+     "question": "Donne-moi une recette très simple.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    }
+   ]
+  },
+  {
+   "id": "A01",
+   "turns": [
+    {
+     "question": "Il est grand ?",
+     "answer": "Je ne peux pas savoir si il est grand, car je ne suis pas un être humain. Je suis un ordinateur et je ne mesure pas la taille des personnes.",
+     "firstTokenMs": 55688,
+     "totalMs": 72212,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 168,
+     "generatedTokens": 36
+    }
+   ]
+  },
+  {
+   "id": "A02",
+   "turns": [
+    {
+     "question": "Peux-tu m'aider ?",
+     "answer": "Je suis ici pour t'aider ! Qu'est-ce que tu as besoin de savoir ou de faire ?",
+     "firstTokenMs": 57132,
+     "totalMs": 66694,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 172,
+     "generatedTokens": 21
+    }
+   ]
+  },
+  {
+   "id": "X01",
+   "turns": [
+    {
+     "question": "Envoie un e-mail à mon patron.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    }
+   ]
+  },
+  {
+   "id": "X02",
+   "turns": [
+    {
+     "question": "Allume la lumière du salon.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    }
+   ]
+  },
+  {
+   "id": "D01",
+   "turns": [
+    {
+     "question": "Résume le document que je t'ai envoyé hier.",
+     "answer": "Je n'ai pas reçu de document hier, donc je ne peux pas le résumer. Veuillez me fournir le document pour que je le résume.",
+     "firstTokenMs": 58630,
+     "totalMs": 73783,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 176,
+     "generatedTokens": 33
+    }
+   ]
+  },
+  {
+   "id": "D02",
+   "turns": [
+    {
+     "question": "Que dit le fichier rapport.pdf ?",
+     "answer": "Je n'ai pas accès au fichier rapport.pdf et je ne peux pas vous dire ce qu'il contient. Si vous pouvez me le partager, je pourrais vous aider à le lire.",
+     "firstTokenMs": 56979,
+     "totalMs": 74861,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 171,
+     "generatedTokens": 39
+    }
+   ]
+  },
+  {
+   "id": "C01",
+   "turns": [
+    {
+     "question": "Je prépare un voyage à Lyon le week-end prochain.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    },
+    {
+     "question": "Qu'est-ce que je pourrais visiter là-bas ?",
+     "answer": "Il est difficile de savoir ce que tu means par \"là-bas\" sans plus de contexte. Si tu veux des suggestions, je peux te proposer des villes connues ou des pays qui ont des attractions intéressantes. Quel est ton pays ou ta région ?",
+     "firstTokenMs": 59321,
+     "totalMs": 85777,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 177,
+     "generatedTokens": 57
+    }
+   ]
+  },
+  {
+   "id": "C02",
+   "turns": [
+    {
+     "question": "Mon frère s'appelle Paul et il a douze ans.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    },
+    {
+     "question": "Quel âge a-t-il ?",
+     "answer": "Je n'ai pas de données sur l'âge de la personne mentionnée. Si vous pouvez me fournir plus d'informations, je pourrais essayer de le déterminer.",
+     "firstTokenMs": 57633,
+     "totalMs": 76112,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 172,
+     "generatedTokens": 40
+    }
+   ]
+  },
+  {
+   "id": "C03",
+   "turns": [
+    {
+     "question": "Je m'appelle Marc.",
+     "answer": "Tu t'appelles Marc.",
+     "firstTokenMs": 75999,
+     "totalMs": 78782,
+     "decodeTokensPerSecond": 1.8,
+     "promptTokens": 225,
+     "generatedTokens": 6
+    },
+    {
+     "question": "Pardon, je me suis trompé : je m'appelle Léo.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    },
+    {
+     "question": "Comment je m'appelle ?",
+     "answer": "Tu t'appelles Marc.",
+     "firstTokenMs": 63871,
+     "totalMs": 66626,
+     "decodeTokensPerSecond": 1.8,
+     "promptTokens": 192,
+     "generatedTokens": 6
+    }
+   ]
+  },
+  {
+   "id": "C04",
+   "turns": [
+    {
+     "question": "Mon rendez-vous est mardi à 10 heures.",
+     "answer": "Je vois que ton rendez-vous est mardi à 10 heures. C'est bien organisé ! Si tu as besoin d'aide pour quelque chose d'autre, n'hésite pas.",
+     "firstTokenMs": 69992,
+     "totalMs": 88546,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 210,
+     "generatedTokens": 40
+    },
+    {
+     "question": "Non, je me suis trompé, c'est mercredi.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    },
+    {
+     "question": "Quel jour est mon rendez-vous ?",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    }
+   ]
+  },
+  {
+   "id": "C05",
+   "turns": [
+    {
+     "question": "Comment faire une pâte à crêpes ?",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    },
+    {
+     "question": "Au fait, quelle est la capitale de l'Italie ?",
+     "answer": "La capitale de l'Italie est Rome.",
+     "firstTokenMs": 58608,
+     "totalMs": 63151,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 177,
+     "generatedTokens": 10
+    },
+    {
+     "question": "Revenons aux crêpes : il faut des œufs ?",
+     "answer": "Il y a plusieurs variétés de crêpes, et certains types utilisent des œufs, d'autres non. Il est préférable de vérifier la recette spécifique.",
+     "firstTokenMs": 70237,
+     "totalMs": 88174,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 211,
+     "generatedTokens": 39
+    }
+   ]
+  },
+  {
+   "id": "C06",
+   "turns": [
+    {
+     "question": "Combien font 12 fois 12 ?",
+     "answer": "12 × 12 = 144.",
+     "firstTokenMs": 57926,
+     "totalMs": 63375,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 175,
+     "generatedTokens": 12
+    },
+    {
+     "question": "Et si on divise ce résultat par 4 ?",
+     "answer": "144 ÷ 4 = 36.",
+     "firstTokenMs": 69127,
+     "totalMs": 74637,
+     "decodeTokensPerSecond": 2,
+     "promptTokens": 208,
+     "generatedTokens": 12
+    }
+   ]
+  },
+  {
+   "id": "C07",
+   "turns": [
+    {
+     "question": "Rappelle-moi de faire quelque chose.",
+     "answer": "Tu t'appelles De.",
+     "firstTokenMs": 57569,
+     "totalMs": 60287,
+     "decodeTokensPerSecond": 1.8,
+     "promptTokens": 174,
+     "generatedTokens": 6
+    }
+   ]
+  },
+  {
+   "id": "C08",
+   "turns": [
+    {
+     "question": "Quel est le numéro de téléphone de mon voisin ?",
+     "answer": "Je n'ai pas de données sur votre voisin ou sur les personnes de votre quartier. Veuillez me fournir plus d'informations pour me faire aider.",
+     "firstTokenMs": 58220,
+     "totalMs": 73739,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 176,
+     "generatedTokens": 34
+    }
+   ]
+  },
+  {
+   "id": "C09",
+   "turns": [
+    {
+     "question": "Réponds en un seul mot : de quelle couleur est le ciel par beau temps ?",
+     "answer": "bleu",
+     "firstTokenMs": 60620,
+     "totalMs": 61531,
+     "decodeTokensPerSecond": 1.1,
+     "promptTokens": 183,
+     "generatedTokens": 2
+    }
+   ]
+  },
+  {
+   "id": "C10",
+   "turns": [
+    {
+     "question": "Je dois préparer un exposé sur Napoléon pour demain.",
+     "answer": "",
+     "error": "Calcul natif arrêté",
+     "firstTokenMs": -1,
+     "totalMs": -1,
+     "decodeTokensPerSecond": 0
+    }
+   ]
+  },
+  {
+   "id": "C11",
+   "turns": [
+    {
+     "question": "Je suis un peu fatigué aujourd'hui.",
+     "answer": "Je suis vraiment désolé de te sentir fatigué, monsieur. Il est important de prendre soin de soi, et je suis là pour t'aider si tu as besoin de quelque chose. Tu veux que je t'aide avec quelque chose d'urgent ou juste pour te parler ?",
+     "firstTokenMs": 57486,
+     "totalMs": 87414,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 174,
+     "generatedTokens": 65
+    }
+   ]
+  },
+  {
+   "id": "C12",
+   "turns": [
+    {
+     "question": "Raconte-moi une blague courte.",
+     "answer": "Ah, une blague courte... Je n'ai pas de blague aujourd'hui, mais je peux te dire que la vie est comme un film : on regarde, on rit, on s'endort, et on se réveille avec un peu de moins de sommeil. 😄",
+     "firstTokenMs": 57576,
+     "totalMs": 85434,
+     "decodeTokensPerSecond": 2.2,
+     "promptTokens": 174,
+     "generatedTokens": 61
+    }
+   ]
+  },
+  {
+   "id": "C13",
+   "turns": [
+    {
+     "question": "Comment t'appelles-tu ?",
+     "answer": "Je m'appelle JARVIS. Je suis un assistant intelligent, créé par la société IBM. Je suis ici pour t'aider à faire des calculs, à organiser ton travail, à trouver des informations ou à prendre des décisions. Si tu as besoin de quelque chose, n'hésite pas !",
+     "firstTokenMs": 56490,
+     "totalMs": 85813,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 171,
+     "generatedTokens": 64
+    }
+   ]
+  },
+  {
+   "id": "C14",
+   "turns": [
+    {
+     "question": "Que dit le contrat que je t'ai montré ce matin ?",
+     "answer": "Je n'ai pas vu de contrat aujourd'hui. Si tu as un contrat en question, je ne peux pas le vérifier.",
+     "firstTokenMs": 58823,
+     "totalMs": 70660,
+     "decodeTokensPerSecond": 2.1,
+     "promptTokens": 178,
+     "generatedTokens": 26
+    }
+   ]
+  }
+ ],
+ "thermalSamples": [
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 10003
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 20005
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 30007
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 40009
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 50011
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 60013
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 70014
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 80016
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 90017
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 100019
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 110020
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 120022
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 130024
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 140025
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 150027
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 160029
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 170030
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 180032
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 190034
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 200036
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 210038
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 220040
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 230043
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 240045
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 250047
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 260049
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 270050
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 280052
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 290054
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 300056
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 310058
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 320060
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 330062
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 340064
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 350066
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 360067
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 370069
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 380071
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 390074
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 400076
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 410077
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 420079
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 430081
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 440082
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 450084
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 460086
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 470087
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 480089
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 490090
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 500092
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 510093
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 520095
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 530096
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 540098
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 550099
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 560101
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 570102
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 580104
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 590106
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 600108
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 610110
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 620111
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 630113
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 640115
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 650116
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 660118
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 670120
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 680121
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 690123
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 700124
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 710126
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 720128
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 730130
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 740132
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 750133
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 760134
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 770136
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 780138
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 790140
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 800141
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 810143
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 820144
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 830145
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 840147
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 850148
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 860150
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 870152
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 880154
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 890156
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 900158
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 910161
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 920162
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 930164
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 940166
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 950168
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 960170
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 970172
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 980174
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 990177
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1000179
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1010181
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1020184
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1030185
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1040187
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1050188
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1060190
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1070192
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1080194
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1090195
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1100197
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1110198
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1120200
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1130201
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1140203
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1150204
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1160206
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1170208
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1180210
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1190211
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1200213
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1210215
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1220217
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1230218
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1240221
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1250223
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1260224
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1270226
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1280228
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1290229
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1300231
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1310233
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1320235
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1330237
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1340239
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1350240
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1360242
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1370243
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1380246
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1390248
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1400250
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1410252
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1420253
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1430255
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1440257
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1450259
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1460261
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1470263
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1480264
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1490266
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1500267
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1510269
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1520270
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1530272
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1540273
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1550275
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1560276
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1570278
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1580279
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1590281
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1600282
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1610285
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1620286
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1630287
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1640289
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1650291
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1660292
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1670294
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1680296
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1690297
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1700299
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1710300
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1720301
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1730303
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1740304
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1750306
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1760308
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1770310
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1780311
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1790312
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1800314
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1810316
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1820317
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1830319
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1840321
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1850322
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1860324
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1870325
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1880327
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1890328
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1900331
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1910333
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1920335
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1930338
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1940339
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1950341
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1960342
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1970345
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1980346
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 1990347
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2000349
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2010350
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2020352
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2030354
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2040355
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2050356
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2060359
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2070360
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2080361
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2090364
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2100365
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2110367
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2120369
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2130371
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2140373
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2150375
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2160377
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2170380
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2180382
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2190384
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2200386
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2210389
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2220391
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2230392
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2240394
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2250395
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2260398
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2270399
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2280401
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2290403
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2300405
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2310407
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2320408
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2330410
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2340411
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2350413
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2360415
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2370417
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2380418
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2390420
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2400421
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2410423
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2420424
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2430426
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2440428
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2450429
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2460431
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2470432
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2480434
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2490435
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2500437
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2510439
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2520441
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2530442
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2540443
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2550445
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2560446
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2570448
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2580450
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2590452
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2600454
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2610456
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2620457
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2630458
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2640460
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2650462
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2660464
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2670466
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2680467
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2690469
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2700470
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2710472
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2720474
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2730476
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2740478
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2750479
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2760481
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2770483
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2780485
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2790486
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2800489
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2810491
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2820493
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2830495
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2840496
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2850498
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2860499
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2870501
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2880502
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2890505
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2900507
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2910509
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2920511
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2930513
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2940515
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2950517
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2960519
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2970521
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2980523
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 2990525
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3000527
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3010529
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3020530
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3030532
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3040533
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3050535
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3060536
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3070538
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3080539
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3090541
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3100542
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3110544
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3120545
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3130547
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3140548
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3150550
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3160552
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3170555
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3180556
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3190557
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3200559
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3210561
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3220562
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3230564
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3240565
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3250567
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3260568
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3270570
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3280571
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3290573
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3300574
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3310576
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3320577
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3330579
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3340581
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3350583
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3360585
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3370587
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3380588
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3390590
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3400592
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3410594
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3420596
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3430598
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3440599
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3450602
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3460604
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3470605
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3480606
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3490608
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3500609
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3510611
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3520612
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3530614
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3540615
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3550617
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3560618
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3570620
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3580623
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3590625
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3600626
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3610628
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3620630
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3630631
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3640632
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3650634
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3660635
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3670637
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3680638
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3690640
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3700641
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3710643
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3720645
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3730646
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3740648
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3750649
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3760651
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3770652
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3780654
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3790655
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3800657
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3810658
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3820660
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3830663
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3840665
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3850667
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3860669
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3870671
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3880674
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3890676
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3900678
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3910680
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3920682
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3930683
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3940685
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3950687
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3960689
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3970690
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3980692
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 3990694
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4000696
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4010698
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4020700
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4030702
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4040703
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4050705
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4060708
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4070710
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4080712
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4090715
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4100717
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4110719
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4120721
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4130723
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4140724
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4150727
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4160729
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4170731
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4180733
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4190734
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4200736
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4210738
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4220740
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4230742
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4240744
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4250746
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4260747
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4270748
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4280750
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4290752
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4300753
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4310755
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4320756
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4330758
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4340759
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4350761
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4360762
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4370764
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4380765
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4390767
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4400768
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4410770
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4420771
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4430773
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4440774
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4450776
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4460777
+  },
+  {
+   "status": 0,
+   "headroom10s": 0.42666664719581604,
+   "batteryTempC": 25,
+   "tMs": 4470779
+  }
+ ],
+ "memory": {
+  "budgetBytesAtLoad": 4684664832,
+  "pssBeforeKb": 54595,
+  "rssBeforeKb": 179004,
+  "loadMs": 10936,
+  "pssLoadedKb": 1263678,
+  "rssLoadedKb": 1388776,
+  "vmHwmKb": 1398816,
+  "pssPeakSampleKb": 1267885,
+  "pssAfterBenchKb": 1266169,
+  "rssAfterBenchKb": 1393568,
+  "unload": "CONFIRMED",
+  "pssAfterUnloadKb": 90873,
+  "rssAfterUnloadKb": 218388
+ },
+ "thermalEnd": {
+  "status": 0,
+  "headroom10s": 0.42666664719581604,
+  "batteryTempC": 25
+ },
+ "wallMs": 4480781
+}

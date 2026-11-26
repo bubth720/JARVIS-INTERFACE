@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Fake adb for test_run_emulator.sh. State dir $FAKE_ADB_DIR. Scenarios (FAKE_SCENARIO):
+#   healthy      every instrumentation prints OK
+#   lost_before  after $FAKE_AFTER instrumentations the device is offline (get-state fails)
+#   lost_during  instrumentation number $FAKE_AFTER hangs and the device goes offline while it runs
+#   shell_hang   after $FAKE_AFTER instrumentations get-state says 'device' but every shell command hangs
+# Real adb can consume its stdin. Reproduce that behaviour so a file-reading shell loop cannot silently stop early.
+[ "${FAKE_DRAIN_STDIN:-0}" = 1 ] && cat > /dev/null
+d="$FAKE_ADB_DIR"; [ -n "${FAKE_OFFLINE_AT_START:-}" ] && [ ! -f "$d/started" ] && { touch "$d/started" "$d/offline"; }; n=$(cat "$d/instr" 2>/dev/null || echo 0); off=$([ -f "$d/offline" ] && echo 1 || echo 0)
+case "$1" in
+  get-state) if [ "$off" = 1 ] && [ "$FAKE_SCENARIO" != shell_hang ]; then echo "error: device offline" >&2; exit 1; fi; echo device; exit 0;;
+  devices) echo "List of devices attached"; [ "$off" = 1 ] && echo "emulator-5554 offline" || echo "emulator-5554 device"; exit 0;;
+esac
+if [ "$off" = 1 ]; then [ "$FAKE_SCENARIO" = shell_hang ] && { sleep 600; exit 1; }; echo "error: device offline" >&2; exit 1; fi
+args="$*"
+case "$args" in
+  "shell echo ok") echo ok;;
+  "shell settings get global airplane_mode_on") echo 1;;
+  "shell pidof "*) echo 4242;;
+  "shell run-as fr.jarvis.v3 ls files/v3shots"|"shell run-as fr.jarvis.v3 ls -1 files/v3shots") python3 "$FAKE_CAPTURE_FIXTURE" list;;
+  "exec-out run-as fr.jarvis.v3 cat files/audit-tour.json") python3 "$FAKE_CAPTURE_FIXTURE" index;;
+  "exec-out run-as fr.jarvis.v3 cat files/v3shots/"*)
+     [ "${FAKE_EVIDENCE:-}" = pull_error ] && exit 1
+     python3 "$FAKE_CAPTURE_FIXTURE" png;;
+  "shell am instrument "*)
+     n=$((n + 1)); echo "$n" > "$d/instr"; echo "$args" >> "$d/instr.log"
+     if [ -n "${FAKE_HANG:-}" ] && [ "$n" -eq "$FAKE_HANG" ]; then sleep 600; exit 1; fi
+     if [ "$FAKE_SCENARIO" = lost_during ] && [ "$n" -ge "${FAKE_AFTER:-3}" ]; then touch "$d/offline"; sleep 600; exit 1; fi
+     echo "INSTRUMENTATION_STATUS_CODE: -1"; echo "OK (1 test)"
+     [ "${FAKE_EVIDENCE:-}" = nonzero_ok ] && [ "$n" -eq 3 ] && exit 1
+     if [ "$FAKE_SCENARIO" != healthy ] && [ "$n" -ge "${FAKE_AFTER:-3}" ]; then touch "$d/offline"; fi;;
+  *) :;;
+esac
+exit 0

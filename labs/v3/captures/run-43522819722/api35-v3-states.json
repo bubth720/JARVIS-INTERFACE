@@ -1,0 +1,70 @@
+{
+  "sdk": 35,
+  "platform": "Android emulator x86_64 (NOT a phone)",
+  "captures": [
+    "02-repos",
+    "03-clavier",
+    "04-reflexion",
+    "05-diffusion-texte",
+    "06-parole",
+    "08-erreur",
+    "07-reponse",
+    "09-fiche-sujet",
+    "10-fiche-agrandie",
+    "11-menu-radial",
+    "12-module-indisponible",
+    "13-reglages",
+    "14-fiche-systeme",
+    "15-ecoute",
+    "16-transcription",
+    "17-paysage"
+  ],
+  "loadMs": 9458,
+  "idleFrames": {
+    "frames": 70,
+    "deliveredFps": 14,
+    "medianFrameMs": 251.9,
+    "p99FrameMs": 344.4,
+    "onePercentLowFps": 2.9
+  },
+  "governor": {
+    "frames": 442,
+    "fps": 10.8,
+    "p50Ms": 83.33333,
+    "p95Ms": 116.666664,
+    "jankPercent": 98.9,
+    "mode": "ECONOMY"
+  },
+  "swipe": {
+    "dragEvents": 19,
+    "yawDelta": -6.023271
+  },
+  "keyboardShown": true,
+  "inputMethod": "accessibility-setText",
+  "typed": {
+    "answer": "La capitale de la France est Paris.",
+    "llmMs": 27144,
+    "firstTextMs": 25888,
+    "error": "TTS : Délai de lecture audio dépassé",
+    "statesCaptured": [
+      "think",
+      "stream",
+      "speak"
+    ],
+    "errorAccentShown": true
+  },
+  "systemCard": "Batterie : 100 % (en charge).",
+  "listeningLevel": 0.9722944,
+  "voice": {
+    "transcript": "Pouf, je m'appelte au ma...",
+    "answer": "Je m'appelle JARVIS. La capitale de la France est Paris.",
+    "sttMs": 23562,
+    "llmMs": 34725,
+    "error": null
+  },
+  "landscapeSameSession": true,
+  "background": {
+    "framesWhileHidden": 0,
+    "framesAfterReturn": 21
+  }
+}

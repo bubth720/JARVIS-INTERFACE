@@ -1,0 +1,7 @@
+PASS a_manifestSinglePermissionNoNetworkInstallable
+PASS b_firstLaunchThenVerifiedImport
+PASS c_realEngineStatesCardsMenuLandscapeBackground
+PASS d_reducedMotionStaticSphereAndFirstText
+PASS e_galleryCapturesAndBeforeAfterBench
+PASS reopen_after_force_stop
+PASS no_crash

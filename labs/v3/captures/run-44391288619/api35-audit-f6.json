@@ -1,0 +1,8 @@
+{
+  "journalFileGone": true,
+  "memoryDbFiles": [
+    "confirmed_memory_lab.sqlite",
+    "confirmed_memory_lab.sqlite-journal"
+  ],
+  "deletedTextStillOnDisk": false
+}

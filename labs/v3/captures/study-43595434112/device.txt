@@ -1,0 +1,4 @@
+sdk_gphone64_x86_64
+MemTotal:        6072164 kB
+MemFree:         1303088 kB
+MemAvailable:    4314232 kB

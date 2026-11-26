@@ -1,0 +1,15 @@
+{
+  "freeBeforeMiB": 3896,
+  "filledMiB": 3896,
+  "fillMs": 5533,
+  "freeAfterFillKiB": 0,
+  "importWhenFull": "g3-plein.txt : refusé (STORAGE_FAILURE)",
+  "stateWhenFull": "Ready",
+  "statusWhenFull": "Prêt · hors ligne (réponse écrite : voix désactivée) · Historique local non enregistré : write failed: ENOSPC (No space left on device)",
+  "answerWhenFull": "9 + 1 = 10. Cela est précisé dans le reglement de la piscine de Valmont.",
+  "freeAfterDeleteMiB": 3896,
+  "importAfterFree": "g3-apres.txt : indexé localement (43 octets)",
+  "statusAfterFree": "Prêt · hors ligne (réponse écrite : voix désactivée)",
+  "docsAfter": 13,
+  "savedWhenFull": false
+}

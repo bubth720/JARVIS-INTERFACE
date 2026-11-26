@@ -1,0 +1,30 @@
+FAIL b3_ambiguousMemoriesAreNotInjectedWithoutChoice
+PASS c3_unknownQuestionsAreNotInvented
+PASS c8_generalAnswerIsNeverPresentedAsDocumentary
+FAIL d2_voiceErrorsLeaveTheSessionUsableWithoutDuplicates
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: silence must not add an exchange expected:<0> but was:<1>
+java.lang.AssertionError: silence must not add an exchange expected:<0> but was:<1>
+java.lang.AssertionError: silence must not add an exchange expected:<0> but was:<1>
+PASS d3_interruptionAtEachStage
+FAIL f2f3f4_documentsContradictoryCorruptAndInjected
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: the injected action claim must not be presented as JARVIS's own statement
+java.lang.AssertionError: the injected action claim must not be presented as JARVIS's own statement
+java.lang.AssertionError: the injected action claim must not be presented as JARVIS's own statement
+FAIL f6_deletionIsVerifiedOnDisk
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: Timeout: released (null)
+java.lang.AssertionError: Timeout: released (null)
+java.lang.AssertionError: Timeout: released (null)
+PASS g6_modelOrDocumentCannotCreateAMemory
+PASS a3_knowledgeImportFormatsAndLimits
+PASS a4_corruptFutureAndSymlinkDatabasesRefusedAndKept
+PASS a5_memoryConsentMismatchAndExpiry
+FAIL e2e3e6e7_layoutStressAccessibilityAvatar
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalArgumentException: Required value was null.
+java.lang.IllegalArgumentException: Required value was null.
+java.lang.IllegalArgumentException: Required value was null.
+PASS g1_microphoneRevokedTextStillWorks
+PASS g2_thermalSevereRefusesTurn
+FAIL h4_loadUnloadCyclesDoNotLeak
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: Timeout: released (null)
+java.lang.AssertionError: Timeout: released (null)
+java.lang.AssertionError: Timeout: released (null)

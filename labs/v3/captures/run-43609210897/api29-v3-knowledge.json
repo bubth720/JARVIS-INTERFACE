@@ -1,0 +1,6 @@
+{
+  "sdk": 29,
+  "platform": "Android emulator x86_64 (NOT a phone), airplane mode",
+  "knowledgeState": "Unavailable(reason=recherche plein texte (FTS5) absente du SQLite de cet Android)",
+  "fts5": false
+}

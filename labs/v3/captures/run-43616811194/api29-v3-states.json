@@ -1,0 +1,46 @@
+{
+  "sdk": 29,
+  "platform": "Android emulator x86_64 (NOT a phone)",
+  "captures": [
+    "02-repos",
+    "03-clavier",
+    "04-reflexion",
+    "05-diffusion-texte",
+    "06-parole",
+    "08-erreur",
+    "07-reponse",
+    "09-fiche-sujet",
+    "10-fiche-agrandie",
+    "11-menu-radial"
+  ],
+  "loadMs": 3584,
+  "idleFrames": {
+    "frames": 0
+  },
+  "governor": {
+    "frames": 0,
+    "mode": "BALANCED"
+  },
+  "restFrames2s": 0,
+  "swipe": {
+    "dragEvents": 0,
+    "yawDelta": 0
+  },
+  "keyboardShown": true,
+  "inputMethod": "accessibility-setText",
+  "thinkingFrames1500ms": 0,
+  "speakingFrames1500ms": 18,
+  "typed": {
+    "answer": "La capitale de la France est Paris.",
+    "llmMs": 12386,
+    "firstTextMs": 11378,
+    "error": "TTS : Délai de lecture audio dépassé",
+    "statesCaptured": [
+      "think",
+      "stream",
+      "speak"
+    ],
+    "errorAccentShown": true
+  },
+  "afterAnswerFrames2s": 0
+}

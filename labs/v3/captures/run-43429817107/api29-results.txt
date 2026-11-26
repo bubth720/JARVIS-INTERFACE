@@ -1,0 +1,59 @@
+PASS a_manifestSinglePermissionNoNetworkInstallable
+PASS b_firstLaunchThenVerifiedImport
+FAIL c_realEngineStatesCardsMenuLandscapeBackground
+--- instrumentation (tail)
+
+INSTRUMENTATION_STATUS: stream=
+Error in c_realEngineStatesCardsMenuLandscapeBackground(fr.jarvis.v3.V3CockpitTest):
+org.junit.ComparisonFailure: typed text did not reach the input expected:<...itale de la France ?[]> but was:<...itale de la France ?[capi]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at fr.jarvis.v3.V3CockpitTest.type(V3CockpitTest.kt:96)
+	at fr.jarvis.v3.V3CockpitTest.c_realEngineStatesCardsMenuLandscapeBackground(V3CockpitTest.kt:160)
+
+INSTRUMENTATION_STATUS: test=c_realEngineStatesCardsMenuLandscapeBackground
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 153.558
+There was 1 failure:
+1) c_realEngineStatesCardsMenuLandscapeBackground(fr.jarvis.v3.V3CockpitTest)
+org.junit.ComparisonFailure: typed text did not reach the input expected:<...itale de la France ?[]> but was:<...itale de la France ?[capi]>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at fr.jarvis.v3.V3CockpitTest.type(V3CockpitTest.kt:96)
+	at fr.jarvis.v3.V3CockpitTest.c_realEngineStatesCardsMenuLandscapeBackground(V3CockpitTest.kt:160)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1
+--- logcat errors
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at androidx.test.ext.junit.runners.AndroidJUnit4.run(AndroidJUnit4.java:162)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.Suite.runChild(Suite.java:128)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.Suite.runChild(Suite.java:27)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:68)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at androidx.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:463)
+11-13 13:12:27.409  6299  6321 E TestRunner: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2189)
+11-13 13:12:27.409  6299  6321 E TestRunner: ----- end exception -----
+11-13 13:12:28.281  1754  1754 E Layer   : [Surface(name=AppWindowToken{a3c41df token=Token{2dc587e ActivityRecord{9b03a39 u0 com.google.android.apps.nexuslauncher/.NexusLauncherActivity t5}}})/@0xe22d76 - animation-leash#0] No local sync point found
+11-13 13:12:28.281  1754  1754 E Layer   : [Surface(name=AppWindowToken{a440f20 token=Token{153fe23 ActivityRecord{e300b52 u0 fr.jarvis.v3.test/androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity t9}}})/@0x644d60c - animation-leash#0] No local sync point found
+11-13 13:12:28.696  3015  3463 E PlaceStateUpdater: Received no places
+11-13 13:12:28.754  3015  6384 E PlaceStateUpdater: Received no places
+11-13 13:12:29.171  2101  2101 E BeaconBle: Missing BluetoothAdapter [CONTEXT service_id=111 ]
+11-13 13:12:29.218  2101  2101 E BeaconBle: Scan couldn't start for Places [CONTEXT service_id=111 ]
+PASS d_reducedMotionStaticSphereAndFirstText
+PASS e_galleryCapturesAndBeforeAfterBench
+PASS reopen_after_force_stop
+PASS no_crash
